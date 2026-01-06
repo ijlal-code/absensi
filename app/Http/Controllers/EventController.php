@@ -9,26 +9,27 @@ use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
-    // Dashboard User (Hanya lihat acara miliknya sendiri)
+    // Dashboard User / Penyelenggara
     public function index() {
-    if (auth()->user()->isAdmin()) {
-        return redirect()->route('admin.dashboard');
+        // Jika Admin nyasar ke sini, lempar ke dashboard admin
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        $user = Auth::user();
+        // Menampilkan event hari ini sesuai Timezone
+        $todayEvents = Event::where('user_id', $user->id) 
+                            ->whereDate('date', Carbon::today())
+                            ->latest()
+                            ->get();
+                            
+        // Pastikan file view ada di resources/views/dashboard/index.blade.php
+        return view('dashboard.index', compact('todayEvents'));
     }
 
-    $user = auth()->user();
-    // Gunakan Carbon::today() yang sekarang sudah Asia/Jakarta
-    $todayEvents = Event::where('user_id', $user->id) 
-                        ->whereDate('date', \Carbon\Carbon::today())
-                        ->latest()
-                        ->get();
-                        
-    return view('organizer.index', compact('todayEvents'));
-}
-
-    // Dashboard Khusus Admin (Bisa lihat semua)
+    // Dashboard Khusus Admin
     public function adminDashboard()
     {
-        // Admin melihat semua event hari ini
         $todayEvents = Event::whereDate('date', Carbon::today())->latest()->get();
         $totalEvents = Event::count();
         return view('admin.dashboard', compact('todayEvents', 'totalEvents'));
@@ -47,31 +48,26 @@ class EventController extends Controller
             'location' => 'required',
         ]);
 
-        // Gabungkan data input dengan ID user yang sedang login
         $data = $request->all();
         $data['user_id'] = Auth::id(); 
 
         Event::create($data);
 
-        // Redirect bedakan antara admin dan user biasa
-        if (Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard')->with('success', 'Acara berhasil dibuat!');
-        }
         return redirect()->route('dashboard')->with('success', 'Acara berhasil dibuat!');
     }
 
     // Edit Acara
     public function edit(Event $event) { 
-        // Proteksi: User tak boleh edit punya orang lain
-        if (Auth::user()->role !== 'admin' && $event->user_id !== Auth::id()) {
-            abort(403, 'Akses Ditolak');
+        if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
+            abort(403);
         }
         return view('dashboard.edit', compact('event')); 
     }
 
+    // Update Acara
     public function update(Request $request, Event $event) {
-        if (Auth::user()->role !== 'admin' && $event->user_id !== Auth::id()) {
-            abort(403, 'Akses Ditolak');
+        if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
+            abort(403);
         }
 
         $request->validate([
@@ -82,35 +78,34 @@ class EventController extends Controller
             'location' => 'required'
         ]);
         
-        // Update data event. user_id tidak perlu di-update.
         $event->update($request->except(['user_id']));
         
-        return back()->with('success', 'Acara berhasil diperbarui!');
+        return redirect()->route('dashboard')->with('success', 'Acara berhasil diperbarui!');
     }
 
     // Hapus Acara
     public function destroy(Event $event) {
-        if (Auth::user()->role !== 'admin' && $event->user_id !== Auth::id()) {
-            abort(403, 'Akses Ditolak');
+        if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
+            abort(403);
         }
 
         $event->delete();
         return back()->with('success', 'Acara berhasil dihapus!');
     }
 
-    // Monitor
+    // Monitor Peserta
     public function show(Event $event) {
-        if (Auth::user()->role !== 'admin' && $event->user_id !== Auth::id()) {
+        if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
             abort(403);
         }
-
         $attendances = $event->attendances()->latest()->get();
+        // Pastikan punya view admin/show.blade.php atau sesuaikan
         return view('admin.show', compact('event', 'attendances'));
     }
 
     // Laporan
     public function reports() {
-        if (Auth::user()->role === 'admin') {
+        if (Auth::user()->isAdmin()) {
             $events = Event::withCount('attendances')->latest('date')->get();
         } else {
             $events = Event::where('user_id', Auth::id())

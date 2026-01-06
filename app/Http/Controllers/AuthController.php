@@ -11,32 +11,32 @@ class AuthController extends Controller
     public function showRegister() { return view('auth.register'); }
 
     public function login(Request $request) {
-    $credentials = $request->validate([
-        'name' => 'required', 
-        'password' => 'required'
-    ]);
+        $credentials = $request->validate([
+            'name' => 'required', 
+            'password' => 'required'
+        ]);
 
-    if (Auth::attempt($credentials)) {
-        $request->session()->regenerate();
-        
-        // [PERBAIKAN REDIRECT BERDASARKAN ROLE]
-        if (Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            
+            // Cek Role
+            if (Auth::user()->isAdmin()) {
+                return redirect()->route('admin.dashboard');
+            }
+            
+            return redirect()->intended('dashboard');
         }
         
-        return redirect()->intended('dashboard');
+        return back()->withErrors(['name' => 'Nama atau password salah.']);
     }
-    
-    return back()->withErrors(['name' => 'Nama atau password salah.']);
-}
 
     public function register(Request $request) {
         $request->validate(['name' => 'required|unique:users', 'password' => 'required|min:6']);
         User::create([
             'name' => $request->name,
-            'email' => strtolower(str_replace(' ', '', $request->name)) . '@system.com', // Email dummy otomatis
+            'email' => strtolower(str_replace(' ', '', $request->name)) . '@system.com',
             'password' => Hash::make($request->password),
-            'role' => 'organizer'
+            'role' => 'organizer' // Default role
         ]);
         return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login.');
     }
