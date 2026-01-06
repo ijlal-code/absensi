@@ -11,14 +11,24 @@ class AuthController extends Controller
     public function showRegister() { return view('auth.register'); }
 
     public function login(Request $request) {
-        $credentials = $request->validate(['name' => 'required', 'password' => 'required']);
-        // Login menggunakan 'name' bukan email
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            return redirect()->intended('dashboard');
+    $credentials = $request->validate([
+        'name' => 'required', 
+        'password' => 'required'
+    ]);
+
+    if (Auth::attempt($credentials)) {
+        $request->session()->regenerate();
+        
+        // [PERBAIKAN REDIRECT BERDASARKAN ROLE]
+        if (Auth::user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
         }
-        return back()->withErrors(['name' => 'Nama atau password salah.']);
+        
+        return redirect()->intended('dashboard');
     }
+    
+    return back()->withErrors(['name' => 'Nama atau password salah.']);
+}
 
     public function register(Request $request) {
         $request->validate(['name' => 'required|unique:users', 'password' => 'required|min:6']);

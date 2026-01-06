@@ -11,6 +11,9 @@ class EventController extends Controller
 {
     // Dashboard User (Hanya lihat acara miliknya sendiri)
     public function index() {
+        if (Auth::user()->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
         $user = Auth::user();
         
         $todayEvents = Event::where('user_id', $user->id) 
