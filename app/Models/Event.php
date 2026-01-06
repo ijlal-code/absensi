@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class Event extends Model
 {
-    protected $guarded = ['user_id'];
+    protected $guarded = [];
 
     // Helper untuk status absensi
     public function getIsOpenAttribute()

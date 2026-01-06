@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth; // [PENTING] Jangan lupa ini
+use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -13,7 +13,6 @@ class EventController extends Controller
     public function index() {
         $user = Auth::user();
         
-        // Filter: Hanya ambil event dimana user_id sama dengan user yang login
         $todayEvents = Event::where('user_id', $user->id) 
                             ->whereDate('date', Carbon::today())
                             ->latest()
@@ -25,6 +24,7 @@ class EventController extends Controller
     // Dashboard Khusus Admin (Bisa lihat semua)
     public function adminDashboard()
     {
+        // Admin melihat semua event hari ini
         $todayEvents = Event::whereDate('date', Carbon::today())->latest()->get();
         $totalEvents = Event::count();
         return view('admin.dashboard', compact('todayEvents', 'totalEvents'));
@@ -43,7 +43,6 @@ class EventController extends Controller
             'location' => 'required',
         ]);
 
-        // [SOLUSI ERROR ANDA DISINI]
         // Gabungkan data input dengan ID user yang sedang login
         $data = $request->all();
         $data['user_id'] = Auth::id(); 
@@ -67,7 +66,6 @@ class EventController extends Controller
     }
 
     public function update(Request $request, Event $event) {
-        // Proteksi
         if (Auth::user()->role !== 'admin' && $event->user_id !== Auth::id()) {
             abort(403, 'Akses Ditolak');
         }
@@ -80,15 +78,14 @@ class EventController extends Controller
             'location' => 'required'
         ]);
         
-        $event->update($request->all());
+        // Update data event. user_id tidak perlu di-update.
+        $event->update($request->except(['user_id']));
         
-        // Redirect kembali ke halaman sebelumnya
         return back()->with('success', 'Acara berhasil diperbarui!');
     }
 
     // Hapus Acara
     public function destroy(Event $event) {
-        // Proteksi
         if (Auth::user()->role !== 'admin' && $event->user_id !== Auth::id()) {
             abort(403, 'Akses Ditolak');
         }
@@ -109,7 +106,6 @@ class EventController extends Controller
 
     // Laporan
     public function reports() {
-        // Admin lihat semua, User lihat punya sendiri
         if (Auth::user()->role === 'admin') {
             $events = Event::withCount('attendances')->latest('date')->get();
         } else {
