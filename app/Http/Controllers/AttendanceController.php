@@ -12,14 +12,21 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class AttendanceController extends Controller
 {
     // Menampilkan Form
-    public function showForm(Event $event)
+   public function showForm(Event $event)
     {
+        // Cek Batas Waktu
+        if (!$event->is_open) {
+            return view('attendance.closed', compact('event')); // Tampilkan halaman tutup
+        }
         return view('attendance.form', compact('event'));
     }
 
-    // Menyimpan Data Absen
     public function store(Request $request, Event $event)
     {
+        // Cek lagi saat submit
+        if (!$event->is_open) {
+            return back()->with('error', 'Maaf, waktu absensi sudah habis!');
+        }
         $request->validate([
             'name' => 'required|string|max:255',
             'work_unit' => 'required|string|max:255',

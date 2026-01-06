@@ -10,13 +10,14 @@ return new class extends Migration
     {
         // Tabel Acara
         Schema::create('events', function (Blueprint $table) {
-            $table->id();
-            $table->string('title'); // Judul Acara
-            $table->date('date');    // Hari/Tanggal
-            $table->time('time');    // Waktu
-            $table->string('location'); // Tempat
-            $table->timestamps();
-        });
+    $table->id();
+    $table->string('title');
+    $table->date('date');
+    $table->time('start_time'); // Waktu mulai
+    $table->time('end_time');   // Batas waktu akhir
+    $table->string('location');
+    $table->timestamps();
+});
 
         // Tabel Absensi
         Schema::create('attendances', function (Blueprint $table) {
