@@ -11,18 +11,19 @@ class EventController extends Controller
 {
     // Dashboard User (Hanya lihat acara miliknya sendiri)
     public function index() {
-        if (Auth::user()->isAdmin()) {
+    if (auth()->user()->isAdmin()) {
         return redirect()->route('admin.dashboard');
     }
-        $user = Auth::user();
-        
-        $todayEvents = Event::where('user_id', $user->id) 
-                            ->whereDate('date', Carbon::today())
-                            ->latest()
-                            ->get();
-                            
-        return view('dashboard.index', compact('todayEvents'));
-    }
+
+    $user = auth()->user();
+    // Gunakan Carbon::today() yang sekarang sudah Asia/Jakarta
+    $todayEvents = Event::where('user_id', $user->id) 
+                        ->whereDate('date', \Carbon\Carbon::today())
+                        ->latest()
+                        ->get();
+                        
+    return view('organizer.index', compact('todayEvents'));
+}
 
     // Dashboard Khusus Admin (Bisa lihat semua)
     public function adminDashboard()

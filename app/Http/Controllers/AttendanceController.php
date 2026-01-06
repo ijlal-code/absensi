@@ -13,9 +13,7 @@ class AttendanceController extends Controller
 {
     public function showForm(Event $event)
     {
-        if (!$event->is_open) {
-            return view('attendance.closed', compact('event'));
-        }
+        
         return view('attendance.form', compact('event'));
     }
 
