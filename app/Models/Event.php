@@ -7,7 +7,7 @@ use Carbon\Carbon;
 
 class Event extends Model
 {
-    protected $guarded = [];
+    protected $guarded = ['user_id'];
 
     // Helper untuk status absensi
     public function getIsOpenAttribute()
@@ -28,5 +28,9 @@ class Event extends Model
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
