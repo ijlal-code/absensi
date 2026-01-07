@@ -7,46 +7,59 @@ use Carbon\Carbon;
 
 class Event extends Model
 {
-    protected $guarded = [];
+    protected $guarded = ['id'];
 
-    // Helper: Cek apakah absensi sedang dibuka (Boolean)
-    public function getIsOpenAttribute()
+    // Relasi ke Attendance
+    public function attendances()
     {
-        // PENTING: Paksa gunakan waktu Jakarta
-        $now = Carbon::now('Asia/Jakarta'); 
-        
-        // Parse waktu acara sebagai waktu Jakarta
-        $start = Carbon::parse($this->date . ' ' . $this->start_time, 'Asia/Jakarta');
-        $end = Carbon::parse($this->date . ' ' . $this->end_time, 'Asia/Jakarta');
-
-        // Cek apakah 'sekarang' ada di antara awal dan akhir
-        return $now->between($start, $end);
+        return $this->hasMany(Attendance::class);
     }
 
-    // Helper: Cek status text (pending/closed/open)
+    // --- LOGIKA STATUS & WAKTU (WITA / Asia/Makassar) ---
+
+    // Atribut Virtual: Cek apakah event sedang buka
+    public function getIsOpenAttribute()
+    {
+        // Gunakan Waktu Makassar (WITA)
+        $now = Carbon::now('Asia/Makassar')->format('H:i:s');
+        $today = Carbon::now('Asia/Makassar')->format('Y-m-d');
+
+        // Cek Tanggal
+        if ($this->date !== $today) {
+            return false;
+        }
+
+        // Cek Jam (Realtime)
+        return $now >= $this->start_time && $now <= $this->end_time;
+    }
+
+    // Atribut Virtual: Status Text (Pending/Open/Closed)
     public function getStatusAttribute()
     {
-        $now = Carbon::now('Asia/Jakarta');
-        $start = Carbon::parse($this->date . ' ' . $this->start_time, 'Asia/Jakarta');
-        $end = Carbon::parse($this->date . ' ' . $this->end_time, 'Asia/Jakarta');
+        // Gunakan Waktu Makassar (WITA)
+        $now = Carbon::now('Asia/Makassar')->format('H:i:s');
+        $today = Carbon::now('Asia/Makassar')->format('Y-m-d');
 
-        if ($now->lt($start)) {
-            return 'pending'; // Belum mulai
-        } elseif ($now->gt($end)) {
-            return 'closed'; // Sudah berakhir
-        } else {
-            return 'open'; // Sedang berlangsung
+        // Logika Tanggal
+        if ($this->date > $today) {
+            return 'pending'; // Hari belum tiba
+        } elseif ($this->date < $today) {
+            return 'closed'; // Hari sudah lewat
         }
+
+        // Logika Jam (Jika hari ini)
+        if ($now < $this->start_time) {
+            return 'pending'; // Belum mulai jamnya
+        } elseif ($now > $this->end_time) {
+            return 'closed'; // Sudah lewat jamnya
+        }
+
+        return 'open'; // Sedang berlangsung
     }
     
     public function getLinkAttribute()
     {
         return route('attendance.form', $this->id);
-    }
-
-    public function attendances()
-    {
-        return $this->hasMany(Attendance::class);
     }
 
     public function user()

@@ -18,18 +18,18 @@ class AttendanceController extends Controller
 
     public function store(Request $request, Event $event)
     {
-        // --- LOGIKA WAKTU (FIXED ASIA/JAKARTA) ---
+        // --- LOGIKA WAKTU (FIXED ASIA/MAKASSAR - WITA) ---
+        // Kita gunakan logika is_open dari Model Event yang sudah diperbaiki ke WITA
         
-        // Cek status berdasarkan logika di Model Event yang sudah diperbaiki
         if (!$event->is_open) {
-            // Debugging: Tampilkan waktu server (WIB) agar jelas
-            $serverTime = Carbon::now('Asia/Jakarta')->format('H:i');
+            // Debugging: Tampilkan waktu server (WITA) agar user paham
+            $serverTime = Carbon::now('Asia/Makassar')->format('H:i');
             
             if ($event->status === 'pending') {
-                return back()->with('error', "Absensi belum dibuka. Waktu Server: $serverTime. Jadwal Mulai: $event->start_time");
+                return back()->with('error', "Absensi belum dibuka. Sekarang pukul $serverTime WITA. Jadwal Mulai: $event->start_time");
             }
             if ($event->status === 'closed') {
-                return back()->with('error', "Absensi sudah ditutup. Waktu Server: $serverTime. Jadwal Selesai: $event->end_time");
+                return back()->with('error', "Absensi sudah ditutup. Sekarang pukul $serverTime WITA. Jadwal Selesai: $event->end_time");
             }
         }
 
@@ -38,7 +38,6 @@ class AttendanceController extends Controller
             'name' => 'required|string|max:255',
             'work_unit' => 'required|string|max:255',
             'signature_type' => 'required|in:draw,upload',
-            // Validasi ini memastikan data tanda tangan masuk
             'signature_draw' => 'required_if:signature_type,draw', 
             'signature_upload' => 'required_if:signature_type,upload|image|max:5120',
         ], [
@@ -50,11 +49,10 @@ class AttendanceController extends Controller
 
             // --- PROSES SIMPAN TANDA TANGAN ---
             if ($request->signature_type === 'draw') {
-                // Proses gambar base64
                 $image_parts = explode(";base64,", $request->signature_draw);
                 
                 if (count($image_parts) < 2) {
-                     return back()->with('error', 'Gagal memproses tanda tangan. Silakan coba lagi.');
+                     return back()->with('error', 'Gagal memproses tanda tangan.');
                 }
                 
                 $image_base64 = base64_decode($image_parts[1]);
@@ -64,7 +62,6 @@ class AttendanceController extends Controller
                 $signaturePath = $fileName;
 
             } else {
-                // Proses upload file
                 if ($request->hasFile('signature_upload')) {
                     $signaturePath = $request->file('signature_upload')->store('signatures', 'public');
                 }
