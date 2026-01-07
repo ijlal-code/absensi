@@ -115,4 +115,36 @@ class EventController extends Controller
         }
         return view('dashboard.reports', compact('events'));
     }
+
+    // Menampilkan Halaman QR Code
+    public function showQrCode(Event $event) {
+        // Cek Hak Akses (Admin atau Pemilik Event)
+        if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
+            abort(403);
+        }
+        
+        // Generate Link Absensi
+        $url = route('attendance.form', $event->id);
+        
+        // Tampilkan view khusus QR
+        return view('dashboard.qrcode', compact('event', 'url'));
+    }
+
+    // Mengunduh QR Code (PNG)
+    public function downloadQrCode(Event $event) {
+        if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $url = route('attendance.form', $event->id);
+
+        // Stream download langsung tanpa simpan file
+        return response()->streamDownload(
+            function () use ($url) {
+                echo QrCode::format('png')->size(500)->margin(2)->generate($url);
+            },
+            'qrcode-' . \Illuminate\Support\Str::slug($event->title) . '.png',
+            ['Content-Type' => 'image/png']
+        );
+    }
 }

@@ -42,6 +42,10 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/event/{event}', [EventController::class, 'update'])->name('event.update');
     Route::delete('/event/{event}', [EventController::class, 'destroy'])->name('event.destroy');
     
+    // QR Code Routes
+    Route::get('/event/{event}/qrcode', [EventController::class, 'showQrCode'])->name('event.qrcode');
+    Route::get('/event/{event}/qrcode/download', [EventController::class, 'downloadQrCode'])->name('event.qrcode.download');
+
     // Laporan & Monitoring
     Route::get('/reports', [EventController::class, 'reports'])->name('reports');
     Route::get('/event/{event}/monitor', [EventController::class, 'show'])->name('event.show');

@@ -41,6 +41,11 @@
                         <i class="fas fa-desktop mr-1"></i> Monitor
                     </a>
 
+                    {{-- Tombol QR Code --}}
+<a href="{{ route('event.qrcode', $event->id) }}" class="bg-purple-100 text-purple-700 px-3 py-2 rounded text-sm hover:bg-purple-200 border border-purple-200 transition" title="Lihat QR Code">
+    <i class="fas fa-qrcode mr-1"></i> QR Code
+</a>
+
                     <button onclick="copyLink('{{ route('attendance.form', $event->id) }}')" class="bg-gray-100 text-gray-700 px-3 py-2 rounded text-sm hover:bg-gray-200 border border-gray-300 transition" title="Salin Link">
                         <i class="fas fa-link mr-1"></i> Salin Link
                     </button>
