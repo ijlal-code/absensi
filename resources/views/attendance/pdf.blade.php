@@ -8,70 +8,29 @@
             font-size: 12px;
         }
 
-        /* Styling untuk Header (Kop Surat) */
+        /* Styling Header */
         .header-table {
             width: 100%;
             border-bottom: 2px solid #000;
             margin-bottom: 20px;
             padding-bottom: 10px;
         }
-        .header-logo-left {
-            text-align: left;
-            width: 15%;
-        }
-        .header-title {
-            text-align: center;
-            width: 70%;
-            vertical-align: middle;
-        }
-        .header-title h2 {
-            margin: 0;
-            text-transform: uppercase;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .header-logo-right {
-            text-align: right;
-            width: 15%;
-        }
-        .header-img {
-            height: 60px; /* Atur tinggi logo di sini */
-            width: auto;
-        }
+        .header-logo-left { text-align: left; width: 15%; }
+        .header-logo-right { text-align: right; width: 15%; }
+        .header-title { text-align: center; width: 70%; vertical-align: middle; }
+        .header-title h2 { margin: 0; text-transform: uppercase; font-size: 18px; font-weight: bold; }
+        .header-img { height: 60px; width: auto; }
 
-        /* Styling untuk Detail Acara */
-        .event-info {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        .event-info tr td {
-            padding: 3px 0;
-            font-size: 13px;
-        }
-        .label {
-            width: 120px;
-            font-weight: bold;
-        }
+        /* Styling Info Acara */
+        .event-info { margin-bottom: 20px; text-align: left; }
+        .event-info tr td { padding: 3px 0; font-size: 13px; }
+        .label { width: 130px; font-weight: bold; }
 
-        /* Styling Tabel Absensi (Tetap Sama) */
-        .attendance-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .attendance-table th, .attendance-table td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: left;
-        }
-        .attendance-table th {
-            background-color: #f2f2f2;
-            text-align: center;
-            font-weight: bold;
-        }
-        .text-center {
-            text-align: center;
-        }
+        /* Styling Tabel Absensi */
+        .attendance-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .attendance-table th, .attendance-table td { border: 1px solid #000; padding: 8px; text-align: left; }
+        .attendance-table th { background-color: #f2f2f2; text-align: center; font-weight: bold; }
+        .text-center { text-align: center; }
     </style>
 </head>
 <body>
@@ -81,11 +40,9 @@
             <td class="header-logo-left">
                 <img src="{{ public_path('img/logo-tonasa.png') }}" class="header-img" alt="Tonasa">
             </td>
-            
             <td class="header-title">
                 <h2>DAFTAR HADIR</h2>
             </td>
-            
             <td class="header-logo-right">
                 <img src="{{ public_path('img/logo-internal-audit.png') }}" class="header-img" alt="Audit">
             </td>
@@ -99,8 +56,8 @@
                 <td>: {{ $event->title }}</td>
             </tr>
             <tr>
-                <td class="label">Tanggal</td>
-                <td>: {{ \Carbon\Carbon::parse($event->date)->isoFormat('D MMMM Y') }}</td>
+                <td class="label">Hari, Tanggal</td>
+                <td>: {{ \Carbon\Carbon::parse($event->date)->locale('id')->isoFormat('dddd, D MMMM Y') }}</td>
             </tr>
             <tr>
                 <td class="label">Waktu</td>
@@ -128,17 +85,18 @@
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
                 <td>
-                    {{ $attendance->user ? $attendance->user->name : $attendance->guest_name }}
+                    {{-- PERBAIKAN: Ambil langsung dari field 'name' tabel attendance --}}
+                    {{ $attendance->name }}
                 </td>
                 <td>
-                    {{ $attendance->user ? $attendance->user->email : '-' }}
+                    {{-- PERBAIKAN: Ambil langsung dari field 'work_unit' tabel attendance --}}
+                    {{ $attendance->work_unit }}
                 </td>
                 <td class="text-center">
-                    {{ \Carbon\Carbon::parse($attendance->check_in_time)->format('H:i') }}
+                    {{-- Gunakan created_at jika check_in_time kosong --}}
+                    {{ \Carbon\Carbon::parse($attendance->created_at)->format('H:i') }}
                 </td>
-                <td class="text-center">
-                    Hadir
-                </td>
+                <td class="text-center">Hadir</td>
             </tr>
             @empty
             <tr>

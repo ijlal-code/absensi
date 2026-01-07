@@ -95,12 +95,16 @@ class EventController extends Controller
     }
 
     // Monitor Peserta
+    // Monitor Peserta (Admin/Penyelenggara)
     public function show(Event $event) {
+        // Cek Hak Akses
         if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
             abort(403);
         }
-        $attendances = $event->attendances()->latest()->get();
-        // Pastikan punya view admin/show.blade.php atau sesuaikan
+
+        // PERBAIKAN: Gunakan oldest() agar urutan 1 adalah yang absen duluan
+        $attendances = $event->attendances()->oldest()->get();
+        
         return view('admin.show', compact('event', 'attendances'));
     }
 
