@@ -28,9 +28,16 @@
 
         /* Styling Tabel Absensi */
         .attendance-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .attendance-table th, .attendance-table td { border: 1px solid #000; padding: 8px; text-align: left; }
+        .attendance-table th, .attendance-table td { border: 1px solid #000; padding: 5px; text-align: left; vertical-align: middle; }
         .attendance-table th { background-color: #f2f2f2; text-align: center; font-weight: bold; }
         .text-center { text-align: center; }
+        
+        /* Styling Tanda Tangan di Tabel */
+        .signature-img {
+            height: 30px; /* Tinggi tanda tangan dibatasi agar baris tidak terlalu besar */
+            width: auto;
+            max-width: 80px;
+        }
     </style>
 </head>
 <body>
@@ -57,6 +64,7 @@
             </tr>
             <tr>
                 <td class="label">Hari, Tanggal</td>
+                {{-- Format Tanggal Bahasa Indonesia --}}
                 <td>: {{ \Carbon\Carbon::parse($event->date)->locale('id')->isoFormat('dddd, D MMMM Y') }}</td>
             </tr>
             <tr>
@@ -74,29 +82,35 @@
         <thead>
             <tr>
                 <th style="width: 5%">No</th>
-                <th style="width: 35%">Nama Peserta</th>
+                <th style="width: 30%">Nama Peserta</th>
                 <th style="width: 25%">Unit Kerja / Instansi</th>
                 <th style="width: 20%">Waktu Hadir</th>
-                <th style="width: 15%">Status</th>
+                {{-- Ubah Header Status Menjadi Tanda Tangan --}}
+                <th style="width: 20%">Tanda Tangan</th>
             </tr>
         </thead>
         <tbody>
             @forelse($attendances as $index => $attendance)
             <tr>
                 <td class="text-center">{{ $index + 1 }}</td>
-                <td>
-                    {{-- PERBAIKAN: Ambil langsung dari field 'name' tabel attendance --}}
-                    {{ $attendance->name }}
-                </td>
-                <td>
-                    {{-- PERBAIKAN: Ambil langsung dari field 'work_unit' tabel attendance --}}
-                    {{ $attendance->work_unit }}
-                </td>
+                <td>{{ $attendance->name }}</td>
+                <td>{{ $attendance->work_unit }}</td>
                 <td class="text-center">
-                    {{-- Gunakan created_at jika check_in_time kosong --}}
                     {{ \Carbon\Carbon::parse($attendance->created_at)->format('H:i') }}
                 </td>
-                <td class="text-center">Hadir</td>
+                <td class="text-center">
+                    {{-- Logika Menampilkan Gambar Tanda Tangan --}}
+                    @php
+                        // Kita gunakan storage_path untuk mengambil file langsung dari folder storage/app/public
+                        $signaturePath = storage_path('app/public/' . $attendance->signature_path);
+                    @endphp
+
+                    @if($attendance->signature_path && file_exists($signaturePath))
+                        <img src="{{ $signaturePath }}" class="signature-img" alt="TTD">
+                    @else
+                        <span style="font-size: 10px; color: #888;">(Tidak Ada)</span>
+                    @endif
+                </td>
             </tr>
             @empty
             <tr>
