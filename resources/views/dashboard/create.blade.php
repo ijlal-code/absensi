@@ -8,7 +8,7 @@
         @csrf
         
         <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2">Nama Acara / Kelas</label>
+            <label class="block text-gray-700 text-sm font-bold mb-2">Nama Acara</label>
             <input type="text" name="title" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required placeholder="Contoh: Rapat Bulanan">
         </div>
 
