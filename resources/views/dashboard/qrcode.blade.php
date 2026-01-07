@@ -15,8 +15,18 @@
 
             <div class="flex justify-center mb-8">
                 <div id="qr-container" class="p-4 bg-white border-2 border-gray-200 rounded-lg shadow-sm inline-block">
-                    {{-- Render SVG ukuran 500px agar tajam saat dicetak --}}
-                    {!! QrCode::size(500)->generate($url) !!}
+                    {{-- 
+                        PERBAIKAN UTAMA:
+                        1. format('svg'): Memastikan format vektor.
+                        2. margin(2): Memberikan jarak aman (quiet zone) di dalam QR agar tidak rusak/terpotong.
+                        3. backgroundColor(255, 255, 255): Memberikan latar putih agar kontras terjaga.
+                    --}}
+                    {!! QrCode::size(500)
+                            ->format('svg')
+                            ->margin(2) 
+                            ->backgroundColor(255, 255, 255)
+                            ->generate($url) 
+                    !!}
                 </div>
             </div>
 
@@ -48,30 +58,30 @@ function downloadQrAsPng() {
     
     // 3. Buat Image Object baru
     const img = new Image();
-    // Encode SVG menjadi format Base64 agar bisa dimuat
+    // Encode SVG menjadi format Base64
     const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
     const url = URL.createObjectURL(svgBlob);
     
     img.onload = function() {
-        // --- KONFIGURASI BORDER ---
-        const borderSize = 30; // Ukuran border putih (dalam pixel)
+        // --- KONFIGURASI BORDER LUAR (FRAME) ---
+        const borderSize = 30; // Border tambahan di luar QR Code
         
-        // Ambil ukuran asli SVG
+        // Ambil ukuran asli SVG (biasanya 500 dari controller)
         const svgWidth = parseInt(svgElement.getAttribute('width')) || 500;
         const svgHeight = parseInt(svgElement.getAttribute('height')) || 500;
 
-        // 4. Siapkan Canvas dengan ukuran LEBIH BESAR (SVG + Border Kiri Kanan Atas Bawah)
+        // 4. Siapkan Canvas dengan ukuran LEBIH BESAR (SVG + Border)
         const canvas = document.createElement('canvas');
         canvas.width = svgWidth + (borderSize * 2);
         canvas.height = svgHeight + (borderSize * 2);
         
         const ctx = canvas.getContext('2d');
         
-        // 5. Isi seluruh Canvas dengan warna PUTIH (sebagai border & background)
+        // 5. Isi seluruh Canvas dengan warna PUTIH (sebagai frame)
         ctx.fillStyle = "#FFFFFF";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // 6. Gambar SVG di tengah-tengah Canvas (digeser sejauh borderSize)
+        // 6. Gambar SVG di tengah-tengah Canvas
         ctx.drawImage(img, borderSize, borderSize);
         
         // 7. Convert Canvas final ke URL PNG
