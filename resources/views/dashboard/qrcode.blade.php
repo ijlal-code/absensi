@@ -14,16 +14,17 @@
             <p class="text-gray-500 mb-6">Scan QR Code ini untuk mengisi absensi</p>
 
             <div class="flex justify-center mb-8">
-                <div class="p-4 bg-white border-2 border-gray-200 rounded-lg shadow-sm">
-                    {{-- Generate QR Code SVG untuk tampilan layar --}}
-                    {!! QrCode::size(250)->generate($url) !!}
+                <div id="qr-container" class="p-4 bg-white border-2 border-gray-200 rounded-lg shadow-sm inline-block">
+                    {{-- Render SVG ukuran 500px agar tajam saat dicetak --}}
+                    {!! QrCode::size(500)->generate($url) !!}
                 </div>
             </div>
 
             <div class="flex justify-center space-x-4">
-                <a href="{{ route('event.qrcode.download', $event->id) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition flex items-center">
+                {{-- Tombol pemicu fungsi JS downloadQrAsPng --}}
+                <button onclick="downloadQrAsPng()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition flex items-center cursor-pointer">
                     <i class="fas fa-download mr-2"></i> Unduh PNG
-                </a>
+                </button>
                 
                 <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg shadow transition">
                     Kembali
@@ -35,4 +36,62 @@
         </div>
     </div>
 </div>
+
+<script>
+function downloadQrAsPng() {
+    // 1. Ambil elemen SVG dari halaman
+    const svgElement = document.querySelector('#qr-container svg');
+    
+    // 2. Serialisasi SVG menjadi string
+    const serializer = new XMLSerializer();
+    const svgString = serializer.serializeToString(svgElement);
+    
+    // 3. Buat Image Object baru
+    const img = new Image();
+    // Encode SVG menjadi format Base64 agar bisa dimuat
+    const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+    const url = URL.createObjectURL(svgBlob);
+    
+    img.onload = function() {
+        // --- KONFIGURASI BORDER ---
+        const borderSize = 30; // Ukuran border putih (dalam pixel)
+        
+        // Ambil ukuran asli SVG
+        const svgWidth = parseInt(svgElement.getAttribute('width')) || 500;
+        const svgHeight = parseInt(svgElement.getAttribute('height')) || 500;
+
+        // 4. Siapkan Canvas dengan ukuran LEBIH BESAR (SVG + Border Kiri Kanan Atas Bawah)
+        const canvas = document.createElement('canvas');
+        canvas.width = svgWidth + (borderSize * 2);
+        canvas.height = svgHeight + (borderSize * 2);
+        
+        const ctx = canvas.getContext('2d');
+        
+        // 5. Isi seluruh Canvas dengan warna PUTIH (sebagai border & background)
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 6. Gambar SVG di tengah-tengah Canvas (digeser sejauh borderSize)
+        ctx.drawImage(img, borderSize, borderSize);
+        
+        // 7. Convert Canvas final ke URL PNG
+        const pngUrl = canvas.toDataURL('image/png');
+        
+        // 8. Proses Download Otomatis
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pngUrl;
+        downloadLink.download = 'qrcode-{{ \Illuminate\Support\Str::slug($event->title) }}.png';
+        
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        
+        // Bersihkan memory browser
+        URL.revokeObjectURL(url);
+    };
+    
+    // Mulai memuat gambar dari URL SVG
+    img.src = url;
+}
+</script>
 @endsection

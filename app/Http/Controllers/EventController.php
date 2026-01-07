@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Models\Event;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -131,20 +132,26 @@ class EventController extends Controller
     }
 
     // Mengunduh QR Code (PNG)
+   // Mengunduh QR Code (PNG) - Mengadaptasi metode dari QR Dinamis
     public function downloadQrCode(Event $event) {
+        // 1. Cek Hak Akses
         if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
             abort(403);
         }
 
+        // 2. Tentukan URL Absensi
         $url = route('attendance.form', $event->id);
 
-        // Stream download langsung tanpa simpan file
-        return response()->streamDownload(
-            function () use ($url) {
-                echo QrCode::format('png')->size(500)->margin(2)->generate($url);
-            },
-            'qrcode-' . \Illuminate\Support\Str::slug($event->title) . '.png',
-            ['Content-Type' => 'image/png']
-        );
+        // 3. Generate QR Code ke dalam variabel (seperti di DynamicQrController)
+        // Pastikan extension GD di php.ini sudah aktif untuk format 'png'
+        $qrCode = QrCode::format('png')
+                        ->size(500)
+                        ->margin(2)
+                        ->generate($url);
+
+        // 4. Return response dengan header yang sesuai
+        return response($qrCode)
+            ->header('Content-Type', 'image/png')
+            ->header('Content-Disposition', 'attachment; filename="qrcode-' . \Illuminate\Support\Str::slug($event->title) . '.png"');
     }
 }
