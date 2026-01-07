@@ -18,22 +18,19 @@ class AttendanceController extends Controller
 
     public function store(Request $request, Event $event)
     {
-        // --- PERBAIKAN LOGIKA WAKTU ---
+        // --- LOGIKA WAKTU (FIXED ASIA/JAKARTA) ---
         
-        // Cek status spesifik
-        if ($event->status === 'pending') {
-            return back()->with('error', 'Absensi belum dibuka. Dimulai pukul: ' . $event->start_time);
-        }
-
-        if ($event->status === 'closed') {
-            return back()->with('error', 'Maaf, waktu absensi sudah berakhir pada pukul: ' . $event->end_time);
-        }
-
-        // Jika status bukan open (jaga-jaga error lain)
+        // Cek status berdasarkan logika di Model Event yang sudah diperbaiki
         if (!$event->is_open) {
-            // Debugging: Tampilkan waktu server ke user jika masih error
-            $serverTime = Carbon::now()->format('H:i');
-            return back()->with('error', "Gagal! Waktu Server: $serverTime. Jadwal: $event->start_time - $event->end_time");
+            // Debugging: Tampilkan waktu server (WIB) agar jelas
+            $serverTime = Carbon::now('Asia/Jakarta')->format('H:i');
+            
+            if ($event->status === 'pending') {
+                return back()->with('error', "Absensi belum dibuka. Waktu Server: $serverTime. Jadwal Mulai: $event->start_time");
+            }
+            if ($event->status === 'closed') {
+                return back()->with('error', "Absensi sudah ditutup. Waktu Server: $serverTime. Jadwal Selesai: $event->end_time");
+            }
         }
 
         // --- VALIDASI INPUT ---
@@ -41,11 +38,11 @@ class AttendanceController extends Controller
             'name' => 'required|string|max:255',
             'work_unit' => 'required|string|max:255',
             'signature_type' => 'required|in:draw,upload',
-            'signature_draw' => 'required_if:signature_type,draw',
+            // Validasi ini memastikan data tanda tangan masuk
+            'signature_draw' => 'required_if:signature_type,draw', 
             'signature_upload' => 'required_if:signature_type,upload|image|max:5120',
         ], [
-            'signature_draw.required_if' => 'Tanda tangan digital wajib diisi.',
-            'signature_upload.required_if' => 'Silakan upload foto tanda tangan.',
+            'signature_draw.required_if' => 'Tanda tangan wajib diisi (gambar/upload).',
         ]);
 
         try {
@@ -53,10 +50,11 @@ class AttendanceController extends Controller
 
             // --- PROSES SIMPAN TANDA TANGAN ---
             if ($request->signature_type === 'draw') {
+                // Proses gambar base64
                 $image_parts = explode(";base64,", $request->signature_draw);
                 
                 if (count($image_parts) < 2) {
-                     return back()->with('error', 'Format tanda tangan tidak valid.');
+                     return back()->with('error', 'Gagal memproses tanda tangan. Silakan coba lagi.');
                 }
                 
                 $image_base64 = base64_decode($image_parts[1]);
@@ -66,12 +64,13 @@ class AttendanceController extends Controller
                 $signaturePath = $fileName;
 
             } else {
+                // Proses upload file
                 if ($request->hasFile('signature_upload')) {
                     $signaturePath = $request->file('signature_upload')->store('signatures', 'public');
                 }
             }
 
-            // --- SIMPAN DATA ---
+            // --- SIMPAN KE DATABASE ---
             Attendance::create([
                 'event_id' => $event->id,
                 'name' => $request->name,
@@ -79,7 +78,7 @@ class AttendanceController extends Controller
                 'signature_path' => $signaturePath,
             ]);
 
-            return back()->with('success', 'Absensi Anda berhasil dicatat!');
+            return back()->with('success', 'Terima kasih, absensi Anda berhasil disimpan!');
 
         } catch (\Exception $e) {
             return back()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());

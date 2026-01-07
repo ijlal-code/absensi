@@ -9,29 +9,31 @@ class Event extends Model
 {
     protected $guarded = [];
 
-    // Helper untuk status absensi (boolean)
+    // Helper: Cek apakah absensi sedang dibuka (Boolean)
     public function getIsOpenAttribute()
     {
-        $now = Carbon::now(); // Waktu sekarang 
-        // Gabungkan tanggal & jam acara
-        $start = Carbon::parse($this->date . ' ' . $this->start_time);
-        $end = Carbon::parse($this->date . ' ' . $this->end_time);
+        // PENTING: Paksa gunakan waktu Jakarta
+        $now = Carbon::now('Asia/Jakarta'); 
+        
+        // Parse waktu acara sebagai waktu Jakarta
+        $start = Carbon::parse($this->date . ' ' . $this->start_time, 'Asia/Jakarta');
+        $end = Carbon::parse($this->date . ' ' . $this->end_time, 'Asia/Jakarta');
 
-        // Cek apakah sekarang berada di antara waktu mulai dan selesai
+        // Cek apakah 'sekarang' ada di antara awal dan akhir
         return $now->between($start, $end);
     }
 
-    // Helper untuk status spesifik (string)
+    // Helper: Cek status text (pending/closed/open)
     public function getStatusAttribute()
     {
-        $now = Carbon::now();
-        $start = Carbon::parse($this->date . ' ' . $this->start_time);
-        $end = Carbon::parse($this->date . ' ' . $this->end_time);
+        $now = Carbon::now('Asia/Jakarta');
+        $start = Carbon::parse($this->date . ' ' . $this->start_time, 'Asia/Jakarta');
+        $end = Carbon::parse($this->date . ' ' . $this->end_time, 'Asia/Jakarta');
 
         if ($now->lt($start)) {
             return 'pending'; // Belum mulai
         } elseif ($now->gt($end)) {
-            return 'closed'; // Sudah lewat
+            return 'closed'; // Sudah berakhir
         } else {
             return 'open'; // Sedang berlangsung
         }
