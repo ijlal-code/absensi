@@ -1,4 +1,4 @@
-@extends('layouts.app') {{-- PERBAIKAN: Gunakan layout app secara langsung --}}
+@extends('layouts.app')
 
 @section('content')
 <div class="max-w-2xl mx-auto mt-10">
@@ -25,14 +25,20 @@
                 </div>
             </div>
 
-            <div class="flex justify-center space-x-4">
+            {{-- UPDATE: Menambahkan Flex Wrap agar tombol rapi di layar kecil --}}
+            <div class="flex flex-wrap justify-center gap-4">
                 {{-- Tombol Download PNG --}}
                 <button onclick="downloadQrAsPng()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg shadow transition flex items-center cursor-pointer">
                     <i class="fas fa-download mr-2"></i> Unduh PNG
                 </button>
                 
-                {{-- Tombol Kembali (Logika rute tetap aman) --}}
-                <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg shadow transition">
+                {{-- BARU: Tombol Share WhatsApp --}}
+                <button onclick="shareToWhatsApp()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-lg shadow transition flex items-center cursor-pointer">
+                    <i class="fab fa-whatsapp mr-2"></i> Share Link
+                </button>
+
+                {{-- Tombol Kembali --}}
+                <a href="{{ Auth::user()->isAdmin() ? route('admin.dashboard') : route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-6 rounded-lg shadow transition flex items-center">
                     Kembali
                 </a>
             </div>
@@ -45,6 +51,22 @@
 </div>
 
 <script>
+// Fungsi Share ke WhatsApp (Hanya Text & Link)
+function shareToWhatsApp() {
+    // Ambil data dari blade
+    const title = "{{ $event->title }}";
+    const link = "{{ $url }}";
+    
+    // Buat pesan
+    const message = `Silakan isi absensi untuk Agenda: *${title}*\n\nKlik link berikut untuk absen:\n${link}`;
+    
+    // Encode agar URL valid
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Buka WhatsApp (gunakan wa.me agar support mobile & web)
+    window.open(`https://wa.me/?text=${encodedMessage}`, '_blank');
+}
+
 function downloadQrAsPng() {
     // 1. Ambil elemen SVG
     const svgElement = document.querySelector('#qr-container svg');
