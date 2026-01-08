@@ -21,7 +21,7 @@
         .header-title h2 { margin: 0; text-transform: uppercase; font-size: 18px; font-weight: bold; }
         .header-img { height: 60px; width: auto; }
 
-        /* Styling Info Acara */
+        /* Styling Info Agenda */
         .event-info { margin-bottom: 20px; text-align: left; }
         .event-info tr td { padding: 3px 0; font-size: 13px; }
         .label { width: 130px; font-weight: bold; }
@@ -59,7 +59,7 @@
     <div class="event-info">
         <table style="width: 100%; border: none;">
             <tr>
-                <td class="label">Nama Acara</td>
+                <td class="label">Agenda</td>
                 <td>: {{ $event->title }}</td>
             </tr>
             <tr>
@@ -69,7 +69,7 @@
             </tr>
             <tr>
                 <td class="label">Waktu</td>
-                <td>: {{ $event->start_time }} - {{ $event->end_time }} WITA</td>
+                <td>: {{ $event->start_time }} - {{ $event->end_time }} Wita</td>
             </tr>
             <tr>
                 <td class="label">Tempat</td>

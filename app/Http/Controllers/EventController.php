@@ -18,9 +18,15 @@ class EventController extends Controller
         }
 
         $user = Auth::user();
-        // Menampilkan event hari ini sesuai Timezone
+
+        // PERBAIKAN: Gunakan Timezone Spesifik (WITA/Makassar) untuk menentukan 'Hari Ini'
+        // Jika menggunakan default Carbon::today(), server UTC seringkali masih 'kemarin' saat pagi hari di Indonesia.
+        // Anda bisa mengganti 'Asia/Makassar' dengan 'Asia/Jakarta' jika perlu WIB.
+        $todayDate = Carbon::now('Asia/Makassar')->toDateString();
+
+        // Menampilkan event hari ini sesuai tanggal di Timezone yang benar
         $todayEvents = Event::where('user_id', $user->id) 
-                            ->whereDate('date', Carbon::today())
+                            ->whereDate('date', $todayDate)
                             ->latest()
                             ->get();
                             
@@ -31,7 +37,10 @@ class EventController extends Controller
     // Dashboard Khusus Admin
     public function adminDashboard()
     {
-        $todayEvents = Event::whereDate('date', Carbon::today())->latest()->get();
+        // Perbaikan juga diterapkan untuk Admin agar konsisten
+        $todayDate = Carbon::now('Asia/Makassar')->toDateString();
+        
+        $todayEvents = Event::whereDate('date', $todayDate)->latest()->get();
         $totalEvents = Event::count();
         return view('admin.dashboard', compact('todayEvents', 'totalEvents'));
     }
@@ -94,7 +103,6 @@ class EventController extends Controller
         return back()->with('success', 'Acara berhasil dihapus!');
     }
 
-    // Monitor Peserta
     // Monitor Peserta (Admin/Penyelenggara)
     public function show(Event $event) {
         // Cek Hak Akses
@@ -102,7 +110,7 @@ class EventController extends Controller
             abort(403);
         }
 
-        // PERBAIKAN: Gunakan oldest() agar urutan 1 adalah yang absen duluan
+        // Gunakan oldest() agar urutan 1 adalah yang absen duluan
         $attendances = $event->attendances()->oldest()->get();
         
         return view('admin.show', compact('event', 'attendances'));
@@ -136,7 +144,6 @@ class EventController extends Controller
     }
 
     // Mengunduh QR Code (PNG)
-   // Mengunduh QR Code (PNG) - Mengadaptasi metode dari QR Dinamis
     public function downloadQrCode(Event $event) {
         // 1. Cek Hak Akses
         if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
@@ -146,8 +153,7 @@ class EventController extends Controller
         // 2. Tentukan URL Absensi
         $url = route('attendance.form', $event->id);
 
-        // 3. Generate QR Code ke dalam variabel (seperti di DynamicQrController)
-        // Pastikan extension GD di php.ini sudah aktif untuk format 'png'
+        // 3. Generate QR Code ke dalam variabel
         $qrCode = QrCode::format('png')
                         ->size(500)
                         ->margin(2)

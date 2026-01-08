@@ -1,7 +1,11 @@
-@extends('layouts.admin') {{-- Pastikan pakai layout admin --}}
-@section('title', 'Dashboard Admin')
+@extends('layouts.app')
 
 @section('content')
+{{-- Header Judul (Ditambahkan manual karena layout app tidak otomatis memilikinya) --}}
+<div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold text-gray-800">Dashboard Admin</h2>
+</div>
+
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500 flex items-center">
         <div class="p-3 bg-blue-100 rounded-full text-blue-600 mr-4">
@@ -52,9 +56,9 @@
                     </a>
 
                     {{-- Tombol QR Code --}}
-<a href="{{ route('event.qrcode', $event->id) }}" class="bg-purple-100 text-purple-700 px-3 py-1 rounded text-sm hover:bg-purple-200 border border-purple-200" title="QR Code">
-    <i class="fas fa-qrcode"></i> QR
-</a>
+                    <a href="{{ route('event.qrcode', $event->id) }}" class="bg-purple-100 text-purple-700 px-3 py-1 rounded text-sm hover:bg-purple-200 border border-purple-200" title="QR Code">
+                        <i class="fas fa-qrcode"></i> QR
+                    </a>
 
                     <button onclick="copyLink('{{ route('attendance.form', $event->id) }}')" class="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-200 border border-gray-300">
                         <i class="fas fa-link"></i> Link
