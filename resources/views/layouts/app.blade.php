@@ -62,6 +62,13 @@
                 <a href="{{ route('reports') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('reports') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-file-export mr-2 w-6"></i> Laporan
                 </a>
+
+                {{-- Informasi Karyawan --}}
+                <li class="nav-item">
+    <a class="nav-link {{ request()->routeIs('employees.index') ? 'active' : '' }}" href="{{ route('employees.index') }}">
+        Informasi Karyawan
+    </a>
+</li>
             </nav>
 
             <div class="absolute bottom-0 left-0 w-full p-4">

@@ -10,12 +10,22 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role', // Pastikan kolom ini ada
-    ];
+    // app/Models/User.php
+
+protected $fillable = [
+    'name',
+    'email',
+    'password',
+    'role', // pastikan ini ada jika Anda pakai role
+    'nik',
+    'tkt_jabatan',
+    'unit_kerja',
+    'no_hp_1',
+    'no_hp_2',
+    'no_hp_3',
+    'foto_sekarang',
+    'foto_lama',
+];
 
     protected $hidden = [
         'password',

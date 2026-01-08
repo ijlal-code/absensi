@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EmployeeInfoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,8 @@ Route::prefix('absensi')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
+    
+    Route::get('/informasi-karyawan', [EmployeeInfoController::class, 'index'])->name('employees.index');
     
     // Dashboard Utama (Redirect otomatis di Controller berdasarkan Role)
     Route::get('/dashboard', [EventController::class, 'index'])->name('dashboard');
