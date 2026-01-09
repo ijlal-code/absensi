@@ -11,7 +11,7 @@ class TonasaImportSeeder extends Seeder
 {
     public function run()
     {
-        // Pastikan file CSV ada di folder root project Anda
+        // 1. Pastikan nama file CSV sesuai dengan yang ada di folder project Anda
         $csvPath = base_path('DATABASE KARYAWAN SEMEN TONASA 2026.xlsx - Sheet1.csv'); 
 
         if (!file_exists($csvPath)) {
@@ -19,28 +19,27 @@ class TonasaImportSeeder extends Seeder
             return;
         }
 
-        // Kosongkan tabel sebelum import ulang
+        // 2. Kosongkan tabel dulu
         TonasaEmployee::truncate();
 
         $file = fopen($csvPath, 'r');
-        $header = fgetcsv($file); // Skip baris header
+        $header = fgetcsv($file); // Lewati baris judul (header)
 
         $this->command->info('Memulai import data karyawan Tonasa...');
 
         while (($row = fgetcsv($file)) !== false) {
-            // Validasi: Lewati jika Nama kosong
+            // Lewati jika Nama kosong (Baris kosong di Excel)
             if (empty($row[3])) continue;
 
-            // Helper function untuk parsing tanggal
+            // --- PERBAIKAN FORMAT TANGGAL ---
+            // Fungsi untuk mengubah '11/15/1969' menjadi '1969-11-15'
             $parseDate = function($dateString) {
                 if (empty($dateString)) return null;
                 try {
-                    // Coba format YYYY-MM-DD (Default database/Excel export)
-                    return Carbon::parse($dateString)->format('Y-m-d');
+                    return Carbon::createFromFormat('m/d/Y', $dateString)->format('Y-m-d');
                 } catch (\Exception $e) {
                     try {
-                        // Coba format MM/DD/YYYY
-                        return Carbon::createFromFormat('m/d/Y', $dateString)->format('Y-m-d');
+                        return Carbon::parse($dateString)->format('Y-m-d');
                     } catch (\Exception $ex) {
                         return null;
                     }
@@ -48,23 +47,23 @@ class TonasaImportSeeder extends Seeder
             };
 
             TonasaEmployee::create([
-                // Data Umum
+                // DATA UMUM
                 'sap_id'        => $row[0] ?? null,
                 'nik'           => $row[1] ?? null,
                 'nama'          => $row[3], 
-                'jabatan'       => $row[4] ?? '-',     // Position (Text)
+                'jabatan'       => $row[4] ?? '-',     // Ambil Kolom 4 (Teks Jabatan)
                 'unit_kerja'    => $row[9] ?? '-',     // TXT_BIRO
                 'departemen'    => $row[8] ?? '-',     // TXT_DEPT
                 
-                // Data Detail (Sensitif)
-                'tanggal_lahir'   => $parseDate($row[11]), // Birth date
+                // DATA DETAIL (SENSITIF)
+                'tanggal_lahir'   => $parseDate($row[11]),
                 'jenis_kelamin'   => $row[12] ?? null,
-                'tanggal_pensiun' => $parseDate($row[22]), // Date Terminasi
+                'tanggal_pensiun' => $parseDate($row[22]),
                 'email'           => $row[23] ?? null,
                 'agama'           => $row[24] ?? null,
                 'tempat_lahir'    => $row[27] ?? null,
                 'pendidikan'      => $row[28] ?? null,
-                'tanggal_masuk'   => $parseDate($row[29]), // Organilk
+                'tanggal_masuk'   => $parseDate($row[29]),
                 'alamat'          => $row[32] ?? null,
                 'band'            => $row[33] ?? null,
             ]);

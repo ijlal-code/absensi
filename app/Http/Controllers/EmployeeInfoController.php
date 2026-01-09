@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TonasaEmployee;
+use App\Models\TonasaEmployee; // PENTING: Pakai Model Baru
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -23,13 +23,12 @@ class EmployeeInfoController extends Controller
             });
         }
 
-        // 2. Fitur Filter Ulang Tahun HARI INI
+        // 2. Fitur Filter Ulang Tahun
         if ($request->has('filter_birthday') && $request->filter_birthday == 'today') {
             $query->whereMonth('tanggal_lahir', Carbon::now()->month)
                   ->whereDay('tanggal_lahir', Carbon::now()->day);
         }
 
-        // Pagination
         $employees = $query->paginate(10);
 
         return view('admin.employees.index', compact('employees'));

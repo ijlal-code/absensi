@@ -17,7 +17,7 @@ class TonasaEmployee extends Model
         'tempat_lahir', 'pendidikan', 'tanggal_masuk', 'tanggal_pensiun', 'band'
     ];
 
-    // Casting tanggal agar fitur ulang tahun dan format tanggal berfungsi
+    // Penting agar format tanggal bisa dibaca view
     protected $casts = [
         'tanggal_lahir' => 'date',
         'tanggal_masuk' => 'date',
