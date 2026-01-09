@@ -126,121 +126,132 @@
                                             </div>
 
                                             <div class="md:col-span-9">
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
 
-        <!-- HEADER CARD -->
-        <div class="px-6 py-4 border-b bg-gray-50">
-            <h4 class="text-lg font-bold text-gray-900">
-                Detail Informasi Karyawan
-            </h4>
-            <p class="text-xs text-gray-500 mt-1">
-                Data personal dan kepegawaian
-            </p>
-        </div>
+                                                    <div class="px-6 py-4 border-b bg-gray-50">
+                                                        <h4 class="text-lg font-bold text-gray-900">
+                                                            Detail Informasi Karyawan
+                                                        </h4>
+                                                        <p class="text-xs text-gray-500 mt-1">
+                                                            Data personal dan kepegawaian
+                                                        </p>
+                                                    </div>
 
-        <!-- BODY TABLE -->
-        <div class="divide-y text-sm">
+                                                    <div class="divide-y text-sm">
 
-        <!-- IDENTITAS KARYAWAN -->
-<div class="grid grid-cols-3 px-6 py-3">
-    <span class="font-medium text-gray-600">Nama Karyawan</span>
-    <span class="col-span-2 font-bold text-gray-900">
-        {{ $emp->name }}
-    </span>
-</div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">Nama Karyawan</span>
+                                                            <span class="col-span-2 font-bold text-gray-900">
+                                                                {{ $emp->name }}
+                                                            </span>
+                                                        </div>
 
-<div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
-    <span class="font-medium text-gray-600">No Karyawan</span>
-    <span class="col-span-2">{{ $emp->nik }}</span>
-</div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">No Karyawan</span>
+                                                            <span class="col-span-2">{{ $emp->nik }}</span>
+                                                        </div>
 
-<div class="grid grid-cols-3 px-6 py-3">
-    <span class="font-medium text-gray-600">Jabatan</span>
-    <span class="col-span-2">{{ $emp->tkt_jabatan }}</span>
-</div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">Jabatan</span>
+                                                            <span class="col-span-2">{{ $emp->tkt_jabatan }}</span>
+                                                        </div>
 
-<div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
-    <span class="font-medium text-gray-600">Unit Kerja</span>
-    <span class="col-span-2">{{ $emp->unit_kerja }}</span>
-</div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">Unit Kerja</span>
+                                                            <span class="col-span-2">{{ $emp->unit_kerja }}</span>
+                                                        </div>
 
-<div class="grid grid-cols-3 px-6 py-3">
-    <span class="font-medium text-gray-600">Band</span>
-    <span class="col-span-2">{{ $emp->band ?? '-' }}</span>
-</div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">Band</span>
+                                                            <span class="col-span-2">{{ $emp->band ?? '-' }}</span>
+                                                        </div>
 
-<div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
-    <span class="font-medium text-gray-600">Email</span>
-    <span class="col-span-2">{{ $emp->email ?? '-' }}</span>
-</div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">Email</span>
+                                                            <span class="col-span-2">{{ $emp->email ?? '-' }}</span>
+                                                        </div>
 
 
-            <div class="grid grid-cols-3 px-6 py-3">
-                <span class="font-medium text-gray-600">Tanggal Lahir</span>
-                <span class="col-span-2 text-gray-900">
-                    {{ $emp->tanggal_lahir ? date('d M Y', strtotime($emp->tanggal_lahir)) : '-' }}
-                </span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">Tanggal Lahir</span>
+                                                            <span class="col-span-2 text-gray-900">
+                                                                {{ $emp->tanggal_lahir ? date('d M Y', strtotime($emp->tanggal_lahir)) : '-' }}
+                                                            </span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
-                <span class="font-medium text-gray-600">Kewarganegaraan</span>
-                <span class="col-span-2">{{ $emp->kewarganegaraan ?? '-' }}</span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">Kewarganegaraan</span>
+                                                            <span class="col-span-2">{{ $emp->kewarganegaraan ?? '-' }}</span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3">
-                <span class="font-medium text-gray-600">Tanggal Masuk</span>
-                <span class="col-span-2">
-                    {{ $emp->tanggal_masuk ? date('d M Y', strtotime($emp->tanggal_masuk)) : '-' }}
-                </span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">Tanggal Masuk</span>
+                                                            <span class="col-span-2">
+                                                                {{ $emp->tanggal_masuk ? date('d M Y', strtotime($emp->tanggal_masuk)) : '-' }}
+                                                            </span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
-                <span class="font-medium text-gray-600">Jenis Kelamin</span>
-                <span class="col-span-2">{{ $emp->jenis_kelamin }}</span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">Jenis Kelamin</span>
+                                                            <span class="col-span-2">{{ $emp->jenis_kelamin }}</span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3">
-                <span class="font-medium text-gray-600">Agama</span>
-                <span class="col-span-2">{{ $emp->agama }}</span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">Agama</span>
+                                                            <span class="col-span-2">{{ $emp->agama }}</span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
-                <span class="font-medium text-gray-600">Status Perkawinan</span>
-                <span class="col-span-2">{{ $emp->status_perkawinan }}</span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">Status Perkawinan</span>
+                                                            <span class="col-span-2">{{ $emp->status_perkawinan }}</span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3">
-                <span class="font-medium text-gray-600">Alamat</span>
-                <span class="col-span-2">{{ $emp->alamat ?? '-' }}</span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">Alamat</span>
+                                                            <span class="col-span-2">{{ $emp->alamat ?? '-' }}</span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
-                <span class="font-medium text-gray-600">Tanggal Pensiun</span>
-                <span class="col-span-2">
-                    {{ $emp->tanggal_pensiun ? date('d M Y', strtotime($emp->tanggal_pensiun)) : '-' }}
-                </span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">Tanggal Pensiun</span>
+                                                            <span class="col-span-2">
+                                                                {{ $emp->tanggal_pensiun ? date('d M Y', strtotime($emp->tanggal_pensiun)) : '-' }}
+                                                            </span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3">
-                <span class="font-medium text-gray-600">Lokasi</span>
-                <span class="col-span-2">{{ $emp->lokasi_kerja ?? '-' }}</span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">Lokasi</span>
+                                                            <span class="col-span-2">{{ $emp->lokasi_kerja ?? '-' }}</span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
-                <span class="font-medium text-gray-600">No Ext</span>
-                <span class="col-span-2">{{ $emp->no_ext ?? '-' }}</span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">No Ext</span>
+                                                            <span class="col-span-2">{{ $emp->no_ext ?? '-' }}</span>
+                                                        </div>
 
-            <div class="grid grid-cols-3 px-6 py-3">
-                <span class="font-medium text-gray-600">No Telpon</span>
-                <span class="col-span-2 text-green-600 font-medium">
-                    {{ $emp->no_hp_1 ?? '-' }}
-                </span>
-            </div>
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">No Telpon 1 (Utama)</span>
+                                                            <span class="col-span-2 text-green-600 font-medium">
+                                                                {{ $emp->no_hp_1 ?? '-' }}
+                                                            </span>
+                                                        </div>
 
-        </div>
-    </div>
-</div>
+                                                        <div class="grid grid-cols-3 px-6 py-3 bg-gray-50">
+                                                            <span class="font-medium text-gray-600">No Telpon 2</span>
+                                                            <span class="col-span-2 text-gray-900">
+                                                                {{ $emp->no_hp_2 ?? '-' }}
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="grid grid-cols-3 px-6 py-3">
+                                                            <span class="font-medium text-gray-600">No Telpon 3</span>
+                                                            <span class="col-span-2 text-gray-900">
+                                                                {{ $emp->no_hp_3 ?? '-' }}
+                                                            </span>
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                         </div>
                                     </div>

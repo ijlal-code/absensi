@@ -39,9 +39,12 @@ class EmployeeSeeder extends Seeder
                 'alamat' => $faker->address(),
                 'lokasi_kerja' => 'Kantor Pusat Tonasa',
                 'no_ext' => $faker->numerify('####'),
+                
+                // PERBAIKAN DI SINI: Mengisi no_hp 1, 2, dan 3
                 'no_hp_1' => $faker->phoneNumber(),
-                'no_hp_2' => null,
-                'no_hp_3' => null,
+                'no_hp_2' => $faker->phoneNumber(), 
+                'no_hp_3' => $faker->phoneNumber(),
+                
                 'foto_sekarang' => null, 
                 'foto_lama' => null,
             ]);
