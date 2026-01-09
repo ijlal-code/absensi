@@ -9,21 +9,25 @@ class EmployeeInfoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Employee::query();
+        $query = TonasaEmployee::query();
 
-        // Fitur Pencarian
+        // 1. Filter Pencarian
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
+                $q->where('nama', 'LIKE', "%{$search}%")
                   ->orWhere('nik', 'LIKE', "%{$search}%")
-                  ->orWhere('unit_kerja', 'LIKE', "%{$search}%")
-                  ->orWhere('tkt_jabatan', 'LIKE', "%{$search}%");
+                  ->orWhere('unit_kerja', 'LIKE', "%{$search}%");
             });
         }
 
-        // Ambil data (10 per halaman)
-        $employees = $query->latest()->paginate(10);
+        // 2. Filter Ulang Tahun Hari Ini
+        if ($request->has('filter_birthday') && $request->filter_birthday == 'today') {
+            $query->whereMonth('tanggal_lahir', Carbon::now()->month)
+                  ->whereDay('tanggal_lahir', Carbon::now()->day);
+        }
+
+        $employees = $query->paginate(10); // Default pagination
 
         return view('admin.employees.index', compact('employees'));
     }
