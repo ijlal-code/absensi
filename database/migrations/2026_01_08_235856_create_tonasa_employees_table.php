@@ -8,24 +8,30 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::dropIfExists('tonasa_employees');
+
         Schema::create('tonasa_employees', function (Blueprint $table) {
             $table->id();
             
-            // --- DATA UTAMA (Tampil di Tabel) ---
-            $table->string('nik')->unique();          // Kolom: NIK
-            $table->string('sap_id')->nullable();     // Kolom: SAP
-            $table->string('nama');                   // Kolom: NAMA KARYAWAN
-            $table->string('jabatan')->nullable();    // Kolom: Position
-            $table->string('unit_kerja')->nullable(); // Kolom: TXT_BIRO / TXT_DEPT
+            // --- DATA UMUM (Tampil di Tabel Informasi Karyawan) ---
+            $table->string('nik')->nullable()->index();  // Kolom 1
+            $table->string('sap_id')->nullable();        // Kolom 0
+            $table->string('nama');                      // Kolom 3
+            $table->string('jabatan')->nullable();       // Kolom 4 (Position Teks)
+            $table->string('unit_kerja')->nullable();    // Kolom 9 (TXT_BIRO)
+            $table->string('departemen')->nullable();    // Kolom 8 (TXT_DEPT)
             
-            // --- DATA DETAIL (Background Merah / Private) ---
-            $table->date('tanggal_lahir')->nullable();  // Kolom: Birth date
-            $table->string('jenis_kelamin')->nullable();// Kolom: Gender Key
-            $table->string('agama')->nullable();        // Kolom: Religious
-            $table->text('alamat')->nullable();         // Kolom: Alamat
-            $table->string('email')->nullable();        // Kolom: E-mail
-            $table->string('tempat_lahir')->nullable(); // Kolom: Tempat Lahir
-            $table->string('pendidikan')->nullable();   // Kolom: Pendidikan
+            // --- DATA DETAIL / SENSITIF (Hanya di Popup Detail) ---
+            $table->date('tanggal_lahir')->nullable();   // Kolom 11
+            $table->string('jenis_kelamin')->nullable(); // Kolom 12
+            $table->string('agama')->nullable();         // Kolom 24
+            $table->text('alamat')->nullable();          // Kolom 32
+            $table->string('email')->nullable();         // Kolom 23
+            $table->string('tempat_lahir')->nullable();  // Kolom 27
+            $table->string('pendidikan')->nullable();    // Kolom 28
+            $table->date('tanggal_masuk')->nullable();   // Kolom 29 (Organilk)
+            $table->date('tanggal_pensiun')->nullable(); // Kolom 22 (Date Terminasi)
+            $table->string('band')->nullable();          // Kolom 33
             
             $table->timestamps();
         });
