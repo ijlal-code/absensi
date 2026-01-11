@@ -17,252 +17,383 @@
 <div class="min-h-screen bg-gray-50 py-8 font-sans">
     <div class="max-w-[98%] mx-auto px-4 sm:px-6 lg:px-8">
         
+        {{-- HEADER --}}
         <div class="md:flex md:items-center md:justify-between mb-6">
             <div class="min-w-0 flex-1">
                 <h2 class="text-3xl font-bold text-gray-900">Informasi Karyawan</h2>
                 <p class="mt-1 text-sm text-gray-500">Database Lengkap Semen Tonasa 2026</p>
             </div>
+            
+            {{-- SEARCH FORM --}}
             <div class="mt-4 flex gap-2 md:mt-0">
-                <form action="{{ route('employees.index') }}" method="GET" class="flex w-full max-w-lg gap-2">
-                     <button type="submit" name="filter_birthday" value="today" class="bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 text-sm whitespace-nowrap shadow-sm transition">
-                        🎂 Ultah Hari Ini
-                    </button>
+                <div class="flex w-full max-w-lg gap-2">
+                     <form action="{{ route('employees.index') }}" method="GET" class="contents">
+                        <button type="submit" name="filter_birthday" value="today" class="bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 text-sm whitespace-nowrap shadow-sm transition">
+                            🎂 Ultah Hari Ini
+                        </button>
+                    </form>
+                    
                     <div class="relative rounded-md shadow-sm flex-grow">
-                        <input type="text" name="search" value="{{ request('search') }}" 
-                            class="block w-full rounded-md border-0 py-2.5 pl-3 pr-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-600 sm:text-sm" 
-                            placeholder="Cari NIK, SAP, Nama...">
+                        <input type="text" id="live-search-input" name="search" value="{{ request('search') }}" 
+                            class="block w-full rounded-md border-0 py-2.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-600 sm:text-sm" 
+                            placeholder="Cari NIK, Nama, SAP..." autocomplete="off">
+                        
+                        <div id="loading-indicator" class="absolute inset-y-0 right-0 flex items-center pr-3 hidden">
+                            <svg class="animate-spin h-5 w-5 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        </div>
                     </div>
-                    <button type="submit" class="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700">Cari</button>
+
                     <a href="{{ route('employees.index') }}" class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-50 flex items-center transition">
                         Reset
                     </a>
-                </form>
+                </div>
             </div>
         </div>
 
-        <div class="bg-white shadow-md rounded-lg overflow-hidden border-t-4 border-primary-600">
-            <div class="overflow-x-auto">
-                <table class="min-w-max w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-primary-50">
-                        <tr>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase sticky left-0 bg-primary-50 z-10 shadow-sm">Aksi</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">NIK</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">SAP</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Nama Pegawai</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Jabatan</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Direktorat</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Departemen</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Unit Kerja</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Subgroup</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Band</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Org Unit</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Cost Center Txt</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Email</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Masa Kerja</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Umur</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Tgl Masuk</th>
-                            <th class="px-4 py-3 text-left font-bold text-primary-700 uppercase">Tgl Pensiun</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($employees as $emp)
-                        @php
-                            $isBirthday = $emp->tanggal_lahir && $emp->tanggal_lahir->format('m-d') == date('m-d');
-                        @endphp
-                        <tr class="{{ $isBirthday ? 'bg-green-50' : 'hover:bg-red-50 transition' }}">
-                            <td class="px-4 py-3 whitespace-nowrap sticky left-0 bg-white z-10 shadow-sm">
-                                <button onclick="openModal('modal-{{ $emp->id }}')" class="bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold py-1.5 px-4 rounded-full shadow transition transform hover:scale-105">
-                                    Detail
-                                </button>
-                            </td>
-                            <td class="px-4 py-3 font-medium text-gray-900">{{ $emp->nik ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-500">{{ $emp->sap_id ?? '-' }}</td>
-                            <td class="px-4 py-3">
-                                <div class="flex flex-col min-w-[200px]">
-                                    <span class="font-bold text-gray-900">{{ $emp->nama }}</span>
-                                    @if($isBirthday) <span class="text-xs text-green-600 font-bold animate-pulse">🎉 Ultah Hari Ini!</span> @endif
-                                </div>
-                            </td>
-                            <td class="px-4 py-3 text-gray-600 min-w-[150px]">{{ $emp->jabatan ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 min-w-[150px]">{{ $emp->direktorat ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 min-w-[150px]">{{ $emp->departemen ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 min-w-[150px]">{{ $emp->unit_kerja ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600">{{ $emp->subgroup ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 text-center">{{ $emp->band ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 min-w-[150px]">{{ $emp->organizational_unit ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 min-w-[150px]">{{ $emp->cost_center_text ?? '-' }}</td>
-                            <td class="px-4 py-3 text-blue-600">{{ $emp->email ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 text-center">{{ $emp->masa_kerja ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 text-center">{{ $emp->umur ?? '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 whitespace-nowrap">{{ $emp->tanggal_masuk ? $emp->tanggal_masuk->format('d M Y') : '-' }}</td>
-                            <td class="px-4 py-3 text-gray-600 whitespace-nowrap">{{ $emp->tanggal_pensiun ? $emp->tanggal_pensiun->format('d M Y') : '-' }}</td>
-                        </tr>
-
-                        <div id="modal-{{ $emp->id }}" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-                            <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeModal('modal-{{ $emp->id }}')"></div>
-
-                            <div class="flex min-h-full items-center justify-center p-2 text-center sm:p-0">
-                                <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-4 sm:w-full sm:max-w-7xl border-t-8 border-primary-600">
+        {{-- WRAPPER KONTEN --}}
+        <div id="employee-content-wrapper">
+            <div class="bg-white shadow-md rounded-lg overflow-hidden border-t-4 border-primary-600">
+                <div class="overflow-x-auto">
+                    {{-- TABEL UTAMA: Menampilkan field yang diminta (KECUALI data teknis) --}}
+                    <table class="min-w-max w-full divide-y divide-gray-200 text-xs">
+                        <thead class="bg-primary-50">
+                            <tr>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase sticky left-0 bg-primary-50 z-10 shadow-sm">Aksi</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">SAP</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">NIK</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Nama Karyawan</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Emp. Subgroup</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">TXT_DIR</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">TXT_DEPT</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">TXT_BIRO</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Birth Date</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Gender</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Org. Unit</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Cost Center</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Date Terminasi</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">E-mail</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Religious</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Umur</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Tempat Lahir</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Pendidikan</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Organilk</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">s.d</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Masa Kerja</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Alamat</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Band</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            @forelse($employees as $emp)
+                            @php
+                                $isBirthday = $emp->tanggal_lahir && $emp->tanggal_lahir->format('m-d') == date('m-d');
+                                $tglLahir = $emp->tanggal_lahir ? $emp->tanggal_lahir->format('d M Y') : '-';
+                                $tglMasuk = $emp->tanggal_masuk ? $emp->tanggal_masuk->format('d M Y') : '-';
+                                $tglPensiun = $emp->tanggal_pensiun ? $emp->tanggal_pensiun->format('d M Y') : '-';
+                                
+                                // JSON DATA: Memuat SEMUA Field (Termasuk yang disembunyikan di tabel)
+                                $jsonData = json_encode([
+                                    'sap' => $emp->sap_id,
+                                    'nik' => $emp->nik,
+                                    'nama' => $emp->nama,
+                                    'subgroup' => $emp->subgroup,
+                                    'txt_dir' => $emp->direktorat,
+                                    'txt_dept' => $emp->departemen,
+                                    'txt_biro' => $emp->unit_kerja,
+                                    'birth_date' => $tglLahir,
+                                    'gender' => $emp->jenis_kelamin,
+                                    'org_unit' => $emp->organizational_unit,
+                                    'cost_center_text' => $emp->cost_center_text,
+                                    'terminasi' => $tglPensiun,
+                                    'email' => $emp->email,
+                                    'religious' => $emp->agama,
+                                    'umur' => $emp->umur,
+                                    'tempat_lahir' => $emp->tempat_lahir,
+                                    'pendidikan' => $emp->pendidikan,
+                                    'organilk' => $tglMasuk, // Asumsi mapping
+                                    'sd' => $tglMasuk, // Asumsi mapping
+                                    'masa_kerja' => $emp->masa_kerja,
+                                    'alamat' => $emp->alamat,
+                                    'band' => $emp->band,
                                     
-                                    <div class="bg-white px-6 py-4 border-b flex justify-between items-center">
-                                        <div>
-                                            <h3 class="text-2xl font-bold leading-6 text-gray-900">Detail Lengkap Karyawan</h3>
-                                            <p class="text-sm text-gray-500 mt-1">{{ $emp->nama }} - {{ $emp->nik }}</p>
-                                        </div>
-                                        <button type="button" class="text-gray-400 hover:text-gray-500" onclick="closeModal('modal-{{ $emp->id }}')">
-                                            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                                        </button>
-                                    </div>
+                                    // Field Teknis (Disembunyikan di tabel, Muncul di Popup)
+                                    'position' => $emp->jabatan, // Mapping ke jabatan/position
+                                    'cost_ctr' => $emp->cost_ctr,
+                                    'txt_sect' => $emp->txt_sect ?? '-', 
+                                    'pers_area' => $emp->personnel_area,
+                                    'abrev_pos' => $emp->abrev_position ?? '-',
+                                    'abrev_org' => $emp->abrev_organization ?? '-',
+                                    'obj_dept' => $emp->obj_dept ?? '-',
+                                    'obj_biro' => $emp->obj_biro ?? '-',
+                                    'obj_sect' => $emp->obj_sect ?? '-',
+                                    'obj_grp' => $emp->obj_grp ?? '-',
+                                    
+                                    // Foto
+                                    'foto_baru' => $emp->foto_terbaru ? asset('storage/'.$emp->foto_terbaru) : null,
+                                    'foto_lama' => $emp->foto_lama ? asset('storage/'.$emp->foto_lama) : null,
+                                ]);
+                            @endphp
+                            <tr class="{{ $isBirthday ? 'bg-green-50' : 'hover:bg-red-50 transition' }}">
+                                <td class="px-2 py-3 whitespace-nowrap sticky left-0 bg-white z-10 shadow-sm border-r">
+                                    <button onclick="showEmployeeModal(this)" 
+                                            data-json="{{ $jsonData }}"
+                                            class="bg-primary-600 hover:bg-primary-700 text-white text-[10px] font-bold py-1 px-3 rounded shadow transition">
+                                        Detail
+                                    </button>
+                                </td>
+                                {{-- Kolom Tampil di Tabel Utama --}}
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->sap_id ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap font-medium">{{ $emp->nik ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap font-bold">{{ $emp->nama ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->subgroup ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->direktorat ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->departemen ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->unit_kerja ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $tglLahir }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->jenis_kelamin ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->organizational_unit ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->cost_center_text ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-red-600">{{ $tglPensiun }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-blue-600">{{ $emp->email ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->agama ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->umur ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->tempat_lahir ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $emp->pendidikan ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $tglMasuk }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $tglMasuk }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->masa_kerja ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap truncate max-w-[150px]">{{ $emp->alamat ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->band ?? '-' }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="23" class="px-6 py-10 text-center text-gray-500">Tidak ada data ditemukan.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="bg-white px-4 py-3 border-t">
+                    {{ $employees->withQueryString()->links('pagination::bootstrap-4') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                                    <div class="px-6 py-6 bg-gray-50 h-[80vh] overflow-y-auto">
-                                        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                                            
-                                            <div class="md:col-span-3 flex flex-col gap-6">
-                                                
-                                                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                                                    <div class="text-center mb-3">
-                                                        <span class="text-xs font-bold bg-green-100 text-green-700 px-3 py-1 rounded-full uppercase tracking-wider">Foto Terbaru</span>
-                                                    </div>
-                                                    <div class="aspect-[3/4] w-full bg-gray-100 rounded-md overflow-hidden flex items-center justify-center border border-gray-300">
-                                                        @if(isset($emp->foto_terbaru) && $emp->foto_terbaru)
-                                                            <img src="{{ asset('storage/'.$emp->foto_terbaru) }}" class="object-cover w-full h-full">
-                                                        @else
-                                                            <div class="text-gray-400 flex flex-col items-center">
-                                                                <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                                                <span class="text-xs">Tidak ada foto</span>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
+{{-- SINGLE MODAL TEMPLATE --}}
+<div id="single-employee-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeEmployeeModal()"></div>
 
-                                                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-                                                    <div class="text-center mb-3">
-                                                        <span class="text-xs font-bold bg-gray-100 text-gray-600 px-3 py-1 rounded-full uppercase tracking-wider">Foto Lama</span>
-                                                    </div>
-                                                    <div class="aspect-[3/4] w-full bg-gray-100 rounded-md overflow-hidden flex items-center justify-center border border-gray-300 opacity-90">
-                                                        @if(isset($emp->foto_lama) && $emp->foto_lama)
-                                                            <img src="{{ asset('storage/'.$emp->foto_lama) }}" class="object-cover w-full h-full grayscale hover:grayscale-0 transition">
-                                                        @else
-                                                            <div class="text-gray-400 flex flex-col items-center">
-                                                                <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                                                <span class="text-xs">Tidak ada foto</span>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
+    <div class="flex min-h-full items-center justify-center p-2 text-center sm:p-0">
+        <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-4 sm:w-full sm:max-w-6xl border-t-8 border-primary-600">
+            
+            {{-- Modal Header --}}
+            <div class="bg-white px-6 py-4 border-b flex justify-between items-center sticky top-0 z-10">
+                <div>
+                    <h3 class="text-2xl font-bold leading-6 text-gray-900">Kartu Data Karyawan</h3>
+                    <p class="text-sm text-gray-500 mt-1" id="modal-header-sub">Nama - NIK</p>
+                </div>
+                <button type="button" class="text-gray-400 hover:text-gray-500" onclick="closeEmployeeModal()">
+                    <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
 
-                                            </div>
+            {{-- Modal Content --}}
+            <div class="px-6 py-6 bg-gray-50 h-[80vh] overflow-y-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    
+                    {{-- KIRI: FOTO --}}
+                    <div class="lg:col-span-3 flex flex-col gap-4">
+                        <div class="bg-white p-3 rounded-lg shadow border border-gray-200">
+                            <div class="text-center mb-2"><span class="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded uppercase">Foto Terbaru</span></div>
+                            <div class="aspect-[3/4] w-full bg-gray-100 rounded overflow-hidden flex items-center justify-center border border-gray-300">
+                                <img id="img-foto-baru" src="" class="object-cover w-full h-full hidden">
+                                <span id="no-foto-baru" class="text-xs text-gray-400 hidden">Tidak ada foto</span>
+                            </div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg shadow border border-gray-200">
+                            <div class="text-center mb-2"><span class="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded uppercase">Foto Lama</span></div>
+                            <div class="aspect-[3/4] w-full bg-gray-100 rounded overflow-hidden flex items-center justify-center border border-gray-300 opacity-90">
+                                <img id="img-foto-lama" src="" class="object-cover w-full h-full grayscale hover:grayscale-0 transition hidden">
+                                <span id="no-foto-lama" class="text-xs text-gray-400 hidden">Tidak ada foto</span>
+                            </div>
+                        </div>
+                    </div>
 
-                                            <div class="md:col-span-9 space-y-6">
-                                                
-                                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                                                    <div class="px-6 py-3 border-b bg-gray-100">
-                                                        <h4 class="text-md font-bold text-gray-800">🏢 Informasi Jabatan & Organisasi</h4>
-                                                    </div>
-                                                    <div class="p-4 grid grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-6 text-sm">
-                                                        <div><span class="block text-gray-500 text-xs">NIK</span> <span class="font-semibold">{{ $emp->nik }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">SAP ID</span> <span class="font-semibold">{{ $emp->sap_id }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Nama Lengkap</span> <span class="font-semibold">{{ $emp->nama }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Jabatan</span> <span class="font-semibold">{{ $emp->jabatan }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Unit Kerja (Biro)</span> <span class="font-semibold">{{ $emp->unit_kerja }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Departemen</span> <span class="font-semibold">{{ $emp->departemen }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Direktorat</span> <span class="font-semibold">{{ $emp->direktorat }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Subgroup</span> <span class="font-semibold">{{ $emp->subgroup }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Band</span> <span class="font-semibold">{{ $emp->band }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Organizational Unit</span> <span class="font-semibold">{{ $emp->organizational_unit }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Cost Center Text</span> <span class="font-semibold">{{ $emp->cost_center_text }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Masa Kerja</span> <span class="font-semibold">{{ $emp->masa_kerja }} Tahun</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Tanggal Masuk</span> <span class="font-semibold text-green-700">{{ $emp->tanggal_masuk ? $emp->tanggal_masuk->format('d M Y') : '-' }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Tanggal Pensiun</span> <span class="font-semibold text-red-600">{{ $emp->tanggal_pensiun ? $emp->tanggal_pensiun->format('d M Y') : '-' }}</span></div>
-                                                    </div>
-                                                </div>
+                    {{-- KANAN: SEMUA DATA DIGABUNG --}}
+                    <div class="lg:col-span-9">
+                        <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+                            <div class="px-6 py-3 bg-primary-50 border-b border-primary-100 flex items-center">
+                                <svg class="w-5 h-5 text-primary-700 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <h4 class="text-lg font-bold text-gray-800">Data Lengkap Karyawan</h4>
+                            </div>
+                            
+                            <div class="p-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm">
+                                    
+                                    {{-- List Field Sesuai Request Popup --}}
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">SAP / NIK</p><p class="font-mono font-bold text-gray-900"><span id="d-sap">-</span> / <span id="d-nik">-</span></p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Nama Karyawan</p><p class="font-bold text-gray-900 text-base" id="d-nama">-</p></div>
+                                    
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Employee Subgroup</p><p class="font-semibold text-gray-800" id="d-subgroup">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Position / Band</p><p class="font-semibold text-gray-800"><span id="d-position">-</span> (<span id="d-band">-</span>)</p></div>
 
-                                                <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                                                    <div class="px-6 py-3 border-b bg-gray-100 flex items-center gap-2">
-                                                        <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                                                        <h4 class="text-md font-bold text-gray-800">Detail Teknis & Struktural</h4>
-                                                    </div>
-                                                    <div class="p-4 grid grid-cols-2 md:grid-cols-4 gap-y-4 gap-x-4 text-sm bg-gray-50">
-                                                        <div><span class="block text-gray-500 text-xs">Position Code</span> <span class="font-mono font-semibold">{{ $emp->position_code ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Cost Center</span> <span class="font-mono font-semibold">{{ $emp->cost_ctr ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Personnel Area</span> <span class="font-semibold">{{ $emp->personnel_area ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">TXT SECT</span> <span class="font-semibold">{{ $emp->seksi ?? '-' }}</span></div>
-                                                        
-                                                        <div><span class="block text-gray-500 text-xs">Abrevation Position</span> <span class="font-semibold">{{ $emp->abrev_position ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">Abrevation Org</span> <span class="font-semibold">{{ $emp->abrev_organization ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">OBJ DEPT</span> <span class="font-mono font-semibold">{{ $emp->obj_dept ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">OBJ BIRO</span> <span class="font-mono font-semibold">{{ $emp->obj_biro ?? '-' }}</span></div>
-                                                        
-                                                        <div><span class="block text-gray-500 text-xs">OBJ SECT</span> <span class="font-mono font-semibold">{{ $emp->obj_sect ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-500 text-xs">OBJ GRP</span> <span class="font-mono font-semibold">{{ $emp->obj_grp ?? '-' }}</span></div>
-                                                    </div>
-                                                </div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">TXT_DIR</p><p class="font-semibold text-gray-800" id="d-txt-dir">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">TXT_DEPT</p><p class="font-semibold text-gray-800" id="d-txt-dept">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">TXT_BIRO</p><p class="font-semibold text-gray-800" id="d-txt-biro">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">TXT_SECT</p><p class="font-semibold text-gray-800" id="d-txt-sect">-</p></div>
 
-                                                <div class="bg-red-50 rounded-lg shadow-sm border border-red-200 overflow-hidden">
-                                                    <div class="px-6 py-3 border-b border-red-200 bg-red-100 flex items-center gap-2">
-                                                        <svg class="w-5 h-5 text-red-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                                        <h4 class="text-md font-bold text-red-800">Data Pribadi (Confidential)</h4>
-                                                    </div>
-                                                    <div class="p-4 grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-6 text-sm">
-                                                        <div><span class="block text-gray-600 text-xs">Tanggal Lahir</span> <span class="font-bold text-gray-900">{{ $emp->tanggal_lahir ? $emp->tanggal_lahir->format('d M Y') : '-' }}</span></div>
-                                                        <div><span class="block text-gray-600 text-xs">Umur</span> <span class="font-semibold">{{ $emp->umur ?? '-' }} Tahun</span></div>
-                                                        <div><span class="block text-gray-600 text-xs">Jenis Kelamin</span> <span class="font-semibold">{{ $emp->jenis_kelamin ?? '-' }}</span></div>
-                                                        
-                                                        <div><span class="block text-gray-600 text-xs">Agama</span> <span class="font-semibold">{{ $emp->agama ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-600 text-xs">Tempat Lahir</span> <span class="font-semibold">{{ $emp->tempat_lahir ?? '-' }}</span></div>
-                                                        <div><span class="block text-gray-600 text-xs">Pendidikan</span> <span class="font-semibold">{{ $emp->pendidikan ?? '-' }}</span></div>
-                                                        
-                                                        <div class="md:col-span-2">
-                                                            <span class="block text-gray-600 text-xs">Email Pribadi/Kantor</span>
-                                                            <span class="font-medium text-blue-700">{{ $emp->email ?? '-' }}</span>
-                                                        </div>
-                                                        
-                                                        <div class="md:col-span-3">
-                                                            <span class="block text-gray-600 text-xs mb-1">Alamat Domisili</span>
-                                                            <div class="bg-white p-3 rounded border border-red-200 text-gray-800 text-xs leading-relaxed">
-                                                                {{ $emp->alamat ?? '-' }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Organizational Unit</p><p class="font-semibold text-gray-800" id="d-org-unit">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Cost Center (Text)</p><p class="font-semibold text-gray-800" id="d-cost-txt">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Cost Ctr (Code)</p><p class="font-mono font-semibold text-gray-800" id="d-cost-ctr">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Personnel Area</p><p class="font-semibold text-gray-800" id="d-pers-area">-</p></div>
 
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Obj Dept / Obj Biro</p><p class="font-mono text-gray-800 text-xs"><span id="d-obj-dept">-</span> / <span id="d-obj-biro">-</span></p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Obj Sect / Obj Grp</p><p class="font-mono text-gray-800 text-xs"><span id="d-obj-sect">-</span> / <span id="d-obj-grp">-</span></p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Abrev. Position</p><p class="font-semibold text-gray-800" id="d-abrev-pos">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Abrev. Organization</p><p class="font-semibold text-gray-800" id="d-abrev-org">-</p></div>
 
-                                    <div class="bg-gray-50 px-6 py-4 border-t flex justify-end">
-                                        <button type="button" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" onclick="closeModal('modal-{{ $emp->id }}')">
-                                            Tutup
-                                        </button>
-                                    </div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Birth Date / Umur</p><p class="font-semibold text-gray-800"><span id="d-birth">-</span> (<span id="d-umur">-</span> Thn)</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Tempat Lahir</p><p class="font-semibold text-gray-800" id="d-tmplahir">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Gender Key</p><p class="font-semibold text-gray-800" id="d-gender">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Religious</p><p class="font-semibold text-gray-800" id="d-religion">-</p></div>
+                                    
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Date Terminasi</p><p class="font-bold text-red-600" id="d-terminasi">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Organilk / s.d</p><p class="font-bold text-green-700"><span id="d-organilk">-</span></p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Masa Kerja</p><p class="font-semibold text-gray-800"><span id="d-masa">-</span> Tahun</p></div>
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">E-mail</p><p class="font-semibold text-blue-600 break-all" id="d-email">-</p></div>
+                                    
+                                    <div class="group border-b border-gray-50 pb-1 md:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Pendidikan</p><p class="font-semibold text-gray-800" id="d-pendidikan">-</p></div>
+                                    <div class="group border-b border-gray-50 pb-1 md:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Alamat</p><p class="font-medium text-gray-800 bg-gray-50 p-2 rounded block w-full text-xs" id="d-alamat">-</p></div>
 
                                 </div>
                             </div>
                         </div>
-                        @empty
-                        <tr>
-                            <td colspan="17" class="px-6 py-10 text-center text-gray-500">Tidak ada data ditemukan.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                    </div>
+                </div>
             </div>
-            
-            <div class="bg-white px-4 py-3 border-t">
-                {{ $employees->withQueryString()->links('pagination::bootstrap-4') }}
+
+            <div class="bg-gray-50 px-6 py-4 border-t flex justify-end">
+                <button type="button" class="bg-white py-2 px-6 border border-gray-300 rounded-md shadow-sm text-sm font-bold text-gray-700 hover:bg-gray-100 focus:outline-none" onclick="closeEmployeeModal()">
+                    Tutup
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    function openModal(id) {
-        document.getElementById(id).classList.remove('hidden');
+    const modal = document.getElementById('single-employee-modal');
+    
+    function showEmployeeModal(btn) {
+        const data = JSON.parse(btn.getAttribute('data-json'));
+        
+        document.getElementById('modal-header-sub').textContent = `${data.nama} - ${data.nik}`;
+
+        const imgBaru = document.getElementById('img-foto-baru');
+        const noFotoBaru = document.getElementById('no-foto-baru');
+        if(data.foto_baru) {
+            imgBaru.src = data.foto_baru;
+            imgBaru.classList.remove('hidden');
+            noFotoBaru.classList.add('hidden');
+        } else {
+            imgBaru.classList.add('hidden');
+            noFotoBaru.classList.remove('hidden');
+        }
+
+        const imgLama = document.getElementById('img-foto-lama');
+        const noFotoLama = document.getElementById('no-foto-lama');
+        if(data.foto_lama) {
+            imgLama.src = data.foto_lama;
+            imgLama.classList.remove('hidden');
+            noFotoLama.classList.add('hidden');
+        } else {
+            imgLama.classList.add('hidden');
+            noFotoLama.classList.remove('hidden');
+        }
+
+        // Helper
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if(el) el.textContent = value || '-';
+        };
+
+        // Mapping Data Popup
+        setText('d-sap', data.sap);
+        setText('d-nik', data.nik);
+        setText('d-nama', data.nama);
+        setText('d-subgroup', data.subgroup);
+        setText('d-position', data.position);
+        setText('d-band', data.band);
+        setText('d-txt-dir', data.txt_dir);
+        setText('d-txt-dept', data.txt_dept);
+        setText('d-txt-biro', data.txt_biro);
+        setText('d-txt-sect', data.txt_sect);
+        setText('d-org-unit', data.org_unit);
+        setText('d-cost-txt', data.cost_center_text);
+        setText('d-cost-ctr', data.cost_ctr);
+        setText('d-pers-area', data.pers_area);
+        setText('d-obj-dept', data.obj_dept);
+        setText('d-obj-biro', data.obj_biro);
+        setText('d-obj-sect', data.obj_sect);
+        setText('d-obj-grp', data.obj_grp);
+        setText('d-abrev-pos', data.abrev_pos);
+        setText('d-abrev-org', data.abrev_org);
+        setText('d-birth', data.birth_date);
+        setText('d-umur', data.umur);
+        setText('d-tmplahir', data.tempat_lahir);
+        setText('d-gender', data.gender);
+        setText('d-religion', data.religious);
+        setText('d-terminasi', data.terminasi);
+        setText('d-organilk', data.organilk);
+        setText('d-masa', data.masa_kerja);
+        setText('d-email', data.email);
+        setText('d-pendidikan', data.pendidikan);
+        setText('d-alamat', data.alamat);
+
+        modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
-    function closeModal(id) {
-        document.getElementById(id).classList.add('hidden');
+
+    function closeEmployeeModal() {
+        modal.classList.add('hidden');
         document.body.style.overflow = 'auto';
     }
+
+    // Logic Live Search
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('live-search-input');
+        const contentWrapper = document.getElementById('employee-content-wrapper');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        let timeout = null;
+
+        searchInput.addEventListener('input', function() {
+            loadingIndicator.classList.remove('hidden');
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const query = this.value;
+                const url = `{{ route('employees.index') }}?search=${encodeURIComponent(query)}`;
+                
+                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newContent = doc.getElementById('employee-content-wrapper').innerHTML;
+                    contentWrapper.innerHTML = newContent;
+                    loadingIndicator.classList.add('hidden');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loadingIndicator.classList.add('hidden');
+                });
+            }, 500);
+        });
+    });
 </script>
 @endsection
