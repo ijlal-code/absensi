@@ -8,10 +8,14 @@ use Carbon\Carbon;
 
 class EmployeeInfoController extends Controller
 {
+    /**
+     * Menampilkan daftar karyawan.
+     */
     public function index(Request $request)
     {
         $query = TonasaEmployee::query();
 
+        // Fitur Pencarian
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -23,12 +27,75 @@ class EmployeeInfoController extends Controller
             });
         }
 
+        // Fitur Filter Ulang Tahun Hari Ini
         if ($request->has('filter_birthday') && $request->filter_birthday == 'today') {
             $query->whereMonth('tanggal_lahir', Carbon::now()->month)
                   ->whereDay('tanggal_lahir', Carbon::now()->day);
         }
 
-        $employees = $query->paginate(10);
+        $employees = $query->latest()->paginate(10);
         return view('admin.employees.index', compact('employees'));
+    }
+
+    /**
+     * Menampilkan form tambah karyawan baru.
+     */
+    public function create()
+    {
+        return view('admin.employees.create');
+    }
+
+    /**
+     * Menyimpan data karyawan baru ke database.
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'nullable|unique:tonasa_employees,nik', // NIK boleh kosong, tapi jika ada harus unik
+            'email' => 'nullable|email',
+        ]);
+
+        TonasaEmployee::create($request->all());
+
+        return redirect()->route('employees.index')->with('success', 'Data karyawan berhasil ditambahkan.');
+    }
+
+    /**
+     * Menampilkan form edit data karyawan.
+     */
+    public function edit($id)
+    {
+        $employee = TonasaEmployee::findOrFail($id);
+        return view('admin.employees.edit', compact('employee'));
+    }
+
+    /**
+     * Memperbarui data karyawan di database.
+     */
+    public function update(Request $request, $id)
+    {
+        $employee = TonasaEmployee::findOrFail($id);
+
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nik' => 'nullable|unique:tonasa_employees,nik,' . $id, // Abaikan validasi unik untuk ID ini sendiri
+            'email' => 'nullable|email',
+        ]);
+
+        $employee->update($request->all());
+
+        return redirect()->route('employees.index')->with('success', 'Data karyawan berhasil diperbarui.');
+    }
+
+    /**
+     * Menghapus data karyawan.
+     */
+    public function destroy($id)
+    {
+        $employee = TonasaEmployee::findOrFail($id);
+        $employee->delete();
+
+        return redirect()->route('employees.index')->with('success', 'Data karyawan berhasil dihapus.');
     }
 }
