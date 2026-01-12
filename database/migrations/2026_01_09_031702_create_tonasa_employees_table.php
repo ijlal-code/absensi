@@ -53,6 +53,11 @@ return new class extends Migration
             $table->text('alamat')->nullable();                 // Col 32 (Merah)
             $table->string('band')->nullable();                 // Col 33
 
+            // --- KONTAK TAMBAHAN ---
+            $table->string('no_hp_1')->nullable(); // Default tampil
+            $table->string('no_hp_2')->nullable();
+            $table->string('no_hp_3')->nullable();
+
             $table->timestamps();
         });
     }

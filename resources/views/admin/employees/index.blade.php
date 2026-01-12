@@ -57,7 +57,6 @@
         <div id="employee-content-wrapper">
             <div class="bg-white shadow-md rounded-lg overflow-hidden border-t-4 border-primary-600">
                 <div class="overflow-x-auto">
-                    {{-- TABEL UTAMA: Menampilkan field yang diminta (KECUALI data teknis) --}}
                     <table class="min-w-max w-full divide-y divide-gray-200 text-xs">
                         <thead class="bg-primary-50">
                             <tr>
@@ -84,21 +83,32 @@
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Masa Kerja</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Alamat</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Band</th>
+                                {{-- Header No HP Utama (Hanya 1 kolom di tabel) --}}
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">No. HP Utama</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($employees as $emp)
                             @php
+                                // Logika Ulang Tahun
                                 $isBirthday = $emp->tanggal_lahir && $emp->tanggal_lahir->format('m-d') == date('m-d');
+                                
+                                // Format Tanggal
                                 $tglLahir = $emp->tanggal_lahir ? $emp->tanggal_lahir->format('d M Y') : '-';
                                 $tglMasuk = $emp->tanggal_masuk ? $emp->tanggal_masuk->format('d M Y') : '-';
                                 $tglPensiun = $emp->tanggal_pensiun ? $emp->tanggal_pensiun->format('d M Y') : '-';
                                 
-                                // JSON DATA: Memuat SEMUA Field (Termasuk yang disembunyikan di tabel)
+                                // JSON DATA
                                 $jsonData = json_encode([
                                     'sap' => $emp->sap_id,
                                     'nik' => $emp->nik,
                                     'nama' => $emp->nama,
+                                    
+                                    // Kirim 3 Nomor HP untuk Modal
+                                    'hp1' => $emp->no_hp_1, 
+                                    'hp2' => $emp->no_hp_2, 
+                                    'hp3' => $emp->no_hp_3, 
+
                                     'subgroup' => $emp->subgroup,
                                     'txt_dir' => $emp->direktorat,
                                     'txt_dept' => $emp->departemen,
@@ -113,41 +123,49 @@
                                     'umur' => $emp->umur,
                                     'tempat_lahir' => $emp->tempat_lahir,
                                     'pendidikan' => $emp->pendidikan,
-                                    'organilk' => $tglMasuk, // Asumsi mapping
-                                    'sd' => $tglMasuk, // Asumsi mapping
+                                    'organilk' => $tglMasuk,
+                                    'sd' => $tglMasuk, 
                                     'masa_kerja' => $emp->masa_kerja,
                                     'alamat' => $emp->alamat,
                                     'band' => $emp->band,
                                     
-                                    // Field Teknis (Disembunyikan di tabel, Muncul di Popup)
-                                    'position' => $emp->jabatan, // Mapping ke jabatan/position
+                                    // Field Teknis
+                                    'position' => $emp->jabatan,
                                     'cost_ctr' => $emp->cost_ctr,
-                                    'txt_sect' => $emp->txt_sect ?? '-', 
+                                    'txt_sect' => $emp->txt_sect, 
                                     'pers_area' => $emp->personnel_area,
-                                    'abrev_pos' => $emp->abrev_position ?? '-',
-                                    'abrev_org' => $emp->abrev_organization ?? '-',
-                                    'obj_dept' => $emp->obj_dept ?? '-',
-                                    'obj_biro' => $emp->obj_biro ?? '-',
-                                    'obj_sect' => $emp->obj_sect ?? '-',
-                                    'obj_grp' => $emp->obj_grp ?? '-',
+                                    'abrev_pos' => $emp->abrev_position,
+                                    'abrev_org' => $emp->abrev_organization,
+                                    'obj_dept' => $emp->obj_dept,
+                                    'obj_biro' => $emp->obj_biro,
+                                    'obj_sect' => $emp->obj_sect,
+                                    'obj_grp' => $emp->obj_grp,
                                     
                                     // Foto
                                     'foto_baru' => $emp->foto_terbaru ? asset('storage/'.$emp->foto_terbaru) : null,
                                     'foto_lama' => $emp->foto_lama ? asset('storage/'.$emp->foto_lama) : null,
                                 ]);
                             @endphp
-                            <tr class="{{ $isBirthday ? 'bg-green-50' : 'hover:bg-red-50 transition' }}">
-                                <td class="px-2 py-3 whitespace-nowrap sticky left-0 bg-white z-10 shadow-sm border-r">
+
+                            {{-- LOGIKA WARNA BARIS: Hijau Full jika Ultah, Putih jika tidak --}}
+                            <tr class="{{ $isBirthday ? 'bg-green-100 text-green-900' : 'bg-white hover:bg-gray-50 transition' }}">
+                                
+                                {{-- Tombol Detail (Sticky) --}}
+                                <td class="px-2 py-3 whitespace-nowrap sticky left-0 z-10 shadow-sm border-r {{ $isBirthday ? 'bg-green-100' : 'bg-white' }}">
                                     <button onclick="showEmployeeModal(this)" 
                                             data-json="{{ $jsonData }}"
                                             class="bg-primary-600 hover:bg-primary-700 text-white text-[10px] font-bold py-1 px-3 rounded shadow transition">
                                         Detail
                                     </button>
                                 </td>
-                                {{-- Kolom Tampil di Tabel Utama --}}
+
+                                {{-- DATA TABEL --}}
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->sap_id ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap font-medium">{{ $emp->nik ?? '-' }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap font-bold">{{ $emp->nama ?? '-' }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap font-bold flex items-center gap-1">
+                                    {{ $emp->nama ?? '-' }}
+                                    @if($isBirthday) <span>🎂</span> @endif
+                                </td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->subgroup ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->direktorat ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->departemen ?? '-' }}</td>
@@ -167,19 +185,51 @@
                                 <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->masa_kerja ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap truncate max-w-[150px]">{{ $emp->alamat ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->band ?? '-' }}</td>
+                                
+                                {{-- KOLOM NO HP UTAMA (Tampil di tabel) --}}
+                                <td class="px-2 py-2 whitespace-nowrap font-medium text-gray-700">
+                                    {{ $emp->no_hp_1 ?? '-' }}
+                                </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="23" class="px-6 py-10 text-center text-gray-500">Tidak ada data ditemukan.</td>
+                                <td colspan="25" class="px-6 py-10 text-center text-gray-500">Tidak ada data ditemukan.</td>
                             </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
                 
-                <div class="bg-white px-4 py-3 border-t">
-                    {{ $employees->withQueryString()->links('pagination::bootstrap-4') }}
+                {{-- PAGINATION MINIMALIS --}}
+                <div class="bg-white px-4 py-3 border-t flex items-center justify-between sm:px-6">
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-xs text-gray-500">
+                                Menampilkan <span class="font-bold text-gray-700">{{ $employees->firstItem() ?? 0 }}</span> 
+                                sampai <span class="font-bold text-gray-700">{{ $employees->lastItem() ?? 0 }}</span> 
+                                dari <span class="font-bold text-gray-700">{{ $employees->total() }}</span> data
+                            </p>
+                        </div>
+                        <div>
+                            @if ($employees->hasPages())
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    @if ($employees->onFirstPage())
+                                        <span class="relative inline-flex items-center px-3 py-1.5 rounded-l-md border border-gray-300 bg-gray-50 text-xs font-medium text-gray-400 cursor-not-allowed">&laquo; Sebelumnya</span>
+                                    @else
+                                        <a href="{{ $employees->previousPageUrl() }}" class="relative inline-flex items-center px-3 py-1.5 rounded-l-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 transition">&laquo; Sebelumnya</a>
+                                    @endif
+
+                                    @if ($employees->hasMorePages())
+                                        <a href="{{ $employees->nextPageUrl() }}" class="relative inline-flex items-center px-3 py-1.5 rounded-r-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 transition">Selanjutnya &raquo;</a>
+                                    @else
+                                        <span class="relative inline-flex items-center px-3 py-1.5 rounded-r-md border border-gray-300 bg-gray-50 text-xs font-medium text-gray-400 cursor-not-allowed">Selanjutnya &raquo;</span>
+                                    @endif
+                                </nav>
+                            @endif
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -236,7 +286,7 @@
                             <div class="p-6">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm">
                                     
-                                    {{-- List Field Sesuai Request Popup --}}
+                                    {{-- List Field --}}
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">SAP / NIK</p><p class="font-mono font-bold text-gray-900"><span id="d-sap">-</span> / <span id="d-nik">-</span></p></div>
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Nama Karyawan</p><p class="font-bold text-gray-900 text-base" id="d-nama">-</p></div>
                                     
@@ -271,6 +321,25 @@
                                     <div class="group border-b border-gray-50 pb-1 md:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Pendidikan</p><p class="font-semibold text-gray-800" id="d-pendidikan">-</p></div>
                                     <div class="group border-b border-gray-50 pb-1 md:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Alamat</p><p class="font-medium text-gray-800 bg-gray-50 p-2 rounded block w-full text-xs" id="d-alamat">-</p></div>
 
+                                    {{-- TAMPILAN 3 NOMOR HP DI MODAL --}}
+                                    <div class="group border-b border-gray-50 pb-2 md:col-span-2">
+                                        <p class="text-xs text-gray-400 mb-1">Kontak Telepon / HP</p>
+                                        <div class="flex flex-wrap gap-8 bg-gray-50 p-2 rounded border border-gray-100">
+                                            <div>
+                                                <span class="text-[10px] text-gray-400 uppercase tracking-wider block">HP Utama</span>
+                                                <span class="font-bold text-green-700 text-sm" id="d-hp1">-</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-[10px] text-gray-400 uppercase tracking-wider block">HP Kedua</span>
+                                                <span class="font-semibold text-gray-600 text-sm" id="d-hp2">-</span>
+                                            </div>
+                                            <div>
+                                                <span class="text-[10px] text-gray-400 uppercase tracking-wider block">HP Ketiga</span>
+                                                <span class="font-semibold text-gray-600 text-sm" id="d-hp3">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -290,43 +359,45 @@
 <script>
     const modal = document.getElementById('single-employee-modal');
     
+    // Fungsi pembantu: Jika value kosong/null/undefined, tampilkan "-"
+    const setText = (id, value) => {
+        const el = document.getElementById(id);
+        if(el) {
+            // Cek jika value null, undefined, atau string kosong
+            el.textContent = (value && value.toString().trim() !== "") ? value : '-';
+        }
+    };
+
     function showEmployeeModal(btn) {
         const data = JSON.parse(btn.getAttribute('data-json'));
         
-        document.getElementById('modal-header-sub').textContent = `${data.nama} - ${data.nik}`;
+        document.getElementById('modal-header-sub').textContent = `${data.nama || '-'} - ${data.nik || '-'}`;
 
-        const imgBaru = document.getElementById('img-foto-baru');
-        const noFotoBaru = document.getElementById('no-foto-baru');
-        if(data.foto_baru) {
-            imgBaru.src = data.foto_baru;
-            imgBaru.classList.remove('hidden');
-            noFotoBaru.classList.add('hidden');
-        } else {
-            imgBaru.classList.add('hidden');
-            noFotoBaru.classList.remove('hidden');
-        }
-
-        const imgLama = document.getElementById('img-foto-lama');
-        const noFotoLama = document.getElementById('no-foto-lama');
-        if(data.foto_lama) {
-            imgLama.src = data.foto_lama;
-            imgLama.classList.remove('hidden');
-            noFotoLama.classList.add('hidden');
-        } else {
-            imgLama.classList.add('hidden');
-            noFotoLama.classList.remove('hidden');
-        }
-
-        // Helper
-        const setText = (id, value) => {
-            const el = document.getElementById(id);
-            if(el) el.textContent = value || '-';
+        const handleImage = (imgId, noImgId, src) => {
+            const imgEl = document.getElementById(imgId);
+            const noImgEl = document.getElementById(noImgId);
+            if(src) {
+                imgEl.src = src;
+                imgEl.classList.remove('hidden');
+                noImgEl.classList.add('hidden');
+            } else {
+                imgEl.classList.add('hidden');
+                noImgEl.classList.remove('hidden');
+            }
         };
+        handleImage('img-foto-baru', 'no-foto-baru', data.foto_baru);
+        handleImage('img-foto-lama', 'no-foto-lama', data.foto_lama);
 
-        // Mapping Data Popup
+        // Populate Data Text
         setText('d-sap', data.sap);
         setText('d-nik', data.nik);
         setText('d-nama', data.nama);
+        
+        // HP
+        setText('d-hp1', data.hp1);
+        setText('d-hp2', data.hp2);
+        setText('d-hp3', data.hp3);
+
         setText('d-subgroup', data.subgroup);
         setText('d-position', data.position);
         setText('d-band', data.band);
