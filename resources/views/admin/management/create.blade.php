@@ -19,32 +19,32 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">NIK</label>
-                        <input type="text" name="nik" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="nik" value="{{ old('nik') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">SAP ID</label>
-                        <input type="text" name="sap_id" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="sap_id" value="{{ old('sap_id') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="nama" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="nama" value="{{ old('nama') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email</label>
-                        <input type="email" name="email" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="email" name="email" value="{{ old('email') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">No HP 1 (Utama)</label>
-                        <input type="text" name="no_hp_1" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="no_hp_1" value="{{ old('no_hp_1') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">No HP 2</label>
-                            <input type="text" name="no_hp_2" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                            <input type="text" name="no_hp_2" value="{{ old('no_hp_2') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">No HP 3</label>
-                            <input type="text" name="no_hp_3" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                            <input type="text" name="no_hp_3" value="{{ old('no_hp_3') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                         </div>
                     </div>
                 </div>
@@ -56,39 +56,39 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="md:col-span-2">
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jabatan (Teks)</label>
-                        <input type="text" name="jabatan" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="jabatan" value="{{ old('jabatan') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Position Code</label>
-                        <input type="text" name="position_code" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="position_code" value="{{ old('position_code') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                      <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Band</label>
-                        <input type="text" name="band" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="band" value="{{ old('band') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Unit Kerja (Biro)</label>
-                        <input type="text" name="unit_kerja" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="unit_kerja" value="{{ old('unit_kerja') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seksi</label>
-                        <input type="text" name="seksi" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="seksi" value="{{ old('seksi') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Departemen</label>
-                        <input type="text" name="departemen" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="departemen" value="{{ old('departemen') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Direktorat</label>
-                        <input type="text" name="direktorat" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="direktorat" value="{{ old('direktorat') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Cost Center</label>
-                        <input type="text" name="cost_ctr" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="cost_ctr" value="{{ old('cost_ctr') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Subgroup</label>
-                        <input type="text" name="subgroup" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="subgroup" value="{{ old('subgroup') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                 </div>
             </div>
@@ -99,15 +99,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tempat Lahir</label>
-                        <input type="text" name="tempat_lahir" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Lahir</label>
-                        <input type="date" name="tanggal_lahir" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Umur</label>
-                        <input type="text" name="umur" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Lahir <span class="text-red-500">*</span></label>
+                        <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <small class="text-gray-500 italic">Umur akan dihitung otomatis.</small>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jenis Kelamin</label>
@@ -119,15 +116,15 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Agama</label>
-                        <input type="text" name="agama" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="agama" value="{{ old('agama') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Pendidikan</label>
-                        <input type="text" name="pendidikan" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="pendidikan" value="{{ old('pendidikan') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Alamat Lengkap</label>
-                        <textarea name="alamat" rows="2" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border"></textarea>
+                        <textarea name="alamat" rows="2" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">{{ old('alamat') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -138,17 +135,14 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Masuk</label>
-                        <input type="date" name="tanggal_masuk" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="date" name="tanggal_masuk" value="{{ old('tanggal_masuk') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <small class="text-gray-500 italic">Masa Kerja akan dihitung otomatis.</small>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Pensiun</label>
-                        <input type="date" name="tanggal_pensiun" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="date" name="tanggal_pensiun" value="{{ old('tanggal_pensiun') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Masa Kerja</label>
-                        <input type="text" name="masa_kerja" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
-                </div>
             </div>
 
             {{-- BAGIAN 5: DATA TEKNIS (LANJUTAN) --}}
@@ -163,39 +157,39 @@
                     <div class="text-gray-500 mt-4 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 pb-4">
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Personnel Area</label>
-                            <input type="text" name="personnel_area" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="personnel_area" value="{{ old('personnel_area') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Abrev Position</label>
-                            <input type="text" name="abrev_position" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="abrev_position" value="{{ old('abrev_position') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Abrev Organization</label>
-                            <input type="text" name="abrev_organization" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="abrev_organization" value="{{ old('abrev_organization') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Obj Dept</label>
-                            <input type="text" name="obj_dept" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="obj_dept" value="{{ old('obj_dept') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Obj Biro</label>
-                            <input type="text" name="obj_biro" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="obj_biro" value="{{ old('obj_biro') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                          <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Obj Sect</label>
-                            <input type="text" name="obj_sect" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="obj_sect" value="{{ old('obj_sect') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                          <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Obj Grp</label>
-                            <input type="text" name="obj_grp" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="obj_grp" value="{{ old('obj_grp') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Organizational Unit</label>
-                            <input type="text" name="organizational_unit" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="organizational_unit" value="{{ old('organizational_unit') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 uppercase">Cost Center Text</label>
-                            <input type="text" name="cost_center_text" class="w-full border-gray-200 rounded text-xs p-1">
+                            <input type="text" name="cost_center_text" value="{{ old('cost_center_text') }}" class="w-full border-gray-200 rounded text-xs p-1">
                         </div>
                     </div>
                 </details>

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TonasaEmployee;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use Carbon\Carbon; // Pastikan library Carbon di-load
 
 class EmployeeInfoController extends Controller
 {
@@ -52,11 +52,32 @@ class EmployeeInfoController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nik' => 'nullable|unique:tonasa_employees,nik', // NIK boleh kosong, tapi jika ada harus unik
+            'nik' => 'nullable|unique:tonasa_employees,nik',
             'email' => 'nullable|email',
         ]);
 
-        TonasaEmployee::create($request->all());
+        // Ambil semua input
+        $data = $request->all();
+
+        // 1. HITUNG UMUR OTOMATIS
+        if ($request->filled('tanggal_lahir')) {
+            try {
+                $data['umur'] = Carbon::parse($request->tanggal_lahir)->age;
+            } catch (\Exception $e) {
+                $data['umur'] = null;
+            }
+        }
+
+        // 2. HITUNG MASA KERJA OTOMATIS
+        if ($request->filled('tanggal_masuk')) {
+            try {
+                $data['masa_kerja'] = Carbon::parse($request->tanggal_masuk)->diffInYears(Carbon::now());
+            } catch (\Exception $e) {
+                $data['masa_kerja'] = null;
+            }
+        }
+
+        TonasaEmployee::create($data);
 
         return redirect()->route('employees.index')->with('success', 'Data karyawan berhasil ditambahkan.');
     }
@@ -79,11 +100,32 @@ class EmployeeInfoController extends Controller
 
         $request->validate([
             'nama' => 'required|string|max:255',
-            'nik' => 'nullable|unique:tonasa_employees,nik,' . $id, // Abaikan validasi unik untuk ID ini sendiri
+            'nik' => 'nullable|unique:tonasa_employees,nik,' . $id,
             'email' => 'nullable|email',
         ]);
 
-        $employee->update($request->all());
+        // Ambil semua input
+        $data = $request->all();
+
+        // 1. HITUNG ULANG UMUR (Jika berubah)
+        if ($request->filled('tanggal_lahir')) {
+            try {
+                $data['umur'] = Carbon::parse($request->tanggal_lahir)->age;
+            } catch (\Exception $e) {
+                $data['umur'] = null;
+            }
+        }
+
+        // 2. HITUNG ULANG MASA KERJA (Jika berubah)
+        if ($request->filled('tanggal_masuk')) {
+            try {
+                $data['masa_kerja'] = Carbon::parse($request->tanggal_masuk)->diffInYears(Carbon::now());
+            } catch (\Exception $e) {
+                $data['masa_kerja'] = null;
+            }
+        }
+
+        $employee->update($data);
 
         return redirect()->route('employees.index')->with('success', 'Data karyawan berhasil diperbarui.');
     }

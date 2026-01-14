@@ -106,9 +106,10 @@
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Lahir</label>
                         <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', $employee->tanggal_lahir ? $employee->tanggal_lahir->format('Y-m-d') : '') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
+                    {{-- UMUR: READONLY & DISABLED --}}
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Umur</label>
-                        <input type="text" name="umur" value="{{ old('umur', $employee->umur) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Umur (Otomatis)</label>
+                        <input type="text" value="{{ $employee->umur }}" disabled class="w-full bg-gray-100 text-gray-500 border-gray-300 rounded-md shadow-sm text-sm p-2 border cursor-not-allowed">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jenis Kelamin</label>
@@ -145,9 +146,10 @@
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Pensiun</label>
                         <input type="date" name="tanggal_pensiun" value="{{ old('tanggal_pensiun', $employee->tanggal_pensiun ? $employee->tanggal_pensiun->format('Y-m-d') : '') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
+                    {{-- MASA KERJA: READONLY & DISABLED --}}
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Masa Kerja</label>
-                        <input type="text" name="masa_kerja" value="{{ old('masa_kerja', $employee->masa_kerja) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Masa Kerja (Otomatis)</label>
+                        <input type="text" value="{{ $employee->masa_kerja }}" disabled class="w-full bg-gray-100 text-gray-500 border-gray-300 rounded-md shadow-sm text-sm p-2 border cursor-not-allowed">
                     </div>
                 </div>
             </div>

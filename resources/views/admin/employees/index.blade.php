@@ -24,29 +24,47 @@
                 <p class="mt-1 text-sm text-gray-500">Database Lengkap Semen Tonasa 2026</p>
             </div>
             
-            {{-- SEARCH FORM --}}
-            <div class="mt-4 flex gap-2 md:mt-0">
-                <div class="flex w-full max-w-lg gap-2">
-                     <form action="{{ route('employees.index') }}" method="GET" class="contents">
-                        <button type="submit" name="filter_birthday" value="today" class="bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 text-sm whitespace-nowrap shadow-sm transition">
-                            Ultah Hari Ini
+            {{-- SEARCH FORM & FILTER (SUDAH DIPERBARUI) --}}
+            <div class="mt-4 md:mt-0 flex flex-col md:flex-row md:items-center gap-4">
+                
+                {{-- Grup 1: Quick Filter --}}
+                <div class="flex-none">
+                    <form action="{{ route('employees.index') }}" method="GET">
+                        <button type="submit" name="filter_birthday" value="today" 
+                            class="group inline-flex items-center gap-2 bg-white border border-green-600 text-green-700 px-4 py-2.5 rounded-lg hover:bg-green-50 transition font-medium text-sm shadow-sm w-full justify-center md:w-auto">
+                            
+                            <span>Ultah Hari Ini</span>
                         </button>
                     </form>
-                    
-                    <div class="relative rounded-md shadow-sm flex-grow">
+                </div>
+
+                {{-- Divider (Pemisah Vertikal) - Hanya tampil di Desktop --}}
+                <div class="hidden md:block h-8 w-[3px] bg-gray-300 rounded-full"></div>
+
+                {{-- Grup 2: Global Search --}}
+                <div class="flex w-full md:max-w-md gap-2">
+                    <div class="relative flex-grow">
+                        {{-- Ikon Search --}}
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+
                         <input type="text" id="live-search-input" name="search" value="{{ request('search') }}" 
-                            class="block w-full rounded-md border-0 py-2.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-primary-600 sm:text-sm" 
+                            class="block w-full rounded-lg border-gray-300 py-2.5 pl-10 pr-10 text-gray-900 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
                             placeholder="Cari NIK, Nama, SAP..." autocomplete="off">
                         
+                        {{-- Loading Spinner --}}
                         <div id="loading-indicator" class="absolute inset-y-0 right-0 flex items-center pr-3 hidden">
-                            <svg class="animate-spin h-5 w-5 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <svg class="animate-spin h-4 w-4 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                         </div>
                     </div>
 
-                    <a href="{{ route('employees.index') }}" class="bg-white border border-gray-300 text-gray-700 px-3 py-2 rounded-md hover:bg-gray-50 flex items-center transition">
+                    <a href="{{ route('employees.index') }}" class="flex-none bg-gray-100 text-gray-600 border border-gray-300 px-4 py-2.5 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition font-medium text-sm shadow-sm flex items-center justify-center">
                         Reset
                     </a>
                 </div>
