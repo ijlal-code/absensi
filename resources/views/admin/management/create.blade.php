@@ -3,6 +3,7 @@
 @section('content')
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="bg-white shadow-lg overflow-hidden sm:rounded-lg p-8">
+        {{-- Header Form --}}
         <div class="flex justify-between items-center mb-8 border-b pb-4">
             <h2 class="text-2xl font-bold text-gray-800">Tambah Data Karyawan</h2>
             <a href="{{ route('employee-management.index') }}" class="text-gray-600 hover:text-gray-900 font-medium flex items-center">
@@ -10,53 +11,70 @@
             </a>
         </div>
 
-        {{-- Tampilkan Pesan Error Global Jika Ada --}}
+        {{-- Pesan Error Global --}}
         @if ($errors->any())
             <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <strong class="font-bold">Terjadi Kesalahan!</strong>
-                <span class="block sm:inline">Mohon periksa kembali inputan Anda.</span>
+                <span class="block sm:inline">Mohon periksa kembali inputan yang bertanda merah.</span>
             </div>
         @endif
 
-        <form action="{{ route('employee-management.store') }}" method="POST">
+        {{-- Form Create --}}
+        <form action="{{ route('employee-management.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             
             {{-- BAGIAN 1: IDENTITAS & KONTAK --}}
             <div class="mb-8">
                 <h3 class="text-lg font-bold text-blue-900 border-l-4 border-blue-600 pl-3 mb-4 bg-gray-50 p-2">1. Identitas & Kontak</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {{-- NIK --}}
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">NIK <span class="text-red-500">*</span></label>
-                        <input type="text" name="nik" value="{{ old('nik') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('nik') border-red-500 @enderror">
+                        <input type="text" name="nik" value="{{ old('nik') }}" required 
+                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('nik') border-red-500 @enderror">
                         @error('nik') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
+
+                    {{-- SAP ID --}}
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">SAP ID <span class="text-red-500">*</span></label>
-                        <input type="text" name="sap_id" value="{{ old('sap_id') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('sap_id') border-red-500 @enderror">
+                        <input type="text" name="sap_id" value="{{ old('sap_id') }}" required 
+                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('sap_id') border-red-500 @enderror">
                         @error('sap_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
+
+                    {{-- Nama Lengkap --}}
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="nama" value="{{ old('nama') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('nama') border-red-500 @enderror">
+                        <input type="text" name="nama" value="{{ old('nama') }}" required 
+                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('nama') border-red-500 @enderror">
                         @error('nama') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
+
+                    {{-- Email --}}
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="email" name="email" value="{{ old('email') }}" 
+                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('email') border-red-500 @enderror">
                         @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
+
+                    {{-- No HP 1 --}}
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">No HP 1 (Utama)</label>
-                        <input type="text" name="no_hp_1" value="{{ old('no_hp_1') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="no_hp_1" value="{{ old('no_hp_1') }}" 
+                               class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
+
+                    {{-- No HP 2 & 3 --}}
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">No HP 2</label>
-                            <input type="text" name="no_hp_2" value="{{ old('no_hp_2') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                            <input type="text" name="no_hp_2" value="{{ old('no_hp_2') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-gray-700 uppercase mb-1">No HP 3</label>
-                            <input type="text" name="no_hp_3" value="{{ old('no_hp_3') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                            <input type="text" name="no_hp_3" value="{{ old('no_hp_3') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                         </div>
                     </div>
                 </div>
@@ -68,39 +86,39 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="md:col-span-2">
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jabatan (Teks)</label>
-                        <input type="text" name="jabatan" value="{{ old('jabatan') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="jabatan" value="{{ old('jabatan') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Position Code</label>
-                        <input type="text" name="position_code" value="{{ old('position_code') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="position_code" value="{{ old('position_code') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                      <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Band</label>
-                        <input type="text" name="band" value="{{ old('band') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="band" value="{{ old('band') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Unit Kerja (Biro)</label>
-                        <input type="text" name="unit_kerja" value="{{ old('unit_kerja') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="unit_kerja" value="{{ old('unit_kerja') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Seksi</label>
-                        <input type="text" name="seksi" value="{{ old('seksi') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="seksi" value="{{ old('seksi') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Departemen</label>
-                        <input type="text" name="departemen" value="{{ old('departemen') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="departemen" value="{{ old('departemen') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Direktorat</label>
-                        <input type="text" name="direktorat" value="{{ old('direktorat') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="direktorat" value="{{ old('direktorat') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Cost Center</label>
-                        <input type="text" name="cost_ctr" value="{{ old('cost_ctr') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="cost_ctr" value="{{ old('cost_ctr') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Subgroup</label>
-                        <input type="text" name="subgroup" value="{{ old('subgroup') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="subgroup" value="{{ old('subgroup') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                 </div>
             </div>
@@ -111,17 +129,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tempat Lahir</label>
-                        <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Lahir <span class="text-red-500">*</span></label>
-                        <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('tanggal_lahir') border-red-500 @enderror">
+                        <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir') }}" required 
+                               class="w-full border-gray-300 rounded-md text-sm p-2 border @error('tanggal_lahir') border-red-500 @enderror">
                         @error('tanggal_lahir') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <small class="text-gray-500 italic">Umur akan dihitung otomatis.</small>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jenis Kelamin</label>
-                        <select name="jenis_kelamin" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <select name="jenis_kelamin" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                             <option value="">-- Pilih --</option>
                             <option value="Laki-laki">Laki-laki</option>
                             <option value="Perempuan">Perempuan</option>
@@ -129,15 +148,15 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Agama</label>
-                        <input type="text" name="agama" value="{{ old('agama') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="agama" value="{{ old('agama') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Pendidikan</label>
-                        <input type="text" name="pendidikan" value="{{ old('pendidikan') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="pendidikan" value="{{ old('pendidikan') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                     <div class="md:col-span-2">
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Alamat Lengkap</label>
-                        <textarea name="alamat" rows="2" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">{{ old('alamat') }}</textarea>
+                        <textarea name="alamat" rows="2" class="w-full border-gray-300 rounded-md text-sm p-2 border">{{ old('alamat') }}</textarea>
                     </div>
                 </div>
             </div>
@@ -148,22 +167,41 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Masuk <span class="text-red-500">*</span></label>
-                        <input type="date" name="tanggal_masuk" value="{{ old('tanggal_masuk') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('tanggal_masuk') border-red-500 @enderror">
+                        <input type="date" name="tanggal_masuk" value="{{ old('tanggal_masuk') }}" required 
+                               class="w-full border-gray-300 rounded-md text-sm p-2 border @error('tanggal_masuk') border-red-500 @enderror">
                         @error('tanggal_masuk') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-                        <small class="text-gray-500 italic">Masa Kerja akan dihitung otomatis (dibulatkan).</small>
+                        <small class="text-gray-500 italic">Masa Kerja akan dihitung otomatis.</small>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Pensiun</label>
-                        <input type="date" name="tanggal_pensiun" value="{{ old('tanggal_pensiun') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="date" name="tanggal_pensiun" value="{{ old('tanggal_pensiun') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                 </div>
             </div>
 
-            {{-- BAGIAN 5: DATA TEKNIS (LANJUTAN) --}}
+            {{-- BAGIAN 5: UPLOAD FOTO (BARU) --}}
+            <div class="mb-8">
+                <h3 class="text-lg font-bold text-blue-900 border-l-4 border-blue-600 pl-3 mb-4 bg-gray-50 p-2">5. Upload Foto</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Foto Terbaru</label>
+                        <input type="file" name="foto_terbaru" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border rounded cursor-pointer @error('foto_terbaru') border-red-500 @enderror">
+                        @error('foto_terbaru') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        <small class="text-gray-400 block mt-1">Format: JPG/PNG, Max: 2MB</small>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Foto Lama (Opsional)</label>
+                        <input type="file" name="foto_lama" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 border rounded cursor-pointer @error('foto_lama') border-red-500 @enderror">
+                        @error('foto_lama') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                </div>
+            </div>
+
+            {{-- BAGIAN 6: DATA TEKNIS (LANJUTAN) --}}
             <div class="mb-8">
                 <details class="group bg-gray-50 rounded-lg p-2 border">
                     <summary class="flex justify-between items-center font-medium cursor-pointer list-none text-blue-900 text-sm font-bold">
-                        <span> 5. Data Teknis / SAP (Klik untuk membuka)</span>
+                        <span> 6. Data Teknis / SAP (Klik untuk membuka)</span>
                         <span class="transition group-open:rotate-180">
                             <i class="fas fa-chevron-down"></i>
                         </span>
@@ -209,6 +247,7 @@
                 </details>
             </div>
 
+            {{-- Tombol Aksi --}}
             <div class="flex justify-end gap-3 pt-6 border-t mt-6 sticky bottom-0 bg-white p-4 shadow-inner">
                 <a href="{{ route('employee-management.index') }}" class="px-6 py-2.5 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition font-medium">Batal</a>
                 <button type="submit" class="px-8 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold shadow-md">

@@ -53,6 +53,7 @@
                             </svg>
                         </div>
 
+                        {{-- PERBAIKAN: Placeholder hanya NIK, Nama, SAP --}}
                         <input type="text" id="live-search-input" name="search" value="{{ request('search') }}" 
                             class="block w-full rounded-lg border-gray-300 py-2.5 pl-10 pr-10 text-gray-900 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
                             placeholder="Cari NIK, Nama, SAP..." autocomplete="off">
@@ -116,7 +117,7 @@
                                 $tglMasuk = $emp->tanggal_masuk ? $emp->tanggal_masuk->format('d M Y') : '-';
                                 $tglPensiun = $emp->tanggal_pensiun ? $emp->tanggal_pensiun->format('d M Y') : '-';
                                 
-                                // JSON DATA
+                                // JSON DATA LENGKAP (Termasuk URL Foto)
                                 $jsonData = json_encode([
                                     'sap' => $emp->sap_id,
                                     'nik' => $emp->nik,
@@ -145,7 +146,7 @@
                                     'band' => $emp->band,
                                     'position' => $emp->jabatan,
                                     'cost_ctr' => $emp->cost_ctr,
-                                    'txt_sect' => $emp->txt_sect, 
+                                    'txt_sect' => $emp->seksi, 
                                     'pers_area' => $emp->personnel_area,
                                     'abrev_pos' => $emp->abrev_position,
                                     'abrev_org' => $emp->abrev_organization,
@@ -153,6 +154,7 @@
                                     'obj_biro' => $emp->obj_biro,
                                     'obj_sect' => $emp->obj_sect,
                                     'obj_grp' => $emp->obj_grp,
+                                    // URL FOTO dari Storage
                                     'foto_baru' => $emp->foto_terbaru ? asset('storage/'.$emp->foto_terbaru) : null,
                                     'foto_lama' => $emp->foto_lama ? asset('storage/'.$emp->foto_lama) : null,
                                 ]);
@@ -192,7 +194,7 @@
                                 <td class="px-2 py-2 whitespace-nowrap truncate max-w-[150px]">{{ $emp->alamat ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->band ?? '-' }}</td>
                                 
-                                {{-- Format HP --}}
+                                {{-- PERBAIKAN: Format No HP di Tabel (Pisah 4 digit) --}}
                                 <td class="px-2 py-2 whitespace-nowrap font-medium text-gray-700">
                                     {{ $emp->no_hp_1 ? wordwrap($emp->no_hp_1, 4, ' ', true) : '-' }}
                                 </td>
@@ -229,13 +231,14 @@
     </div>
 </div>
 
-{{-- SINGLE MODAL TEMPLATE (Sama seperti sebelumnya, hanya memastikan script format HP tetap ada) --}}
+{{-- MODAL POPUP --}}
 <div id="single-employee-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeEmployeeModal()"></div>
 
     <div class="flex min-h-full items-center justify-center p-2 text-center sm:p-0">
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-4 sm:w-full sm:max-w-6xl border-t-8 border-primary-600">
             
+            {{-- Modal Header --}}
             <div class="bg-white px-6 py-4 border-b flex justify-between items-center sticky top-0 z-10">
                 <div>
                     <h3 class="text-2xl font-bold leading-6 text-gray-900">Kartu Data Karyawan</h3>
@@ -249,20 +252,20 @@
             <div class="px-6 py-6 bg-gray-50 h-[80vh] overflow-y-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
-                    {{-- KIRI: FOTO --}}
+                    {{-- KIRI: FOTO (DINAMIS DENGAN JS) --}}
                     <div class="lg:col-span-3 flex flex-col gap-4">
                         <div class="bg-white p-3 rounded-lg shadow border border-gray-200">
                             <div class="text-center mb-2"><span class="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded uppercase">Foto Terbaru</span></div>
                             <div class="aspect-[3/4] w-full bg-gray-100 rounded overflow-hidden flex items-center justify-center border border-gray-300">
                                 <img id="img-foto-baru" src="" class="object-cover w-full h-full hidden">
-                                <span id="no-foto-baru" class="text-xs text-gray-400 hidden">Tidak ada foto</span>
+                                <span id="no-foto-baru" class="text-xs text-gray-400">Tidak ada foto</span>
                             </div>
                         </div>
                         <div class="bg-white p-3 rounded-lg shadow border border-gray-200">
                             <div class="text-center mb-2"><span class="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded uppercase">Foto Lama</span></div>
                             <div class="aspect-[3/4] w-full bg-gray-100 rounded overflow-hidden flex items-center justify-center border border-gray-300 opacity-90">
                                 <img id="img-foto-lama" src="" class="object-cover w-full h-full grayscale hover:grayscale-0 transition hidden">
-                                <span id="no-foto-lama" class="text-xs text-gray-400 hidden">Tidak ada foto</span>
+                                <span id="no-foto-lama" class="text-xs text-gray-400">Tidak ada foto</span>
                             </div>
                         </div>
                     </div>
@@ -350,6 +353,7 @@
 <script>
     const modal = document.getElementById('single-employee-modal');
     
+    // Fungsi Set Text Aman (cegah null)
     const setText = (id, value) => {
         const el = document.getElementById(id);
         if(el) {
@@ -357,6 +361,7 @@
         }
     };
 
+    // Fungsi Format HP 4 digit spasi
     const formatPhoneNumber = (str) => {
         if (!str) return '-';
         return str.toString().replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
@@ -367,10 +372,12 @@
         
         document.getElementById('modal-header-sub').textContent = `${data.nama || '-'} - ${data.nik || '-'}`;
 
+        // LOGIKA MENAMPILKAN FOTO DI MODAL
         const handleImage = (imgId, noImgId, src) => {
             const imgEl = document.getElementById(imgId);
             const noImgEl = document.getElementById(noImgId);
-            if(src) {
+            // Cek jika src ada dan tidak kosong/null
+            if(src && src !== 'null' && src !== "") {
                 imgEl.src = src;
                 imgEl.classList.remove('hidden');
                 noImgEl.classList.add('hidden');
@@ -379,9 +386,11 @@
                 noImgEl.classList.remove('hidden');
             }
         };
+        
         handleImage('img-foto-baru', 'no-foto-baru', data.foto_baru);
         handleImage('img-foto-lama', 'no-foto-lama', data.foto_lama);
 
+        // Populate Text Data
         setText('d-sap', data.sap);
         setText('d-nik', data.nik);
         setText('d-nama', data.nama);
@@ -428,6 +437,7 @@
         document.body.style.overflow = 'auto';
     }
 
+    // Logic Live Search
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('live-search-input');
         const contentWrapper = document.getElementById('employee-content-wrapper');
