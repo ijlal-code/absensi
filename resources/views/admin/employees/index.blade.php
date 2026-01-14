@@ -262,11 +262,11 @@
                             </div>
                         </div>
                         <div class="bg-white p-3 rounded-lg shadow border border-gray-200">
-                            <div class="text-center mb-2"><span class="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded uppercase">Foto Lama</span></div>
-                            <div class="aspect-[3/4] w-full bg-gray-100 rounded overflow-hidden flex items-center justify-center border border-gray-300 opacity-90">
-                                <img id="img-foto-lama" src="" class="object-cover w-full h-full grayscale hover:grayscale-0 transition hidden">
-                                <span id="no-foto-lama" class="text-xs text-gray-400">Tidak ada foto</span>
-                            </div>
+                            <div class="text-center mb-2"><span class="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded uppercase">Foto Badge</span></div>
+                            <div class="aspect-[3/4] w-full bg-gray-100 rounded overflow-hidden flex items-center justify-center border border-gray-300">
+    <img id="img-foto-lama" src="" class="object-cover w-full h-full hidden">
+    <span id="no-foto-lama" class="text-xs text-gray-400">Tidak ada foto</span>
+</div>
                         </div>
                     </div>
 

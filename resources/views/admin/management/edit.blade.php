@@ -210,11 +210,11 @@
 
                     {{-- Foto Lama --}}
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Foto Lama</label>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Foto Badge</label>
                         @if($employee->foto_lama)
                             <div class="mb-2">
-                                <img src="{{ asset('storage/'.$employee->foto_lama) }}" class="h-24 w-20 object-cover rounded border shadow-sm grayscale opacity-80" alt="Foto Lama">
-                                <p class="text-[10px] text-gray-500 mt-1">Foto lama saat ini</p>
+                                <img src="{{ asset('storage/'.$employee->foto_lama) }}" class="h-24 w-20 object-cover rounded border shadow-sm" alt="Foto Lama">
+                                <p class="text-[10px] text-gray-500 mt-1">Foto Badge saat ini</p>
                             </div>
                         @endif
                         <input type="file" name="foto_lama" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 border rounded cursor-pointer @error('foto_lama') border-red-500 @enderror">

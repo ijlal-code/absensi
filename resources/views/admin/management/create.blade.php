@@ -190,7 +190,7 @@
                         <small class="text-gray-400 block mt-1">Format: JPG/PNG, Max: 2MB</small>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Foto Lama (Opsional)</label>
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Foto Badge (Opsional)</label>
                         <input type="file" name="foto_lama" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 border rounded cursor-pointer @error('foto_lama') border-red-500 @enderror">
                         @error('foto_lama') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
