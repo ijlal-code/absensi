@@ -24,7 +24,7 @@
                 <p class="mt-1 text-sm text-gray-500">Database Lengkap Semen Tonasa 2026</p>
             </div>
             
-            {{-- SEARCH FORM & FILTER (SUDAH DIPERBARUI) --}}
+            {{-- SEARCH FORM & FILTER --}}
             <div class="mt-4 md:mt-0 flex flex-col md:flex-row md:items-center gap-4">
                 
                 {{-- Grup 1: Quick Filter --}}
@@ -32,19 +32,18 @@
                     <form action="{{ route('employees.index') }}" method="GET">
                         <button type="submit" name="filter_birthday" value="today" 
                             class="group inline-flex items-center gap-2 bg-white border border-green-600 text-green-700 px-4 py-2.5 rounded-lg hover:bg-green-50 transition font-medium text-sm shadow-sm w-full justify-center md:w-auto">
-                            
+                            <span>🎂</span>
                             <span>Ultah Hari Ini</span>
                         </button>
                     </form>
                 </div>
 
-                {{-- Divider (Pemisah Vertikal) - Hanya tampil di Desktop --}}
+                {{-- Divider (TEBAL) --}}
                 <div class="hidden md:block h-8 w-[3px] bg-gray-300 rounded-full"></div>
 
                 {{-- Grup 2: Global Search --}}
                 <div class="flex w-full md:max-w-md gap-2">
                     <div class="relative flex-grow">
-                        {{-- Ikon Search --}}
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -55,7 +54,6 @@
                             class="block w-full rounded-lg border-gray-300 py-2.5 pl-10 pr-10 text-gray-900 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
                             placeholder="Cari NIK, Nama, SAP..." autocomplete="off">
                         
-                        {{-- Loading Spinner --}}
                         <div id="loading-indicator" class="absolute inset-y-0 right-0 flex items-center pr-3 hidden">
                             <svg class="animate-spin h-4 w-4 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -101,7 +99,6 @@
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Masa Kerja</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Alamat</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Band</th>
-                                {{-- Header No HP Utama (Hanya 1 kolom di tabel) --}}
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">No. HP Utama</th>
                             </tr>
                         </thead>
@@ -121,12 +118,9 @@
                                     'sap' => $emp->sap_id,
                                     'nik' => $emp->nik,
                                     'nama' => $emp->nama,
-                                    
-                                    // Kirim 3 Nomor HP untuk Modal
                                     'hp1' => $emp->no_hp_1, 
                                     'hp2' => $emp->no_hp_2, 
                                     'hp3' => $emp->no_hp_3, 
-
                                     'subgroup' => $emp->subgroup,
                                     'txt_dir' => $emp->direktorat,
                                     'txt_dept' => $emp->departemen,
@@ -146,8 +140,6 @@
                                     'masa_kerja' => $emp->masa_kerja,
                                     'alamat' => $emp->alamat,
                                     'band' => $emp->band,
-                                    
-                                    // Field Teknis
                                     'position' => $emp->jabatan,
                                     'cost_ctr' => $emp->cost_ctr,
                                     'txt_sect' => $emp->txt_sect, 
@@ -158,17 +150,12 @@
                                     'obj_biro' => $emp->obj_biro,
                                     'obj_sect' => $emp->obj_sect,
                                     'obj_grp' => $emp->obj_grp,
-                                    
-                                    // Foto
                                     'foto_baru' => $emp->foto_terbaru ? asset('storage/'.$emp->foto_terbaru) : null,
                                     'foto_lama' => $emp->foto_lama ? asset('storage/'.$emp->foto_lama) : null,
                                 ]);
                             @endphp
 
-                            {{-- LOGIKA WARNA BARIS: Hijau Full jika Ultah, Putih jika tidak --}}
                             <tr class="{{ $isBirthday ? 'bg-green-100 text-green-900' : 'bg-white hover:bg-gray-50 transition' }}">
-                                
-                                {{-- Tombol Detail (Sticky) --}}
                                 <td class="px-2 py-3 whitespace-nowrap sticky left-0 z-10 shadow-sm border-r {{ $isBirthday ? 'bg-green-100' : 'bg-white' }}">
                                     <button onclick="showEmployeeModal(this)" 
                                             data-json="{{ $jsonData }}"
@@ -176,8 +163,6 @@
                                         Detail
                                     </button>
                                 </td>
-
-                                {{-- DATA TABEL --}}
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->sap_id ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap font-medium">{{ $emp->nik ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap font-bold flex items-center gap-1">
@@ -204,9 +189,9 @@
                                 <td class="px-2 py-2 whitespace-nowrap truncate max-w-[150px]">{{ $emp->alamat ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->band ?? '-' }}</td>
                                 
-                                {{-- KOLOM NO HP UTAMA (Tampil di tabel) --}}
+                                {{-- PERBAIKAN: Format No HP di Tabel (Pisah 4 digit) --}}
                                 <td class="px-2 py-2 whitespace-nowrap font-medium text-gray-700">
-                                    {{ $emp->no_hp_1 ?? '-' }}
+                                    {{ $emp->no_hp_1 ? wordwrap($emp->no_hp_1, 4, ' ', true) : '-' }}
                                 </td>
                             </tr>
                             @empty
@@ -218,7 +203,7 @@
                     </table>
                 </div>
                 
-                {{-- PAGINATION MINIMALIS --}}
+                {{-- PAGINATION --}}
                 <div class="bg-white px-4 py-3 border-t flex items-center justify-between sm:px-6">
                     <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                         <div>
@@ -230,19 +215,7 @@
                         </div>
                         <div>
                             @if ($employees->hasPages())
-                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                                    @if ($employees->onFirstPage())
-                                        <span class="relative inline-flex items-center px-3 py-1.5 rounded-l-md border border-gray-300 bg-gray-50 text-xs font-medium text-gray-400 cursor-not-allowed">&laquo; Sebelumnya</span>
-                                    @else
-                                        <a href="{{ $employees->previousPageUrl() }}" class="relative inline-flex items-center px-3 py-1.5 rounded-l-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 transition">&laquo; Sebelumnya</a>
-                                    @endif
-
-                                    @if ($employees->hasMorePages())
-                                        <a href="{{ $employees->nextPageUrl() }}" class="relative inline-flex items-center px-3 py-1.5 rounded-r-md border border-gray-300 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 transition">Selanjutnya &raquo;</a>
-                                    @else
-                                        <span class="relative inline-flex items-center px-3 py-1.5 rounded-r-md border border-gray-300 bg-gray-50 text-xs font-medium text-gray-400 cursor-not-allowed">Selanjutnya &raquo;</span>
-                                    @endif
-                                </nav>
+                                {{ $employees->links('pagination::tailwind') }}
                             @endif
                         </div>
                     </div>
@@ -380,9 +353,15 @@
     const setText = (id, value) => {
         const el = document.getElementById(id);
         if(el) {
-            // Cek jika value null, undefined, atau string kosong
             el.textContent = (value && value.toString().trim() !== "") ? value : '-';
         }
+    };
+
+    // PERBAIKAN: Fungsi format HP Javascript
+    const formatPhoneNumber = (str) => {
+        if (!str) return '-';
+        // Hapus karakter non-digit, lalu pasang spasi tiap 4 digit
+        return str.toString().replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
     };
 
     function showEmployeeModal(btn) {
@@ -410,10 +389,10 @@
         setText('d-nik', data.nik);
         setText('d-nama', data.nama);
         
-        // HP
-        setText('d-hp1', data.hp1);
-        setText('d-hp2', data.hp2);
-        setText('d-hp3', data.hp3);
+        // PERBAIKAN: Gunakan formatPhoneNumber di sini
+        setText('d-hp1', formatPhoneNumber(data.hp1));
+        setText('d-hp2', formatPhoneNumber(data.hp2));
+        setText('d-hp3', formatPhoneNumber(data.hp3));
 
         setText('d-subgroup', data.subgroup);
         setText('d-position', data.position);

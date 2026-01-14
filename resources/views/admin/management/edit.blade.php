@@ -10,6 +10,13 @@
             </a>
         </div>
 
+        @if ($errors->any())
+            <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Terjadi Kesalahan!</strong>
+                <span class="block sm:inline">Mohon periksa kembali inputan Anda.</span>
+            </div>
+        @endif
+
         <form action="{{ route('employee-management.update', $employee->id) }}" method="POST">
             @csrf
             @method('PUT')
@@ -19,20 +26,24 @@
                 <h3 class="text-lg font-bold text-blue-900 border-l-4 border-blue-600 pl-3 mb-4 bg-gray-50 p-2">1. Identitas & Kontak</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">NIK</label>
-                        <input type="text" name="nik" value="{{ old('nik', $employee->nik) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">NIK <span class="text-red-500">*</span></label>
+                        <input type="text" name="nik" value="{{ old('nik', $employee->nik) }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('nik') border-red-500 @enderror">
+                        @error('nik') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">SAP ID</label>
-                        <input type="text" name="sap_id" value="{{ old('sap_id', $employee->sap_id) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">SAP ID <span class="text-red-500">*</span></label>
+                        <input type="text" name="sap_id" value="{{ old('sap_id', $employee->sap_id) }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('sap_id') border-red-500 @enderror">
+                        @error('sap_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
-                        <input type="text" name="nama" value="{{ old('nama', $employee->nama) }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <input type="text" name="nama" value="{{ old('nama', $employee->nama) }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('nama') border-red-500 @enderror">
+                        @error('nama') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Email</label>
                         <input type="email" name="email" value="{{ old('email', $employee->email) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">No HP 1 (Utama)</label>
@@ -103,8 +114,9 @@
                         <input type="text" name="tempat_lahir" value="{{ old('tempat_lahir', $employee->tempat_lahir) }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Lahir</label>
-                        <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', $employee->tanggal_lahir ? $employee->tanggal_lahir->format('Y-m-d') : '') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Lahir <span class="text-red-500">*</span></label>
+                        <input type="date" name="tanggal_lahir" value="{{ old('tanggal_lahir', $employee->tanggal_lahir ? $employee->tanggal_lahir->format('Y-m-d') : '') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('tanggal_lahir') border-red-500 @enderror">
+                        @error('tanggal_lahir') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     {{-- UMUR: READONLY & DISABLED --}}
                     <div>
@@ -139,8 +151,9 @@
                 <h3 class="text-lg font-bold text-blue-900 border-l-4 border-blue-600 pl-3 mb-4 bg-gray-50 p-2">4. Kepegawaian</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Masuk</label>
-                        <input type="date" name="tanggal_masuk" value="{{ old('tanggal_masuk', $employee->tanggal_masuk ? $employee->tanggal_masuk->format('Y-m-d') : '') }}" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Masuk <span class="text-red-500">*</span></label>
+                        <input type="date" name="tanggal_masuk" value="{{ old('tanggal_masuk', $employee->tanggal_masuk ? $employee->tanggal_masuk->format('Y-m-d') : '') }}" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('tanggal_masuk') border-red-500 @enderror">
+                        @error('tanggal_masuk') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Pensiun</label>

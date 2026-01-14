@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\TonasaEmployee;
 use Illuminate\Http\Request;
-use Carbon\Carbon; // Tambahkan library Carbon untuk menghitung tanggal
+use Carbon\Carbon;
 
 class EmployeeManagementController extends Controller
 {
-    // Menampilkan Tabel Ringkas (Hanya NIK & Nama)
+    // Menampilkan Tabel
     public function index(Request $request)
     {
         $query = TonasaEmployee::query();
@@ -17,7 +17,8 @@ class EmployeeManagementController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('nama', 'LIKE', "%{$search}%")
-                  ->orWhere('nik', 'LIKE', "%{$search}%");
+                  ->orWhere('nik', 'LIKE', "%{$search}%")
+                  ->orWhere('sap_id', 'LIKE', "%{$search}%");
             });
         }
 
@@ -25,50 +26,58 @@ class EmployeeManagementController extends Controller
         return view('admin.management.index', compact('employees'));
     }
 
-    // Form Tambah (Full Field)
+    // Form Tambah
     public function create()
     {
         return view('admin.management.create');
     }
 
-    // Simpan Data (Store)
+    // Simpan Data Baru (Store)
     public function store(Request $request)
     {
+        // 1. VALIDASI DATA (Wajib Diisi & Format Benar)
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'nik' => 'nullable|unique:tonasa_employees,nik',
-            // Tambahkan validasi tanggal jika perlu, misal: 'tanggal_lahir' => 'nullable|date'
+            'nama'          => 'required|string|max:255',
+            'nik'           => 'required|unique:tonasa_employees,nik', // NIK Wajib & Unik
+            'sap_id'        => 'required|string|max:50',                // SAP Wajib
+            'tanggal_lahir' => 'required|date',                         // Tanggal Lahir Wajib
+            'tanggal_masuk' => 'required|date',                         // Tanggal Masuk Wajib
+            'email'         => 'nullable|email',
+        ], [
+            // Pesan Error Custom
+            'nama.required'          => 'Nama karyawan wajib diisi.',
+            'nik.required'           => 'NIK wajib diisi.',
+            'nik.unique'             => 'NIK sudah terdaftar di sistem.',
+            'sap_id.required'        => 'SAP ID wajib diisi.',
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi untuk menghitung umur.',
+            'tanggal_masuk.required' => 'Tanggal masuk wajib diisi untuk menghitung masa kerja.',
         ]);
 
-        // Ambil semua data inputan form
         $data = $request->all();
 
-        // 1. HITUNG UMUR OTOMATIS (Jika Tanggal Lahir diisi)
-        if ($request->filled('tanggal_lahir')) {
-            try {
-                $data['umur'] = Carbon::parse($request->tanggal_lahir)->age;
-            } catch (\Exception $e) {
-                $data['umur'] = null;
-            }
+        // 2. HITUNG UMUR (Otomatis)
+        try {
+            // Carbon::age otomatis membulatkan ke bawah (umur sebenarnya)
+            $data['umur'] = Carbon::parse($request->tanggal_lahir)->age;
+        } catch (\Exception $e) {
+            $data['umur'] = 0; // Default jika error
         }
 
-        // 2. HITUNG MASA KERJA OTOMATIS (Jika Tanggal Masuk diisi)
-        if ($request->filled('tanggal_masuk')) {
-            try {
-                $data['masa_kerja'] = Carbon::parse($request->tanggal_masuk)->diffInYears(Carbon::now());
-            } catch (\Exception $e) {
-                $data['masa_kerja'] = null;
-            }
+        // 3. HITUNG MASA KERJA (Otomatis & Dibulatkan)
+        try {
+            // Menggunakan (int) untuk memastikan angka bulat
+            $data['masa_kerja'] = (int) Carbon::parse($request->tanggal_masuk)->diffInYears(Carbon::now());
+        } catch (\Exception $e) {
+            $data['masa_kerja'] = 0;
         }
 
-        // Simpan data (menggunakan variable $data yang sudah dimodifikasi)
         TonasaEmployee::create($data);
 
         return redirect()->route('employee-management.index')
-            ->with('success', 'Data karyawan berhasil ditambahkan (Umur & Masa Kerja otomatis dihitung).');
+            ->with('success', 'Data karyawan berhasil ditambahkan.');
     }
 
-    // Form Edit (Full Field)
+    // Form Edit
     public function edit($id)
     {
         $employee = TonasaEmployee::findOrFail($id);
@@ -80,33 +89,42 @@ class EmployeeManagementController extends Controller
     {
         $employee = TonasaEmployee::findOrFail($id);
 
+        // 1. VALIDASI DATA (Ignore NIK milik sendiri saat update)
         $request->validate([
-            'nama' => 'required|string|max:255',
-            'nik' => 'nullable|unique:tonasa_employees,nik,' . $id,
+            'nama'          => 'required|string|max:255',
+            'nik'           => 'required|unique:tonasa_employees,nik,' . $id,
+            'sap_id'        => 'required|string|max:50',
+            'tanggal_lahir' => 'required|date',
+            'tanggal_masuk' => 'required|date',
+        ], [
+            'nama.required'          => 'Nama karyawan wajib diisi.',
+            'nik.required'           => 'NIK wajib diisi.',
+            'nik.unique'             => 'NIK sudah digunakan karyawan lain.',
+            'sap_id.required'        => 'SAP ID wajib diisi.',
+            'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
+            'tanggal_masuk.required' => 'Tanggal masuk wajib diisi.',
         ]);
 
-        // Ambil semua data inputan form
         $data = $request->all();
 
-        // 1. HITUNG ULANG UMUR (Jika Tanggal Lahir diubah/ada)
+        // 2. HITUNG ULANG UMUR
         if ($request->filled('tanggal_lahir')) {
             try {
                 $data['umur'] = Carbon::parse($request->tanggal_lahir)->age;
             } catch (\Exception $e) {
-                $data['umur'] = null;
+                // Biarkan nilai lama atau set null jika perlu
             }
         }
 
-        // 2. HITUNG ULANG MASA KERJA (Jika Tanggal Masuk diubah/ada)
+        // 3. HITUNG ULANG MASA KERJA
         if ($request->filled('tanggal_masuk')) {
             try {
-                $data['masa_kerja'] = Carbon::parse($request->tanggal_masuk)->diffInYears(Carbon::now());
+                $data['masa_kerja'] = (int) Carbon::parse($request->tanggal_masuk)->diffInYears(Carbon::now());
             } catch (\Exception $e) {
-                $data['masa_kerja'] = null;
+                // Biarkan nilai lama
             }
         }
 
-        // Update data menggunakan array $data
         $employee->update($data);
 
         return redirect()->route('employee-management.index')
