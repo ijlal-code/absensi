@@ -30,9 +30,12 @@
                 {{-- Grup 1: Quick Filter --}}
                 <div class="flex-none">
                     <form action="{{ route('employees.index') }}" method="GET">
+                        {{-- PERBAIKAN: Menghapus Ikon Kue agar lebih profesional --}}
                         <button type="submit" name="filter_birthday" value="today" 
                             class="group inline-flex items-center gap-2 bg-white border border-green-600 text-green-700 px-4 py-2.5 rounded-lg hover:bg-green-50 transition font-medium text-sm shadow-sm w-full justify-center md:w-auto">
-                            <span>🎂</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
                             <span>Ultah Hari Ini</span>
                         </button>
                     </form>
@@ -166,8 +169,8 @@
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->sap_id ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap font-medium">{{ $emp->nik ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap font-bold flex items-center gap-1">
+                                    {{-- PERBAIKAN: Menghapus Ikon Kue di samping Nama --}}
                                     {{ $emp->nama ?? '-' }}
-                                    @if($isBirthday) <span>🎂</span> @endif
                                 </td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->subgroup ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->direktorat ?? '-' }}</td>
@@ -189,7 +192,7 @@
                                 <td class="px-2 py-2 whitespace-nowrap truncate max-w-[150px]">{{ $emp->alamat ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->band ?? '-' }}</td>
                                 
-                                {{-- PERBAIKAN: Format No HP di Tabel (Pisah 4 digit) --}}
+                                {{-- Format HP --}}
                                 <td class="px-2 py-2 whitespace-nowrap font-medium text-gray-700">
                                     {{ $emp->no_hp_1 ? wordwrap($emp->no_hp_1, 4, ' ', true) : '-' }}
                                 </td>
@@ -226,14 +229,13 @@
     </div>
 </div>
 
-{{-- SINGLE MODAL TEMPLATE --}}
+{{-- SINGLE MODAL TEMPLATE (Sama seperti sebelumnya, hanya memastikan script format HP tetap ada) --}}
 <div id="single-employee-modal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeEmployeeModal()"></div>
 
     <div class="flex min-h-full items-center justify-center p-2 text-center sm:p-0">
         <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-2xl transition-all sm:my-4 sm:w-full sm:max-w-6xl border-t-8 border-primary-600">
             
-            {{-- Modal Header --}}
             <div class="bg-white px-6 py-4 border-b flex justify-between items-center sticky top-0 z-10">
                 <div>
                     <h3 class="text-2xl font-bold leading-6 text-gray-900">Kartu Data Karyawan</h3>
@@ -244,7 +246,6 @@
                 </button>
             </div>
 
-            {{-- Modal Content --}}
             <div class="px-6 py-6 bg-gray-50 h-[80vh] overflow-y-auto">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                     
@@ -266,7 +267,7 @@
                         </div>
                     </div>
 
-                    {{-- KANAN: SEMUA DATA DIGABUNG --}}
+                    {{-- KANAN: DATA KARYAWAN --}}
                     <div class="lg:col-span-9">
                         <div class="bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
                             <div class="px-6 py-3 bg-primary-50 border-b border-primary-100 flex items-center">
@@ -311,7 +312,7 @@
                                     <div class="group border-b border-gray-50 pb-1 md:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Pendidikan</p><p class="font-semibold text-gray-800" id="d-pendidikan">-</p></div>
                                     <div class="group border-b border-gray-50 pb-1 md:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Alamat</p><p class="font-medium text-gray-800 bg-gray-50 p-2 rounded block w-full text-xs" id="d-alamat">-</p></div>
 
-                                    {{-- TAMPILAN 3 NOMOR HP DI MODAL --}}
+                                    {{-- HP di Modal --}}
                                     <div class="group border-b border-gray-50 pb-2 md:col-span-2">
                                         <p class="text-xs text-gray-400 mb-1">Kontak Telepon / HP</p>
                                         <div class="flex flex-wrap gap-8 bg-gray-50 p-2 rounded border border-gray-100">
@@ -349,7 +350,6 @@
 <script>
     const modal = document.getElementById('single-employee-modal');
     
-    // Fungsi pembantu: Jika value kosong/null/undefined, tampilkan "-"
     const setText = (id, value) => {
         const el = document.getElementById(id);
         if(el) {
@@ -357,10 +357,8 @@
         }
     };
 
-    // PERBAIKAN: Fungsi format HP Javascript
     const formatPhoneNumber = (str) => {
         if (!str) return '-';
-        // Hapus karakter non-digit, lalu pasang spasi tiap 4 digit
         return str.toString().replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
     };
 
@@ -384,12 +382,10 @@
         handleImage('img-foto-baru', 'no-foto-baru', data.foto_baru);
         handleImage('img-foto-lama', 'no-foto-lama', data.foto_lama);
 
-        // Populate Data Text
         setText('d-sap', data.sap);
         setText('d-nik', data.nik);
         setText('d-nama', data.nama);
         
-        // PERBAIKAN: Gunakan formatPhoneNumber di sini
         setText('d-hp1', formatPhoneNumber(data.hp1));
         setText('d-hp2', formatPhoneNumber(data.hp2));
         setText('d-hp3', formatPhoneNumber(data.hp3));
@@ -432,7 +428,6 @@
         document.body.style.overflow = 'auto';
     }
 
-    // Logic Live Search
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('live-search-input');
         const contentWrapper = document.getElementById('employee-content-wrapper');
