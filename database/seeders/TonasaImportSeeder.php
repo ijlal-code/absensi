@@ -74,30 +74,30 @@ class TonasaImportSeeder extends Seeder
         }
 
         // 2. BUAT 5 DATA DUMMY (ULANG TAHUN HARI INI & ADA NO HP)
-        $this->command->info('Creating 5 Dummy Employees (Birthday Today)...');
+        // $this->command->info('Creating 5 Dummy Employees (Birthday Today)...');
         
-        for ($i = 1; $i <= 5; $i++) {
-            TonasaEmployee::create([
-                'sap_id'            => 'DUMMY00' . $i,
-                'nik'               => 'TEST-' . $i,
-                'nama'              => 'Karyawan Ultah ' . $i,
-                'jabatan'           => 'Staff Percobaan',
-                'unit_kerja'        => 'Departemen IT',
-                'direktorat'        => 'Operasional',
-                'tanggal_lahir'     => Carbon::now()->format('Y-m-d'), // Ulang Tahun Hari Ini
-                'no_hp_1'           => '0811' . rand(1000, 9999) . '00' . $i, // Default
-                'no_hp_2'           => '0812' . rand(1000, 9999) . '00' . $i,
-                'no_hp_3'           => '0813' . rand(1000, 9999) . '00' . $i,
-                'email'             => 'dummy'.$i.'@tonasa.co.id',
-                'jenis_kelamin'     => ($i % 2 == 0) ? 'Perempuan' : 'Laki-laki',
-                'umur'              => rand(25, 40),
-                'tempat_lahir'      => 'Makassar',
-                'alamat'            => 'Jl. Dummy No. ' . $i . ', Pangkep',
-                'agama'             => 'Islam',
-                'masa_kerja'        => rand(1, 10) . ' Tahun',
-                'band'              => 'IV',
-            ]);
-        }
+        // for ($i = 1; $i <= 5; $i++) {
+        //     TonasaEmployee::create([
+        //         'sap_id'            => 'DUMMY00' . $i,
+        //         'nik'               => 'TEST-' . $i,
+        //         'nama'              => 'Karyawan Ultah ' . $i,
+        //         'jabatan'           => 'Staff Percobaan',
+        //         'unit_kerja'        => 'Departemen IT',
+        //         'direktorat'        => 'Operasional',
+        //         'tanggal_lahir'     => Carbon::now()->format('Y-m-d'), // Ulang Tahun Hari Ini
+        //         'no_hp_1'           => '0811' . rand(1000, 9999) . '00' . $i, // Default
+        //         'no_hp_2'           => '0812' . rand(1000, 9999) . '00' . $i,
+        //         'no_hp_3'           => '0813' . rand(1000, 9999) . '00' . $i,
+        //         'email'             => 'dummy'.$i.'@tonasa.co.id',
+        //         'jenis_kelamin'     => ($i % 2 == 0) ? 'Perempuan' : 'Laki-laki',
+        //         'umur'              => rand(25, 40),
+        //         'tempat_lahir'      => 'Makassar',
+        //         'alamat'            => 'Jl. Dummy No. ' . $i . ', Pangkep',
+        //         'agama'             => 'Islam',
+        //         'masa_kerja'        => rand(1, 10) . ' Tahun',
+        //         'band'              => 'IV',
+        //     ]);
+        // }
 
         $this->command->info('All Done!');
     }

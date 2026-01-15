@@ -145,13 +145,24 @@
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Umur (Otomatis)</label>
                         <input type="text" value="{{ $employee->umur }} Tahun" disabled class="w-full bg-gray-100 text-gray-500 border-gray-300 rounded-md text-sm p-2 border cursor-not-allowed">
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Jenis Kelamin</label>
-                        <select name="jenis_kelamin" class="w-full border-gray-300 rounded-md text-sm p-2 border">
-                            <option value="">-- Pilih --</option>
-                            <option value="Laki-laki" {{ $employee->jenis_kelamin == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                            <option value="Perempuan" {{ $employee->jenis_kelamin == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                   <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="jenis_kelamin">
+                            Jenis Kelamin <span class="text-red-500">*</span>
+                        </label>
+                        <select name="jenis_kelamin" id="jenis_kelamin" 
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-yellow-500 bg-white @error('jenis_kelamin') border-red-500 @enderror">
+                            <option value="">-- Pilih Gender --</option>
+                            <option value="Male" {{ (old('jenis_kelamin') ?? $employee->jenis_kelamin) == 'Male' ? 'selected' : '' }}>Male</option>
+                            <option value="Female" {{ (old('jenis_kelamin') ?? $employee->jenis_kelamin) == 'Female' ? 'selected' : '' }}>Female</option>
+                            
+                            {{-- Fallback untuk data lama jika masih ada yang tersimpan 'Laki-laki' atau 'Perempuan' --}}
+                            @if(in_array($employee->jenis_kelamin, ['Laki-laki', 'Perempuan']))
+                                <option value="{{ $employee->jenis_kelamin }}" selected hidden>{{ $employee->jenis_kelamin }} (Data Lama)</option>
+                            @endif
                         </select>
+                        @error('jenis_kelamin')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Agama</label>
