@@ -23,14 +23,21 @@ class EmployeeManagementController extends Controller
             return $item->pendidikan ?? 'Belum Diisi';
         })->map->count();
 
-        // 2. Data Masa Kerja (Kelompokkan per Range Tahun)
+        // 2. Data Masa Kerja (LOGIKA DIPERBARUI: Rentang 0-5 Tahun)
         $serviceData = $employees->map(function($item) {
-            $years = (int) $item->masa_kerja; // Pastikan jadi integer
-            if ($years < 1) return '< 1 Tahun';
-            if ($years <= 5) return '1 - 5 Tahun';
+            $years = (int) $item->masa_kerja; 
+            
+            // Penggabungan rentang menjadi 0 - 5 Tahun
+            if ($years <= 5) return '0 - 5 Tahun'; 
             if ($years <= 10) return '6 - 10 Tahun';
             if ($years <= 20) return '11 - 20 Tahun';
-            return '> 20 Tahun';
+            if ($years <= 25) return '21 - 25 Tahun';
+            if ($years <= 30) return '26 - 30 Tahun';
+            if ($years <= 35) return '31 - 35 Tahun';
+            if ($years <= 40) return '36 - 40 Tahun';
+            if ($years <= 45) return '41 - 45 Tahun';
+            if ($years <= 50) return '46 - 50 Tahun';
+           
         })->groupBy(fn($item) => $item)->map->count();
 
         // 3. Data Tingkat Usia (Kelompokkan per Range Umur)
