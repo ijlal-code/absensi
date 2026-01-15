@@ -29,33 +29,36 @@
                 User: <span class="text-white font-bold">{{ Auth::user()->name }}</span>
             </div>
 
-           {{-- resources/views/layouts/app.blade.php --}}
+            <nav class="mt-4">
+                
+                {{-- Menu Dashboard User Biasa --}}
+                @if(!Auth::user()->isAdmin())
+                    <a href="{{ route('dashboard') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('dashboard') ? 'bg-blue-700' : '' }}">
+                        <i class="fas fa-home mr-2 w-6"></i> Dashboard
+                    </a>
+                @endif
+            
+                {{-- MENU 1: INFORMASI KARYAWAN (View Only) --}}
+                <a href="{{ route('employees.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employees.index') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-info-circle mr-2 w-6"></i> Informasi Karyawan
+                </a>
 
-<nav class="mt-4">
-    
-    {{-- Menu Dashboard User Biasa --}}
-    @if(!Auth::user()->isAdmin())
-        <a href="{{ route('dashboard') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('dashboard') ? 'bg-blue-700' : '' }}">
-            <i class="fas fa-home mr-2 w-6"></i> Dashboard
-        </a>
-    @endif
-
-    {{-- MENU 1: INFORMASI KARYAWAN (View Only) --}}
-    <a href="{{ route('employees.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employees.index') ? 'bg-blue-700' : '' }}">
-        <i class="fas fa-info-circle mr-2 w-6"></i> Informasi Karyawan
-    </a>
-
-    {{-- MENU 2: KELOLA KARYAWAN (CRUD) --}}
-    <a href="{{ route('employee-management.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee-management.*') ? 'bg-blue-700' : '' }}">
-        <i class="fas fa-user-edit mr-2 w-6"></i> Kelola Karyawan
-    </a>
-
-    {{-- Menu Lainnya --}}
-    <a href="{{ route('reports') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('reports') ? 'bg-blue-700' : '' }}">
-        <i class="fas fa-file-export mr-2 w-6"></i> Laporan
-    </a>
-
-    </nav>
+                {{-- BARU: MENU STATISTIK KARYAWAN --}}
+                <a href="{{ route('employee.stats') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee.stats') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-chart-pie mr-2 w-6"></i> Statistik Karyawan
+                </a>
+            
+                {{-- MENU 2: KELOLA KARYAWAN (CRUD) --}}
+                <a href="{{ route('employee-management.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee-management.*') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-user-edit mr-2 w-6"></i> Kelola Karyawan
+                </a>
+            
+                {{-- Menu Lainnya --}}
+                <a href="{{ route('reports') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('reports') ? 'bg-blue-700' : '' }}">
+                    <i class="fas fa-file-export mr-2 w-6"></i> Laporan
+                </a>
+            
+            </nav>
 
             <div class="absolute bottom-0 left-0 w-full p-4">
                 <form action="{{ route('logout') }}" method="POST">

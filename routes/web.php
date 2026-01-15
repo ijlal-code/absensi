@@ -34,10 +34,14 @@ Route::middleware(['auth'])->group(function () {
     // 1. Route Informasi Karyawan (View Only / Publik)
     Route::get('/informasi-karyawan', [EmployeeInfoController::class, 'index'])->name('employees.index');
 
+    // --- PERUBAHAN DI SINI ---
+    // Route Statistik Karyawan (Menu Terpisah)
+    Route::get('/statistik-karyawan', [EmployeeManagementController::class, 'stats'])->name('employee.stats');
+
     // 2. Route Kelola Karyawan (CRUD Lengkap)
-    // PENTING: Route 'stats' harus ditaruh SEBELUM 'resource' agar tidak dianggap sebagai {id}
-    Route::get('employee-management/stats', [EmployeeManagementController::class, 'stats'])->name('employee-management.stats');
+    // Note: Route 'stats' yang lama dihapus dari sini agar tidak konflik
     Route::resource('employee-management', EmployeeManagementController::class);
+    // -------------------------
 
     // Dashboard Utama
     Route::get('/dashboard', [EventController::class, 'index'])->name('dashboard');

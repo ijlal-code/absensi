@@ -59,9 +59,9 @@
                         </a>
                     </div>
                     {{-- Tombol Statistik (BARU) --}}
-                    <a href="{{ route('employee-management.stats') }}" class="w-full text-center border border-teal-600 text-teal-600 px-3 py-2 rounded-lg hover:bg-teal-50 transition font-medium text-sm">
-                        <i class="fas fa-chart-pie mr-1"></i> Statistik & Persentase
-                    </a>
+                   <a href="{{ route('employee.stats') }}" class="w-full text-center border border-teal-600 text-teal-600 px-3 py-2 rounded-lg hover:bg-teal-50 transition font-medium text-sm">
+    <i class="fas fa-chart-pie mr-1"></i> Statistik & Persentase
+</a>
                 </div>
             </div>
         </div>
