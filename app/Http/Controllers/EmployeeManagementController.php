@@ -5,10 +5,47 @@ namespace App\Http\Controllers;
 use App\Models\TonasaEmployee;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage; // Wajib untuk menangani file foto
+use Illuminate\Support\Facades\Storage;
 
 class EmployeeManagementController extends Controller
 {
+    /**
+     * Menampilkan halaman statistik karyawan (Chart & Persentase).
+     * Method ini ditambahkan untuk fitur visualisasi data.
+     */
+    public function stats()
+    {
+        $employees = TonasaEmployee::all();
+
+        // 1. Data Tingkat Pendidikan
+        // Mengelompokkan berdasarkan kolom 'pendidikan'. Jika null, dianggap 'Belum Diisi'.
+        $educationData = $employees->groupBy(function($item) {
+            return $item->pendidikan ?? 'Belum Diisi';
+        })->map->count();
+
+        // 2. Data Masa Kerja (Kelompokkan per Range Tahun)
+        $serviceData = $employees->map(function($item) {
+            $years = (int) $item->masa_kerja; // Pastikan jadi integer
+            if ($years < 1) return '< 1 Tahun';
+            if ($years <= 5) return '1 - 5 Tahun';
+            if ($years <= 10) return '6 - 10 Tahun';
+            if ($years <= 20) return '11 - 20 Tahun';
+            return '> 20 Tahun';
+        })->groupBy(fn($item) => $item)->map->count();
+
+        // 3. Data Tingkat Usia (Kelompokkan per Range Umur)
+        $ageData = $employees->map(function($item) {
+            $age = (int) $item->umur; // Pastikan jadi integer
+            if ($age < 25) return '< 25 Tahun';
+            if ($age <= 35) return '25 - 35 Tahun';
+            if ($age <= 45) return '36 - 45 Tahun';
+            if ($age <= 55) return '46 - 55 Tahun';
+            return '> 55 Tahun';
+        })->groupBy(fn($item) => $item)->map->count();
+
+        return view('admin.management.stats', compact('educationData', 'serviceData', 'ageData'));
+    }
+
     /**
      * Menampilkan daftar karyawan dengan pencarian spesifik.
      */
@@ -50,6 +87,7 @@ class EmployeeManagementController extends Controller
             'sap_id'        => 'required|string|max:50',
             'tanggal_lahir' => 'required|date',
             'tanggal_masuk' => 'required|date',
+            'pendidikan'    => 'nullable|string', // Tambahan validasi pendidikan
             'email'         => 'nullable|email',
             // Validasi Foto: Harus gambar, max 2MB
             'foto_terbaru'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
@@ -121,6 +159,7 @@ class EmployeeManagementController extends Controller
             'sap_id'        => 'required|string|max:50',
             'tanggal_lahir' => 'required|date',
             'tanggal_masuk' => 'required|date',
+            'pendidikan'    => 'nullable|string',
             'email'         => 'nullable|email',
             'foto_terbaru'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'foto_lama'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',

@@ -6,7 +6,7 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeInfoController;
-use App\Http\Controllers\EmployeeManagementController; // Pastikan ini di-import
+use App\Http\Controllers\EmployeeManagementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +34,9 @@ Route::middleware(['auth'])->group(function () {
     // 1. Route Informasi Karyawan (View Only / Publik)
     Route::get('/informasi-karyawan', [EmployeeInfoController::class, 'index'])->name('employees.index');
 
-    // 2. Route Kelola Karyawan (CRUD Lengkap) - Ditaruh disini agar tidak terbatas Admin
+    // 2. Route Kelola Karyawan (CRUD Lengkap)
+    // PENTING: Route 'stats' harus ditaruh SEBELUM 'resource' agar tidak dianggap sebagai {id}
+    Route::get('employee-management/stats', [EmployeeManagementController::class, 'stats'])->name('employee-management.stats');
     Route::resource('employee-management', EmployeeManagementController::class);
 
     // Dashboard Utama
@@ -46,8 +48,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/event/{event}/edit', [EventController::class, 'edit'])->name('event.edit');
     Route::put('/event/{event}', [EventController::class, 'update'])->name('event.update');
     Route::delete('/event/{event}', [EventController::class, 'destroy'])->name('event.destroy');
+    
     Route::get('/event/{event}/qrcode', [EventController::class, 'showQrCode'])->name('event.qrcode');
     Route::get('/event/{event}/qrcode/download', [EventController::class, 'downloadQrCode'])->name('event.qrcode.download');
+    
     Route::get('/reports', [EventController::class, 'reports'])->name('reports');
     Route::get('/event/{event}/monitor', [EventController::class, 'show'])->name('event.show');
     Route::get('/event/{event}/download-pdf', [AttendanceController::class, 'downloadPdf'])->name('attendance.pdf');
