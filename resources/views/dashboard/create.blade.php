@@ -3,14 +3,14 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
     <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Buat Acara Baru</h2>
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">Buat Agenda Baru</h2>
 
         <form action="{{ route('event.store') }}" method="POST">
             @csrf
             
-            {{-- Judul Acara --}}
+            {{-- Judul Agenda --}}
             <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Nama Acara</label>
+                <label class="block text-gray-700 font-bold mb-2">Nama Agenda</label>
                 <input type="text" name="title" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contoh: Rapat Evaluasi Bulanan" required>
             </div>
 
@@ -42,7 +42,7 @@
             {{-- Tombol Aksi --}}
             <div class="flex justify-end space-x-2">
                 <a href="{{ route('dashboard') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</a>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow-lg">Simpan Acara</button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow-lg">Simpan Agenda</button>
             </div>
         </form>
     </div>

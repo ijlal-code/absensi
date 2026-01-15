@@ -20,7 +20,7 @@
                     </span>
                     <input type="text" name="search" value="{{ request('search') }}" 
                            class="w-full py-2 pl-10 pr-4 text-gray-700 bg-gray-50 border rounded-lg focus:outline-none focus:border-blue-500" 
-                           placeholder="Cari NIK atau Nama..." 
+                           placeholder="Cari SAP atau Nama..." 
                            onchange="this.form.submit()">
                 </div>
                 
@@ -39,7 +39,8 @@
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-800 text-white">
                 <tr>
-                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider w-1/4">NIK / SAP ID</th>
+                    {{-- PERUBAHAN DI SINI: Header ditukar jadi SAP ID / NIK --}}
+                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider w-1/4">SAP / NIK</th>
                     <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">Nama Karyawan</th>
                     <th class="px-6 py-4 text-center text-sm font-bold uppercase tracking-wider w-1/6">Aksi</th>
                 </tr>
@@ -48,8 +49,9 @@
                 @forelse($employees as $employee)
                 <tr class="hover:bg-blue-50 transition duration-150">
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        <span class="font-mono font-semibold">{{ $employee->nik ?? '-' }}</span>
-                        <div class="text-xs text-gray-400">{{ $employee->sap_id }}</div>
+                        {{-- PERUBAHAN DI SINI: SAP ID jadi utama (tebal), NIK jadi kecil di bawahnya --}}
+                        <span class="font-mono font-semibold">{{ $employee->sap_id ?? '-' }}</span>
+                        <div class="text-xs text-gray-400">{{ $employee->nik ?? '-' }}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800">
                         {{ $employee->nama }}

@@ -22,7 +22,7 @@
 <body class="bg-gray-100 min-h-screen py-6 px-4 flex items-center justify-center">
 
     <div class="w-full max-w-lg bg-white shadow-xl rounded-lg overflow-hidden">
-        {{-- Header Acara --}}
+        {{-- Header Agenda --}}
         <div class="bg-blue-900 p-6 text-white relative">
             <h1 class="text-xl md:text-2xl font-bold mb-3 leading-tight">{{ $event->title }}</h1>
             <div class="text-sm space-y-2 opacity-90">

@@ -8,7 +8,7 @@
         <thead>
             <tr class="bg-gray-100 text-gray-600 uppercase text-xs leading-normal">
                 <th class="py-3 px-6 text-left">Tanggal</th>
-                <th class="py-3 px-6 text-left">Acara</th>
+                <th class="py-3 px-6 text-left">Agenda</th>
                 <th class="py-3 px-6 text-center">Aksi</th>
             </tr>
         </thead>
@@ -45,7 +45,7 @@
     {{-- Tampilkan pesan jika data kosong --}}
     @if($events->isEmpty())
     <div class="p-6 text-center text-gray-500">
-        Belum ada laporan acara yang tersimpan.
+        Belum ada laporan Agenda yang tersimpan.
     </div>
     @endif
 </div>

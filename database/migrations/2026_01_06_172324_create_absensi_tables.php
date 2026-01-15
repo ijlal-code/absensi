@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Tabel Acara
+        // Tabel Agenda
        Schema::create('events', function (Blueprint $table) {
     $table->id();
     $table->foreignId('user_id')->constrained()->onDelete('cascade'); // <--- TAMBAHKAN INI

@@ -63,10 +63,10 @@ class EventController extends Controller
 
         Event::create($data);
 
-        return redirect()->route('dashboard')->with('success', 'Acara berhasil dibuat!');
+        return redirect()->route('dashboard')->with('success', 'Agenda berhasil dibuat!');
     }
 
-    // Edit Acara
+    // Edit Agenda
     public function edit(Event $event) { 
         if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
             abort(403);
@@ -74,7 +74,7 @@ class EventController extends Controller
         return view('dashboard.edit', compact('event')); 
     }
 
-    // Update Acara
+    // Update Agenda
     public function update(Request $request, Event $event) {
         if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
             abort(403);
@@ -90,17 +90,17 @@ class EventController extends Controller
         
         $event->update($request->except(['user_id']));
         
-        return redirect()->route('dashboard')->with('success', 'Acara berhasil diperbarui!');
+        return redirect()->route('dashboard')->with('success', 'Agenda berhasil diperbarui!');
     }
 
-    // Hapus Acara
+    // Hapus Agenda
     public function destroy(Event $event) {
         if (!Auth::user()->isAdmin() && $event->user_id !== Auth::id()) {
             abort(403);
         }
 
         $event->delete();
-        return back()->with('success', 'Acara berhasil dihapus!');
+        return back()->with('success', 'Agenda berhasil dihapus!');
     }
 
     // Monitor Peserta (Admin/Penyelenggara)

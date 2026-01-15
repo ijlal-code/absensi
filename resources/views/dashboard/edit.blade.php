@@ -3,7 +3,7 @@
 @section('content')
 <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
     <div class="flex justify-between items-center mb-6 border-b pb-4">
-        <h2 class="text-xl font-bold text-gray-800">Edit Acara</h2>
+        <h2 class="text-xl font-bold text-gray-800">Edit Agenda</h2>
         <a href="{{ url()->previous() }}" class="text-gray-600 hover:text-blue-600 text-sm">Kembali</a>
     </div>
 
@@ -12,7 +12,7 @@
         @method('PUT') {{-- PENTING: Method PUT untuk update --}}
 
         <div class="mb-4">
-            <label class="block text-gray-700 font-bold mb-2">Nama Acara</label>
+            <label class="block text-gray-700 font-bold mb-2">Nama Agenda</label>
             <input type="text" name="title" value="{{ old('title', $event->title) }}" class="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500" required>
         </div>
 

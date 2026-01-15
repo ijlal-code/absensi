@@ -10,7 +10,7 @@
             <i class="fas fa-times-circle"></i>
         </div>
         <h1 class="text-2xl font-bold text-gray-800 mb-2">Absensi Ditutup</h1>
-        <p class="text-gray-600 mb-6">Maaf, batas waktu pengisian absensi untuk acara <strong>{{ $event->title }}</strong> sudah berakhir pada pukul {{ $event->end_time }}.</p>
+        <p class="text-gray-600 mb-6">Maaf, batas waktu pengisian absensi untuk Agenda <strong>{{ $event->title }}</strong> sudah berakhir pada pukul {{ $event->end_time }}.</p>
     </div>
 </body>
 </html>

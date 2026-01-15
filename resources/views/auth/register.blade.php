@@ -11,7 +11,7 @@
     <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
         <div class="text-center mb-6">
             <h1 class="text-2xl font-bold text-blue-900">Daftar Akun Baru</h1>
-            <p class="text-gray-500 text-sm">Khusus untuk Penyelenggara Acara</p>
+            <p class="text-gray-500 text-sm">Khusus untuk Penyelenggara Agenda</p>
         </div>
 
         @if($errors->any()) 

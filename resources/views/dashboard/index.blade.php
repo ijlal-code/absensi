@@ -8,7 +8,7 @@
         <h2 class="text-2xl font-bold text-gray-800 mb-4">Menu Utama</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- KARTU 1: MANAJEMEN ACARA (Absensi) --}}
+            {{-- KARTU 1: MANAJEMEN Agenda (Absensi) --}}
             <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-600 hover:shadow-lg transition duration-300 group">
                 <div class="flex justify-between items-start">
                     <div>
@@ -16,16 +16,16 @@
                             <div class="p-3 bg-blue-100 rounded-lg text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
                                 <i class="fas fa-calendar-alt text-xl"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-800">Manajemen Acara</h3>
+                            <h3 class="text-xl font-bold text-gray-800">Manajemen Agenda</h3>
                         </div>
                         <p class="text-gray-600 mb-4 text-sm h-10">
-                            Buat jadwal acara baru, pantau kehadiran peserta, dan kelola QR Code absensi.
+                            Buat jadwal Agenda baru, pantau kehadiran peserta, dan kelola QR Code absensi.
                         </p>
                     </div>
                 </div>
                 <div class="flex gap-2 mt-2">
                     <a href="{{ route('event.create') }}" class="flex-1 text-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium">
-                        <i class="fas fa-plus mr-1"></i> Buat Acara
+                        <i class="fas fa-plus mr-1"></i> Buat Agenda
                     </a>
                 </div>
             </div>
@@ -67,16 +67,16 @@
         </div>
     </div>
 
-    {{-- BAGIAN 2: DAFTAR ACARA HARI INI (Monitoring) --}}
+    {{-- BAGIAN 2: DAFTAR Agenda HARI INI (Monitoring) --}}
     <div class="bg-white rounded-lg shadow overflow-hidden mt-8">
         <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
             <h3 class="font-bold text-gray-700 flex items-center">
-                <i class="fas fa-clock text-gray-400 mr-2"></i> Jadwal Acara Hari Ini
+                <i class="fas fa-clock text-gray-400 mr-2"></i> Jadwal Agenda Hari Ini
             </h3>
             {{-- Badge jumlah event --}}
             @if(!$todayEvents->isEmpty())
                 <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
-                    {{ $todayEvents->count() }} Acara
+                    {{ $todayEvents->count() }} Agenda
                 </span>
             @endif
         </div>
@@ -86,8 +86,8 @@
                 <div class="inline-block p-4 bg-gray-100 rounded-full mb-3">
                     <i class="fas fa-calendar-check text-4xl text-gray-300"></i>
                 </div>
-                <p>Tidak ada jadwal acara aktif hari ini.</p>
-                <p class="text-sm mt-2">Silakan gunakan menu <b>"Manajemen Acara"</b> di atas untuk membuat jadwal.</p>
+                <p>Tidak ada jadwal Agenda aktif hari ini.</p>
+                <p class="text-sm mt-2">Silakan gunakan menu <b>"Manajemen Agenda"</b> di atas untuk membuat jadwal.</p>
             </div>
         @else
             <div class="divide-y divide-gray-200">
@@ -124,9 +124,9 @@
                             <i class="fas fa-edit"></i>
                         </a>
 
-                        <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus acara ini? Data absensi akan ikut terhapus.');" class="inline">
+                        <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus Agenda ini? Data absensi akan ikut terhapus.');" class="inline">
                             @csrf @method('DELETE')
-                            <button type="submit" class="bg-red-100 text-red-700 px-3 py-2 rounded text-sm hover:bg-red-200 border border-red-200 transition" title="Hapus Acara">
+                            <button type="submit" class="bg-red-100 text-red-700 px-3 py-2 rounded text-sm hover:bg-red-200 border border-red-200 transition" title="Hapus Agenda">
                                 <i class="fas fa-trash-alt"></i>
                             </button>
                         </form>

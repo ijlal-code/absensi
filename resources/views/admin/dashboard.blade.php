@@ -12,7 +12,7 @@
             <i class="fas fa-calendar-day fa-2x"></i>
         </div>
         <div>
-            <p class="text-gray-500 text-sm">Acara Hari Ini</p>
+            <p class="text-gray-500 text-sm">Agenda Hari Ini</p>
             <h3 class="text-2xl font-bold">{{ $todayEvents->count() }}</h3>
         </div>
     </div>
@@ -21,7 +21,7 @@
             <i class="fas fa-folder-open fa-2x"></i>
         </div>
         <div>
-            <p class="text-gray-500 text-sm">Total Semua Acara</p>
+            <p class="text-gray-500 text-sm">Total Semua Agenda</p>
             <h3 class="text-2xl font-bold">{{ $totalEvents }}</h3>
         </div>
     </div>
@@ -29,13 +29,13 @@
 
 <div class="bg-white rounded-lg shadow overflow-hidden">
     <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
-        <h3 class="font-bold text-gray-700">Monitoring Acara Hari Ini</h3>
-        <a href="{{ route('event.create') }}" class="text-blue-600 text-sm hover:underline font-semibold">+ Buat Acara</a>
+        <h3 class="font-bold text-gray-700">Monitoring Agenda Hari Ini</h3>
+        <a href="{{ route('event.create') }}" class="text-blue-600 text-sm hover:underline font-semibold">+ Buat Agenda</a>
     </div>
 
     @if($todayEvents->isEmpty())
         <div class="p-6 text-center text-gray-500">
-            Belum ada acara hari ini.
+            Belum ada Agenda hari ini.
         </div>
     @else
         <div class="divide-y divide-gray-200">
@@ -68,7 +68,7 @@
                         <i class="fas fa-edit"></i> Edit
                     </a>
 
-                    <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Hapus acara ini?');">
+                    <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Hapus Agenda ini?');">
                         @csrf @method('DELETE')
                         <button type="submit" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm hover:bg-red-200 border border-red-200">
                             <i class="fas fa-trash"></i> Hapus
