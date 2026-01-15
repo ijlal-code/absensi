@@ -12,17 +12,16 @@ class TonasaImportSeeder extends Seeder
     {
         $csvPath = base_path('DATABASE KARYAWAN SEMEN TONASA 2026.xlsx - Sheet1.csv'); 
 
-        TonasaEmployee::truncate(); // Hapus data lama
+        TonasaEmployee::truncate();
 
-        // 1. IMPORT DARI CSV (Jika file ada)
         if (file_exists($csvPath)) {
             $file = fopen($csvPath, 'r');
-            $header = fgetcsv($file); // Skip Header
+            $header = fgetcsv($file); 
 
             $this->command->info('Importing data from CSV...');
 
             while (($row = fgetcsv($file)) !== false) {
-                if (empty($row[3])) continue; // Skip jika Nama kosong
+                if (empty($row[3])) continue;
 
                 $parseDate = function($val) {
                     if (empty($val)) return null;
@@ -55,22 +54,25 @@ class TonasaImportSeeder extends Seeder
                     'obj_grp'           => $row[19] ?? null,
                     'organizational_unit'=> $row[20] ?? null,
                     'cost_center_text'  => $row[21] ?? null,
-                    'tanggal_pensiun'   => $parseDate($row[22]),
+                    
+                    // PERUBAHAN DI SINI
+                    'date_terminasi'    => $parseDate($row[22]), // Col 22
+                    
                     'email'             => $row[23] ?? null,
                     'agama'             => $row[24] ?? null,
                     'umur'              => $row[26] ?? null,
                     'tempat_lahir'      => $row[27] ?? null,
                     'pendidikan'        => $row[28] ?? null,
                     'tanggal_masuk'     => $parseDate($row[29]),
+                    's_d'               => $parseDate($row[30]),
                     'masa_kerja'        => $row[31] ?? null,
                     'alamat'            => $row[32] ?? null,
                     'band'              => $row[33] ?? null,
-                    // No HP Kosong untuk data CSV default
                 ]);
             }
             fclose($file);
         } else {
-            $this->command->warn("File CSV tidak ditemukan, melewati proses import CSV.");
+            $this->command->warn("File CSV tidak ditemukan.");
         }
 
         // 2. BUAT 5 DATA DUMMY (ULANG TAHUN HARI INI & ADA NO HP)

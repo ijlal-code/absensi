@@ -13,48 +13,48 @@ return new class extends Migration
         Schema::create('tonasa_employees', function (Blueprint $table) {
             $table->id();
             
-            // --- KOLOM DATA CSV (LENGKAP) ---
-            $table->string('sap_id')->nullable();           // Col 0
-            $table->string('nik')->nullable()->index();     // Col 1
-            $table->string('position_code')->nullable();    // Col 2 (Position Angka)
-            $table->string('nama');                         // Col 3
-            $table->string('jabatan')->nullable();          // Col 4 (Position Teks)
-            $table->string('subgroup')->nullable();         // Col 5
-            $table->string('cost_ctr')->nullable();         // Col 6
-            $table->string('direktorat')->nullable();       // Col 7 (TXT_DIR)
-            $table->string('departemen')->nullable();       // Col 8 (TXT_DEPT)
-            $table->string('unit_kerja')->nullable();       // Col 9 (TXT_BIRO)
-            $table->string('seksi')->nullable();            // Col 10 (TXT_SECT)
+            // --- KOLOM DATA CSV ---
+            $table->string('sap_id')->nullable();
+            $table->string('nik')->nullable()->index();
+            $table->string('position_code')->nullable();
+            $table->string('nama');
+            $table->string('jabatan')->nullable();
+            $table->string('subgroup')->nullable();
+            $table->string('cost_ctr')->nullable();
+            $table->string('direktorat')->nullable();
+            $table->string('departemen')->nullable();
+            $table->string('unit_kerja')->nullable();
+            $table->string('seksi')->nullable();
             
-            // --- DATA MERAH (PRIBADI) ---
-            $table->date('tanggal_lahir')->nullable();      // Col 11
-            $table->string('jenis_kelamin')->nullable();    // Col 12
+            $table->date('tanggal_lahir')->nullable();
+            $table->string('jenis_kelamin')->nullable();
             
-            // --- DATA TEKNIS ---
-            $table->string('personnel_area')->nullable();       // Col 13
-            $table->string('abrev_position')->nullable();       // Col 14
-            $table->string('abrev_organization')->nullable();   // Col 15
-            $table->string('obj_dept')->nullable();             // Col 16
-            $table->string('obj_biro')->nullable();             // Col 17
-            $table->string('obj_sect')->nullable();             // Col 18
-            $table->string('obj_grp')->nullable();              // Col 19
-            $table->string('organizational_unit')->nullable();  // Col 20
-            $table->string('cost_center_text')->nullable();     // Col 21
+            $table->string('personnel_area')->nullable();
+            $table->string('abrev_position')->nullable();
+            $table->string('abrev_organization')->nullable();
+            $table->string('obj_dept')->nullable();
+            $table->string('obj_biro')->nullable();
+            $table->string('obj_sect')->nullable();
+            $table->string('obj_grp')->nullable();
+            $table->string('organizational_unit')->nullable();
+            $table->string('cost_center_text')->nullable();
             
-            $table->date('tanggal_pensiun')->nullable();        // Col 22
-            $table->string('email')->nullable();                // Col 23 (Merah)
-            $table->string('agama')->nullable();                // Col 24 (Merah)
+            // PERUBAHAN DI SINI: ganti tanggal_pensiun jadi date_terminasi
+            $table->date('date_terminasi')->nullable(); // Col 22
             
-            $table->string('umur')->nullable();                 // Col 26
-            $table->string('tempat_lahir')->nullable();         // Col 27 (Merah)
-            $table->string('pendidikan')->nullable();           // Col 28 (Merah)
-            $table->date('tanggal_masuk')->nullable();          // Col 29 (Organilk)
-            $table->string('masa_kerja')->nullable();           // Col 31
-            $table->text('alamat')->nullable();                 // Col 32 (Merah)
-            $table->string('band')->nullable();                 // Col 33
+            $table->string('email')->nullable();
+            $table->string('agama')->nullable();
+            
+            $table->string('umur')->nullable();
+            $table->string('tempat_lahir')->nullable();
+            $table->string('pendidikan')->nullable();
+            $table->date('tanggal_masuk')->nullable();
+            $table->date('s_d')->nullable();
+            $table->string('masa_kerja')->nullable();
+            $table->text('alamat')->nullable();
+            $table->string('band')->nullable();
 
-            // --- KONTAK TAMBAHAN ---
-            $table->string('no_hp_1')->nullable(); // Default tampil
+            $table->string('no_hp_1')->nullable();
             $table->string('no_hp_2')->nullable();
             $table->string('no_hp_3')->nullable();
 

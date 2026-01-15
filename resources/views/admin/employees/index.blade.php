@@ -27,10 +27,8 @@
             {{-- SEARCH FORM & FILTER --}}
             <div class="mt-4 md:mt-0 flex flex-col md:flex-row md:items-center gap-4">
                 
-                {{-- Grup 1: Quick Filter --}}
                 <div class="flex-none">
                     <form action="{{ route('employees.index') }}" method="GET">
-                        {{-- PERBAIKAN: Menghapus Ikon Kue agar lebih profesional --}}
                         <button type="submit" name="filter_birthday" value="today" 
                             class="group inline-flex items-center gap-2 bg-white border border-green-600 text-green-700 px-4 py-2.5 rounded-lg hover:bg-green-50 transition font-medium text-sm shadow-sm w-full justify-center md:w-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -41,10 +39,8 @@
                     </form>
                 </div>
 
-                {{-- Divider (TEBAL) --}}
                 <div class="hidden md:block h-8 w-[3px] bg-gray-300 rounded-full"></div>
 
-                {{-- Grup 2: Global Search --}}
                 <div class="flex w-full md:max-w-md gap-2">
                     <div class="relative flex-grow">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -53,7 +49,6 @@
                             </svg>
                         </div>
 
-                        {{-- PERBAIKAN: Placeholder hanya NIK, Nama, SAP --}}
                         <input type="text" id="live-search-input" name="search" value="{{ request('search') }}" 
                             class="block w-full rounded-lg border-gray-300 py-2.5 pl-10 pr-10 text-gray-900 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" 
                             placeholder="Cari SAP, Nama, NIK" autocomplete="off">
@@ -92,7 +87,10 @@
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Gender</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Org. Unit</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Cost Center</th>
+                                
+                                {{-- HEADER TABLE --}}
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Date Terminasi</th>
+                                
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">E-mail</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Religious</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Umur</th>
@@ -109,15 +107,15 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($employees as $emp)
                             @php
-                                // Logika Ulang Tahun
                                 $isBirthday = $emp->tanggal_lahir && $emp->tanggal_lahir->format('m-d') == date('m-d');
                                 
-                                // Format Tanggal
-                                $tglLahir = $emp->tanggal_lahir ? $emp->tanggal_lahir->format('d M Y') : '-';
-                                $tglMasuk = $emp->tanggal_masuk ? $emp->tanggal_masuk->format('d M Y') : '-';
-                                $tglPensiun = $emp->tanggal_pensiun ? $emp->tanggal_pensiun->format('d M Y') : '-';
+                                $tglLahir   = $emp->tanggal_lahir ? $emp->tanggal_lahir->format('d M Y') : '-';
+                                $tglMasuk   = $emp->tanggal_masuk ? $emp->tanggal_masuk->format('d M Y') : '-';
+                                $tglSd      = $emp->s_d ? $emp->s_d->format('d M Y') : '-';
                                 
-                                // JSON DATA LENGKAP (Termasuk URL Foto)
+                                // PERUBAHAN DI SINI: Gunakan date_terminasi
+                                $tglTerminasi = $emp->date_terminasi ? $emp->date_terminasi->format('d M Y') : '-';
+                                
                                 $jsonData = json_encode([
                                     'sap' => $emp->sap_id,
                                     'nik' => $emp->nik,
@@ -133,14 +131,14 @@
                                     'gender' => $emp->jenis_kelamin,
                                     'org_unit' => $emp->organizational_unit,
                                     'cost_center_text' => $emp->cost_center_text,
-                                    'terminasi' => $tglPensiun,
+                                    'terminasi' => $tglTerminasi, // Use new var
                                     'email' => $emp->email,
                                     'religious' => $emp->agama,
                                     'umur' => $emp->umur,
                                     'tempat_lahir' => $emp->tempat_lahir,
                                     'pendidikan' => $emp->pendidikan,
                                     'organilk' => $tglMasuk,
-                                    'sd' => $tglMasuk, 
+                                    'sd' => $tglSd,
                                     'masa_kerja' => $emp->masa_kerja,
                                     'alamat' => $emp->alamat,
                                     'band' => $emp->band,
@@ -154,7 +152,6 @@
                                     'obj_biro' => $emp->obj_biro,
                                     'obj_sect' => $emp->obj_sect,
                                     'obj_grp' => $emp->obj_grp,
-                                    // URL FOTO dari Storage
                                     'foto_baru' => $emp->foto_terbaru ? asset('storage/'.$emp->foto_terbaru) : null,
                                     'foto_lama' => $emp->foto_lama ? asset('storage/'.$emp->foto_lama) : null,
                                 ]);
@@ -170,10 +167,7 @@
                                 </td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->sap_id ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap font-medium">{{ $emp->nik ?? '-' }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap font-bold flex items-center gap-1">
-                                    {{-- PERBAIKAN: Menghapus Ikon Kue di samping Nama --}}
-                                    {{ $emp->nama ?? '-' }}
-                                </td>
+                                <td class="px-2 py-2 whitespace-nowrap font-bold flex items-center gap-1">{{ $emp->nama ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->subgroup ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->direktorat ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->departemen ?? '-' }}</td>
@@ -182,19 +176,20 @@
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->jenis_kelamin ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->organizational_unit ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->cost_center_text ?? '-' }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap text-red-600">{{ $tglPensiun }}</td>
+                                
+                                {{-- PERBAIKAN DI SINI --}}
+                                <td class="px-2 py-2 whitespace-nowrap text-red-600">{{ $tglTerminasi }}</td>
+                                
                                 <td class="px-2 py-2 whitespace-nowrap text-blue-600">{{ $emp->email ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->agama ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->umur ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->tempat_lahir ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->pendidikan ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $tglMasuk }}</td>
-                                <td class="px-2 py-2 whitespace-nowrap">{{ $tglMasuk }}</td>
+                                <td class="px-2 py-2 whitespace-nowrap">{{ $tglSd }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->masa_kerja ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap truncate max-w-[150px]">{{ $emp->alamat ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap text-center">{{ $emp->band ?? '-' }}</td>
-                                
-                                {{-- PERBAIKAN: Format No HP di Tabel (Pisah 4 digit) --}}
                                 <td class="px-2 py-2 whitespace-nowrap font-medium text-gray-700">
                                     {{ $emp->no_hp_1 ? wordwrap($emp->no_hp_1, 4, ' ', true) : '-' }}
                                 </td>
@@ -264,9 +259,9 @@
                         <div class="bg-white p-3 rounded-lg shadow border border-gray-200">
                             <div class="text-center mb-2"><span class="text-[10px] font-bold bg-gray-100 text-gray-600 px-2 py-0.5 rounded uppercase">Foto Badge</span></div>
                             <div class="aspect-[3/4] w-full bg-gray-100 rounded overflow-hidden flex items-center justify-center border border-gray-300">
-    <img id="img-foto-lama" src="" class="object-cover w-full h-full hidden">
-    <span id="no-foto-lama" class="text-xs text-gray-400">Tidak ada foto</span>
-</div>
+                                <img id="img-foto-lama" src="" class="object-cover w-full h-full hidden">
+                                <span id="no-foto-lama" class="text-xs text-gray-400">Tidak ada foto</span>
+                            </div>
                         </div>
                     </div>
 
@@ -280,7 +275,6 @@
                             <div class="p-6">
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-8 text-sm">
                                     
-                                    {{-- List Field --}}
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">SAP / NIK</p><p class="font-mono font-bold text-gray-900"><span id="d-sap">-</span> / <span id="d-nik">-</span></p></div>
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Nama Karyawan</p><p class="font-bold text-gray-900 text-base" id="d-nama">-</p></div>
                                     
@@ -307,15 +301,17 @@
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Gender Key</p><p class="font-semibold text-gray-800" id="d-gender">-</p></div>
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Religious</p><p class="font-semibold text-gray-800" id="d-religion">-</p></div>
                                     
+                                    {{-- PERBAIKAN DI SINI: Label modal diganti --}}
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Date Terminasi</p><p class="font-bold text-red-600" id="d-terminasi">-</p></div>
-                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Organilk / s.d</p><p class="font-bold text-green-700"><span id="d-organilk">-</span></p></div>
+                                    
+                                    <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Organilk / s.d</p><p class="font-bold text-green-700"><span id="d-organilk">-</span> / <span id="d-sd">-</span></p></div>
+                                    
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">Masa Kerja</p><p class="font-semibold text-gray-800"><span id="d-masa">-</span> Tahun</p></div>
                                     <div class="group border-b border-gray-50 pb-1"><p class="text-xs text-gray-400 mb-0.5">E-mail</p><p class="font-semibold text-blue-600 break-all" id="d-email">-</p></div>
                                     
                                     <div class="group border-b border-gray-50 pb-1 md:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Pendidikan</p><p class="font-semibold text-gray-800" id="d-pendidikan">-</p></div>
                                     <div class="group border-b border-gray-50 pb-1 md:col-span-2"><p class="text-xs text-gray-400 mb-0.5">Alamat</p><p class="font-medium text-gray-800 bg-gray-50 p-2 rounded block w-full text-xs" id="d-alamat">-</p></div>
 
-                                    {{-- HP di Modal --}}
                                     <div class="group border-b border-gray-50 pb-2 md:col-span-2">
                                         <p class="text-xs text-gray-400 mb-1">Kontak Telepon / HP</p>
                                         <div class="flex flex-wrap gap-8 bg-gray-50 p-2 rounded border border-gray-100">
@@ -353,7 +349,6 @@
 <script>
     const modal = document.getElementById('single-employee-modal');
     
-    // Fungsi Set Text Aman (cegah null)
     const setText = (id, value) => {
         const el = document.getElementById(id);
         if(el) {
@@ -361,7 +356,6 @@
         }
     };
 
-    // Fungsi Format HP 4 digit spasi
     const formatPhoneNumber = (str) => {
         if (!str) return '-';
         return str.toString().replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
@@ -372,11 +366,9 @@
         
         document.getElementById('modal-header-sub').textContent = `${data.nama || '-'} - ${data.nik || '-'}`;
 
-        // LOGIKA MENAMPILKAN FOTO DI MODAL
         const handleImage = (imgId, noImgId, src) => {
             const imgEl = document.getElementById(imgId);
             const noImgEl = document.getElementById(noImgId);
-            // Cek jika src ada dan tidak kosong/null
             if(src && src !== 'null' && src !== "") {
                 imgEl.src = src;
                 imgEl.classList.remove('hidden');
@@ -390,11 +382,9 @@
         handleImage('img-foto-baru', 'no-foto-baru', data.foto_baru);
         handleImage('img-foto-lama', 'no-foto-lama', data.foto_lama);
 
-        // Populate Text Data
         setText('d-sap', data.sap);
         setText('d-nik', data.nik);
         setText('d-nama', data.nama);
-        
         setText('d-hp1', formatPhoneNumber(data.hp1));
         setText('d-hp2', formatPhoneNumber(data.hp2));
         setText('d-hp3', formatPhoneNumber(data.hp3));
@@ -423,6 +413,7 @@
         setText('d-religion', data.religious);
         setText('d-terminasi', data.terminasi);
         setText('d-organilk', data.organilk);
+        setText('d-sd', data.sd);
         setText('d-masa', data.masa_kerja);
         setText('d-email', data.email);
         setText('d-pendidikan', data.pendidikan);

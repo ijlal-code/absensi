@@ -139,11 +139,11 @@
                         <small class="text-gray-500 italic">Umur akan dihitung otomatis.</small>
                     </div>
                     <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="jenis_kelamin">
+                        <label class="block text-gray-700 text-xs font-bold uppercase mb-1" for="jenis_kelamin">
                             Jenis Kelamin <span class="text-red-500">*</span>
                         </label>
                         <select name="jenis_kelamin" id="jenis_kelamin" 
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 bg-white @error('jenis_kelamin') border-red-500 @enderror">
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm p-2 border @error('jenis_kelamin') border-red-500 @enderror">
                             <option value="">-- Pilih Gender --</option>
                             <option value="Male" {{ old('jenis_kelamin') == 'Male' ? 'selected' : '' }}>Male</option>
                             <option value="Female" {{ old('jenis_kelamin') == 'Female' ? 'selected' : '' }}>Female</option>
@@ -178,9 +178,11 @@
                         @error('tanggal_masuk') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         <small class="text-gray-500 italic">Masa Kerja akan dihitung otomatis.</small>
                     </div>
+                    
+                    {{-- PERBAIKAN DI SINI: Tanggal Pensiun diganti Date Terminasi --}}
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Tanggal Pensiun</label>
-                        <input type="date" name="tanggal_pensiun" value="{{ old('tanggal_pensiun') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
+                        <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Date Terminasi</label>
+                        <input type="date" name="date_terminasi" value="{{ old('date_terminasi') }}" class="w-full border-gray-300 rounded-md text-sm p-2 border">
                     </div>
                 </div>
             </div>

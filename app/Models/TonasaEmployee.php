@@ -9,11 +9,12 @@ class TonasaEmployee extends Model
 {
     use HasFactory;
     protected $table = 'tonasa_employees';
-    protected $guarded = ['id']; // Allow mass assignment
+    protected $guarded = ['id'];
 
     protected $casts = [
         'tanggal_lahir' => 'date',
         'tanggal_masuk' => 'date',
-        'tanggal_pensiun' => 'date',
+        's_d' => 'date',
+        'date_terminasi' => 'date', // PERUBAHAN DI SINI
     ];
 }
