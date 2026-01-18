@@ -8,7 +8,7 @@
             <h2 class="text-2xl font-bold text-gray-800">Statistik Karyawan</h2>
             <p class="text-gray-600 text-sm">Visualisasi data demografi karyawan Semen Tonasa.</p>
         </div>
-        <a href="{{ route('dashboard') }}" class="text-gray-500 hover:text-gray-700 text-sm">
+        <a href="{{ route('dashboard') }}" class="text-gray-500 hover:text-gray-700 text-sm font-medium">
             <i class="fas fa-arrow-left mr-1"></i> Kembali ke Dashboard
         </a>
     </div>
@@ -42,7 +42,7 @@
                     </button>
 
                     <button onclick="updateChart('age')" id="btn-age" class="chart-btn flex items-center p-3 rounded-lg border-2 border-transparent hover:bg-gray-50 transition w-full">
-                        <div class="bg-purple-500 text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
+                        <div class="bg-indigo-500 text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
                             <i class="fas fa-user-clock text-sm"></i>
                         </div>
                         <div class="text-left">
@@ -51,86 +51,103 @@
                         </div>
                     </button>
 
+                    {{-- Tombol Gender dengan icon warna Pink/Biru --}}
                     <button onclick="updateChart('gender')" id="btn-gender" class="chart-btn flex items-center p-3 rounded-lg border-2 border-transparent hover:bg-gray-50 transition w-full">
-                        <div class="bg-pink-500 text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
+                        <div class="bg-gradient-to-br from-blue-500 to-pink-500 text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
                             <i class="fas fa-venus-mars text-sm"></i>
                         </div>
                         <div class="text-left">
                             <span class="block font-bold text-sm">Jenis Kelamin</span>
-                            <span class="text-xs text-gray-500">Male vs Female</span>
+                            <span class="text-xs text-gray-500">Laki-laki & Perempuan</span>
                         </div>
                     </button>
                 </div>
             </div>
 
             {{-- Summary Card --}}
-            <div class="bg-white rounded-xl shadow-md p-5 text-center">
+            <div class="bg-white rounded-xl shadow-md p-5 text-center transform transition hover:scale-105">
                 <h4 class="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Karyawan</h4>
-                <p class="text-3xl font-extrabold text-gray-800">{{ $educationData->sum() }}</p>
+                <p class="text-4xl font-extrabold text-gray-800">{{ $educationData->sum() }}</p>
+                <span class="text-xs text-green-500 font-semibold"><i class="fas fa-check-circle"></i> Data Terupdate</span>
             </div>
         </div>
 
         {{-- KOLOM KANAN: AREA GRAFIK --}}
         <div class="lg:col-span-2">
-            <div class="bg-white rounded-xl shadow-md p-6 h-full min-h-[550px] flex flex-col">
-                <div class="mb-4">
-                    <h3 id="chart-title" class="text-lg font-bold text-gray-800 text-center">Persentase Tingkat Pendidikan</h3>
+            <div class="bg-white rounded-xl shadow-md p-6 h-full min-h-[550px] flex flex-col relative">
+                <div class="mb-4 flex justify-between items-start">
+                    <h3 id="chart-title" class="text-xl font-bold text-gray-800">Persentase Tingkat Pendidikan</h3>
+                    <div class="bg-gray-100 rounded p-1">
+                        <i class="fas fa-chart-pie text-gray-400"></i>
+                    </div>
                 </div>
                 
                 {{-- Container Canvas Responsif --}}
                 <div class="flex-grow relative w-full flex items-center justify-center">
-                    {{-- ID diganti untuk ECharts --}}
                     <div id="echart-container" class="w-full h-[450px]"></div>
                 </div>
                 
-                <div class="mt-2 text-center text-xs text-gray-400">
-                    * Grafik interaktif: Arahkan kursor untuk detail
+                <div class="mt-2 text-center text-xs text-gray-400 border-t pt-2">
+                    * Arahkan kursor pada grafik untuk melihat detail jumlah orang.
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Load Apache ECharts dari CDN (Sangat Ringan & Cepat) --}}
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 
 <script>
     // --- 1. Persiapan Data ---
-    // Fungsi helper untuk mengubah format data PHP (Arrays) ke format ECharts (Object {name, value})
     function formatData(keys, values) {
         return keys.map((key, index) => {
             return { value: values[index], name: key };
         });
     }
 
+    // Definisi Warna Custom Profesional
+    const customColors = {
+        // Gender: Biru untuk Laki-laki, Pink untuk Perempuan
+        'Laki-laki': '#3B82F6', 
+        'Pria': '#3B82F6',
+        'Male': '#3B82F6',
+        
+        'Perempuan': '#EC4899', 
+        'Wanita': '#EC4899',
+        'Female': '#EC4899',
+
+        'Tidak Diketahui': '#9CA3AF'
+    };
+
     const rawData = {
         education: {
             data: formatData({!! json_encode($educationData->keys()) !!}, {!! json_encode($educationData->values()) !!}),
             title: 'Persentase Tingkat Pendidikan',
-            color: ['#3B82F6', '#60A5FA', '#93C5FD', '#1D4ED8', '#1E40AF'] // Nuansa Biru
+            // Gradasi Biru Profesional
+            color: ['#1E3A8A', '#1D4ED8', '#2563EB', '#3B82F6', '#60A5FA', '#93C5FD'] 
         },
         service: {
             data: formatData({!! json_encode($serviceData->keys()) !!}, {!! json_encode($serviceData->values()) !!}),
             title: 'Persentase Masa Kerja',
-            color: ['#10B981', '#34D399', '#6EE7B7', '#047857', '#065F46'] // Nuansa Hijau Teal
+            // Gradasi Teal/Emerald
+            color: ['#064E3B', '#065F46', '#047857', '#059669', '#10B981', '#34D399', '#6EE7B7']
         },
         age: {
             data: formatData({!! json_encode($ageData->keys()) !!}, {!! json_encode($ageData->values()) !!}),
             title: 'Persentase Tingkat Usia',
-            color: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#6D28D9', '#5B21B6'] // Nuansa Ungu
+            // Gradasi Indigo/Ungu
+            color: ['#312E81', '#4338CA', '#4F46E5', '#6366F1', '#818CF8', '#A5B4FC']
         },
         gender: {
             data: formatData({!! json_encode($genderData->keys()) !!}, {!! json_encode($genderData->values()) !!}),
             title: 'Persentase Jenis Kelamin',
-            color: ['#F472B6', '#3B82F6', '#EC4899', '#2563EB'] // Pink & Biru
+            // Warna akan di-override logic di bawah, ini fallback
+            color: ['#3B82F6', '#EC4899'] 
         }
     };
 
-    // Inisialisasi Chart
     let myChart = echarts.init(document.getElementById('echart-container'));
 
-    // --- 2. Konfigurasi Responsif ---
-    // Agar chart otomatis resize saat layar diubah ukurannya
     window.addEventListener('resize', function() {
         myChart.resize();
     });
@@ -141,74 +158,71 @@
         // Update Judul
         document.getElementById('chart-title').innerText = dataset.title;
 
-        // --- 3. Konfigurasi ECharts (The Magic Part) ---
+        // LOGIKA KHUSUS UNTUK WARNA GENDER
+        let chartColors = dataset.color;
+        let chartData = dataset.data;
+
+        if (type === 'gender') {
+            // Jika gender, paksa warna sesuai nama key (Laki=Biru, Pr=Pink)
+            chartData = chartData.map(item => {
+                return {
+                    value: item.value,
+                    name: item.name,
+                    itemStyle: {
+                        color: customColors[item.name] || '#9CA3AF' // Fallback abu-abu
+                    }
+                };
+            });
+        }
+
         const option = {
-            // Tooltip saat hover
             tooltip: {
                 trigger: 'item',
                 formatter: '{b}: <br/><b>{c} Orang</b> ({d}%)',
-                backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                borderColor: '#eee',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                borderColor: '#e5e7eb',
                 borderWidth: 1,
-                textStyle: { color: '#333' }
+                textStyle: { color: '#1f2937' },
+                padding: 10,
+                extraCssText: 'box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);'
             },
-            
-            // Legend (Keterangan Warna) di bawah
             legend: {
                 bottom: '0%',
                 left: 'center',
-                itemGap: 20,
-                textStyle: { fontSize: 12, color: '#666' }
+                itemGap: 15,
+                textStyle: { fontSize: 12, color: '#4B5563' }
             },
-
             series: [
                 {
                     name: dataset.title,
                     type: 'pie',
-                    
-                    // Membuat efek Donut (Bolong tengah)
-                    radius: ['40%', '65%'], 
-                    
-                    // Posisi Chart
-                    center: ['50%', '45%'], 
-
-                    // Fitur Anti Tumpah Tindih (Avoid Overlap)
+                    radius: ['45%', '70%'], // Donut style lebih tebal
+                    center: ['50%', '45%'],
                     avoidLabelOverlap: true,
-                    
-                    // Style tiap potongan
                     itemStyle: {
-                        borderRadius: 8,
+                        borderRadius: 6,
                         borderColor: '#fff',
                         borderWidth: 2
                     },
-                    
-                    // Konfigurasi Label (Angka & Garis)
                     label: {
                         show: true,
-                        position: 'outside', // Label di luar
-                        formatter: '{b}\n{d}%', // Tampilkan Nama & Persen
-                        fontWeight: 'bold',
+                        position: 'outside',
+                        formatter: '{b}\n{d}%',
+                        fontWeight: '600',
                         fontSize: 13,
-                        color: '#4B5563',
-                        padding: [0, -10], // Tweak padding
-                        lineHeight: 18
+                        color: '#374151'
                     },
-                    
-                    // Konfigurasi Garis Penunjuk
                     labelLine: {
                         show: true,
-                        length: 20,  // Panjang garis segmen 1
-                        length2: 30, // Panjang garis segmen 2 (yang mendatar)
-                        smooth: true // Garis agak melengkung estetik
+                        length: 15,
+                        length2: 25,
+                        smooth: true
                     },
-
-                    // Data
-                    data: dataset.data,
+                    data: chartData,
                     
-                    // Warna Custom per kategori
-                    color: dataset.color,
+                    // Gunakan warna default jika bukan gender (gender sudah di-override di atas)
+                    color: (type !== 'gender') ? chartColors : undefined,
 
-                    // Animasi Masuk
                     animationType: 'scale',
                     animationEasing: 'elasticOut',
                     animationDelay: function (idx) {
@@ -218,8 +232,6 @@
             ]
         };
 
-        // Render Opsi ke Chart
-        // notMerge: true memastikan chart bersih total sebelum gambar baru (animasi ulang)
         myChart.setOption(option, { notMerge: true });
     }
 
@@ -229,18 +241,22 @@
             btn.classList.remove(
                 'bg-blue-50', 'text-blue-700', 'border-blue-500', 
                 'bg-teal-50', 'text-teal-700', 'border-teal-500', 
-                'bg-purple-50', 'text-purple-700', 'border-purple-500',
-                'bg-pink-50', 'text-pink-700', 'border-pink-500'
+                'bg-indigo-50', 'text-indigo-700', 'border-indigo-500', // Age (Ungu)
+                'bg-pink-50', 'text-pink-700', 'border-pink-500', // Gender (Pink base)
+                'active'
             );
             btn.classList.add('border-transparent', 'hover:bg-gray-50');
+            // Reset icon colors
         });
 
         const btn = document.getElementById('btn-' + type);
         btn.classList.remove('border-transparent', 'hover:bg-gray-50');
+        btn.classList.add('active');
         
         if(type === 'education') btn.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-500');
         if(type === 'service') btn.classList.add('bg-teal-50', 'text-teal-700', 'border-teal-500');
-        if(type === 'age') btn.classList.add('bg-purple-50', 'text-purple-700', 'border-purple-500');
+        if(type === 'age') btn.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-500');
+        // Khusus gender kita kasih style pink-ish tapi kontennya gradasi
         if(type === 'gender') btn.classList.add('bg-pink-50', 'text-pink-700', 'border-pink-500');
 
         renderChart(type);

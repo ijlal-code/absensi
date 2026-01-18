@@ -1,91 +1,89 @@
 @extends('layouts.app')
 
 @section('content')
-{{-- Header Judul (Ditambahkan manual karena layout app tidak otomatis memilikinya) --}}
-<div class="flex justify-between items-center mb-6">
-    <h2 class="text-2xl font-bold text-gray-800">Dashboard Admin</h2>
-</div>
-
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-    <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500 flex items-center">
-        <div class="p-3 bg-blue-100 rounded-full text-blue-600 mr-4">
-            <i class="fas fa-calendar-day fa-2x"></i>
-        </div>
-        <div>
-            <p class="text-gray-500 text-sm">Agenda Hari Ini</p>
-            <h3 class="text-2xl font-bold">{{ $todayEvents->count() }}</h3>
-        </div>
-    </div>
-    <div class="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500 flex items-center">
-        <div class="p-3 bg-green-100 rounded-full text-green-600 mr-4">
-            <i class="fas fa-folder-open fa-2x"></i>
-        </div>
-        <div>
-            <p class="text-gray-500 text-sm">Total Semua Agenda</p>
-            <h3 class="text-2xl font-bold">{{ $totalEvents }}</h3>
-        </div>
-    </div>
-</div>
-
-<div class="bg-white rounded-lg shadow overflow-hidden">
-    <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
-        <h3 class="font-bold text-gray-700">Monitoring Agenda Hari Ini</h3>
-        <a href="{{ route('event.create') }}" class="text-blue-600 text-sm hover:underline font-semibold">+ Buat Agenda</a>
+<div class="container mx-auto px-4 py-8">
+    {{-- Header --}}
+    <div class="mb-10 text-center md:text-left">
+        <h2 class="text-3xl font-bold text-gray-800">Dashboard Admin</h2>
+        <p class="text-gray-500 mt-2">Selamat Datang di Sistem Absensi & Data Karyawan.</p>
     </div>
 
-    @if($todayEvents->isEmpty())
-        <div class="p-6 text-center text-gray-500">
-            Belum ada Agenda hari ini.
-        </div>
-    @else
-        <div class="divide-y divide-gray-200">
-            @foreach($todayEvents as $event)
-            <div class="p-5 flex flex-col md:flex-row justify-between items-start md:items-center hover:bg-gray-50 transition">
-                
-                <div class="mb-4 md:mb-0">
-                    <h4 class="font-bold text-lg text-blue-900">{{ $event->title }}</h4>
-                    <div class="text-sm text-gray-600 mt-1">
-                        <i class="far fa-clock"></i> {{ $event->start_time }} - {{ $event->end_time }} | 
-                        <i class="fas fa-map-marker-alt"></i> {{ $event->location }}
+    {{-- Menu Grid --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+
+        {{-- CARD 1: MENU MANAJEMEN AGENDA (Tetap Link Utuh) --}}
+        <a href="{{ route('event.agenda') }}" class="group bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 border-l-8 border-blue-600 overflow-hidden relative p-8 flex flex-col justify-between">
+            <div>
+                <div class="flex items-center justify-between mb-6">
+                    <div class="p-4 bg-blue-100 rounded-2xl text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+                        <i class="fas fa-calendar-check fa-2x"></i>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-4xl font-extrabold text-gray-800">{{ $totalEvents }}</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-wider">Total Agenda</span>
                     </div>
                 </div>
-
-                <div class="flex flex-wrap gap-2">
-                    <a href="{{ route('event.show', $event->id) }}" class="bg-teal-100 text-teal-700 px-3 py-1 rounded text-sm hover:bg-teal-200 border border-teal-200">
-                        <i class="fas fa-desktop"></i> Monitor
-                    </a>
-
-                    {{-- Tombol QR Code --}}
-                    <a href="{{ route('event.qrcode', $event->id) }}" class="bg-purple-100 text-purple-700 px-3 py-1 rounded text-sm hover:bg-purple-200 border border-purple-200" title="QR Code">
-                        <i class="fas fa-qrcode"></i> QR
-                    </a>
-
-                    <button onclick="copyLink('{{ route('attendance.form', $event->id) }}')" class="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-200 border border-gray-300">
-                        <i class="fas fa-link"></i> Link
-                    </button>
-
-                    <a href="{{ route('event.edit', $event->id) }}" class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded text-sm hover:bg-yellow-200 border border-yellow-200">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
-
-                    <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Hapus Agenda ini?');">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="bg-red-100 text-red-700 px-3 py-1 rounded text-sm hover:bg-red-200 border border-red-200">
-                            <i class="fas fa-trash"></i> Hapus
-                        </button>
-                    </form>
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition">Manajemen Agenda</h3>
+                    <p class="text-gray-500">Kelola jadwal rapat, buat agenda baru, QR Code, dan monitoring kehadiran.</p>
                 </div>
             </div>
-            @endforeach
-        </div>
-    @endif
-</div>
+            
+            {{-- Indikator Klik --}}
+            <div class="mt-6 flex items-center text-blue-600 font-semibold group-hover:translate-x-2 transition-transform">
+                <span>Buka Menu Agenda</span> <i class="fas fa-arrow-right ml-2"></i>
+            </div>
+        </a>
 
-<script>
-function copyLink(url) {
-    navigator.clipboard.writeText(url).then(() => {
-        alert('Link berhasil disalin!');
-    });
-}
-</script>
+        {{-- CARD 2: MENU DATA KARYAWAN (Diubah menjadi Container dengan 3 Tombol) --}}
+        <div class="bg-white rounded-2xl shadow-md border-l-8 border-green-600 overflow-hidden relative p-8 flex flex-col">
+            
+            {{-- Header Card --}}
+            <div class="flex items-center justify-between mb-6">
+                <div class="p-4 bg-green-100 rounded-2xl text-green-600">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+                <div class="text-right">
+                    <span class="block text-4xl font-extrabold text-gray-800">{{ $totalEmployees }}</span>
+                    <span class="text-xs text-gray-500 uppercase tracking-wider">Personil</span>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h3 class="text-2xl font-bold text-gray-800 mb-1">Data Karyawan</h3>
+                <p class="text-gray-500 text-sm">Pilih menu pengelolaan di bawah ini:</p>
+            </div>
+
+            {{-- Action Buttons --}}
+            <div class="grid grid-cols-1 gap-3 mt-auto">
+                
+                {{-- 1. Kelola Data --}}
+                <a href="{{ route('employee-management.index') }}" class="flex items-center justify-between px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-600 hover:text-white transition group">
+                    <div class="flex items-center font-bold">
+                        <i class="fas fa-edit w-6"></i> Kelola Data
+                    </div>
+                    <i class="fas fa-chevron-right opacity-50 group-hover:opacity-100 transition"></i>
+                </a>
+
+                {{-- 2. Informasi (View Only) --}}
+                <a href="{{ route('employees.index') }}" class="flex items-center justify-between px-4 py-3 bg-teal-50 text-teal-700 rounded-lg hover:bg-teal-600 hover:text-white transition group">
+                    <div class="flex items-center font-bold">
+                        <i class="fas fa-info-circle w-6"></i> Informasi Karyawan
+                    </div>
+                    <i class="fas fa-chevron-right opacity-50 group-hover:opacity-100 transition"></i>
+                </a>
+
+                {{-- 3. Statistik --}}
+                <a href="{{ route('employee-management.stats') }}" class="flex items-center justify-between px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-600 hover:text-white transition group">
+                    <div class="flex items-center font-bold">
+                        <i class="fas fa-chart-pie w-6"></i> Statistik Visual
+                    </div>
+                    <i class="fas fa-chevron-right opacity-50 group-hover:opacity-100 transition"></i>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+</div>
 @endsection

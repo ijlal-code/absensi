@@ -44,7 +44,7 @@
                 </a>
 
                 {{-- BARU: MENU STATISTIK KARYAWAN --}}
-                <a href="{{ route('employee.stats') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee.stats') ? 'bg-blue-700' : '' }}">
+                <a href="{{ route('employee-management.stats') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee.stats') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-chart-pie mr-2 w-6"></i> Statistik Karyawan
                 </a>
             

@@ -10,7 +10,7 @@ use App\Http\Controllers\EmployeeManagementController;
 
 /*
 |--------------------------------------------------------------------------
-| Public Routes
+| Public Routes (Login, Register, Form Absensi)
 |--------------------------------------------------------------------------
 */
 Route::get('/', [AuthController::class, 'showLogin'])->name('login');
@@ -19,6 +19,7 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Route Absensi Publik (Dapat diakses peserta tanpa login admin)
 Route::prefix('absensi')->group(function () {
     Route::get('/{event}', [AttendanceController::class, 'showForm'])->name('attendance.form');
     Route::post('/{event}', [AttendanceController::class, 'store'])->name('attendance.store');
@@ -26,31 +27,28 @@ Route::prefix('absensi')->group(function () {
 
 /*
 |--------------------------------------------------------------------------
-| Dashboard Routes (Auth Required)
+| Dashboard Routes (Authentication Required)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
     
-    // 1. Route Informasi Karyawan (View Only / Publik)
-    Route::get('/informasi-karyawan', [EmployeeInfoController::class, 'index'])->name('employees.index');
-
-    // --- PERUBAHAN DI SINI ---
-    // Route Statistik Karyawan (Menu Terpisah)
-    Route::get('/statistik-karyawan', [EmployeeManagementController::class, 'stats'])->name('employee.stats');
-
-    // Tambahkan ini agar route stats terdefinisi
-Route::get('employee-management/stats', [EmployeeManagementController::class, 'stats'])->name('employee-management.stats');
-
-// Baru kemudian route resource
-Route::resource('employee-management', EmployeeManagementController::class);
-
-    // 2. Route Kelola Karyawan (CRUD Lengkap)
-    // Note: Route 'stats' yang lama dihapus dari sini agar tidak konflik
-    Route::resource('employee-management', EmployeeManagementController::class);
-    // -------------------------
-
-    // Dashboard Utama
+    // --- 1. Dashboard Utama (Menu Navigasi) ---
     Route::get('/dashboard', [EventController::class, 'index'])->name('dashboard');
+
+    // --- 2. Manajemen Agenda (Halaman Operasional) ---
+    // Halaman list agenda & tombol buat agenda
+    Route::get('/manajemen-agenda', [EventController::class, 'agenda'])->name('event.agenda');
+
+    // --- 3. Manajemen Karyawan & Statistik ---
+    // View Informasi Publik Karyawan (Read Only / Tampilan Card)
+    Route::get('/informasi-karyawan', [EmployeeInfoController::class, 'index'])->name('employees.index');
+    
+    // Halaman Statistik Visual
+    Route::get('/statistik-karyawan', [EmployeeManagementController::class, 'stats'])->name('employee-management.stats');
+
+    // CRUD Data Karyawan (Full Akses: Create, Read, Update, Delete)
+    // Route resource ini otomatis membuat route untuk index, create, store, show, edit, update, destroy
+    Route::resource('employee-management', EmployeeManagementController::class);
 
     // Menu Penyelenggara
     Route::get('/create-event', [EventController::class, 'create'])->name('event.create');
@@ -66,9 +64,8 @@ Route::resource('employee-management', EmployeeManagementController::class);
     Route::get('/event/{event}/monitor', [EventController::class, 'show'])->name('event.show');
     Route::get('/event/{event}/download-pdf', [AttendanceController::class, 'downloadPdf'])->name('attendance.pdf');
 
-    // Menu Admin (User Management)
+    // --- 5. Admin Management (User System) ---
     Route::middleware(['can:is_admin'])->prefix('admin')->name('admin.')->group(function() {
-        Route::get('/dashboard', [EventController::class, 'adminDashboard'])->name('dashboard');
         Route::resource('users', UserController::class);
     });
 });
