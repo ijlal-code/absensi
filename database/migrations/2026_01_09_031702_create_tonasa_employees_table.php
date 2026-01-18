@@ -39,8 +39,7 @@ return new class extends Migration
             $table->string('organizational_unit')->nullable();
             $table->string('cost_center_text')->nullable();
             
-            // PERUBAHAN DI SINI: ganti tanggal_pensiun jadi date_terminasi
-            $table->date('date_terminasi')->nullable(); // Col 22
+            $table->date('date_terminasi')->nullable();
             
             $table->string('email')->nullable();
             $table->string('agama')->nullable();
@@ -54,9 +53,13 @@ return new class extends Migration
             $table->text('alamat')->nullable();
             $table->string('band')->nullable();
 
+            // --- KONTAK ---
             $table->string('no_hp_1')->nullable();
             $table->string('no_hp_2')->nullable();
             $table->string('no_hp_3')->nullable();
+
+            // FITUR BARU: Menandai nomor mana yang utama (opsi: 'no_hp_1', 'no_hp_2', atau 'no_hp_3')
+            $table->string('primary_phone')->default('no_hp_1')->nullable();
 
             $table->timestamps();
         });

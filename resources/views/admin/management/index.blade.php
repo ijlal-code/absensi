@@ -2,124 +2,185 @@
 
 @section('content')
 <div class="container mx-auto px-4 py-6">
-    
-    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <h2 class="text-2xl font-bold text-gray-800">Manajemen Data Karyawan</h2>
-        <a href="{{ route('employee-management.create') }}" class="bg-blue-600 text-white px-5 py-2 rounded-lg shadow hover:bg-blue-700 transition flex items-center">
-            <i class="fas fa-plus mr-2"></i> Tambah Karyawan
-        </a>
+    {{-- HEADER --}}
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Manajemen Karyawan</h2>
+            <p class="text-gray-600 text-sm">Kelola data karyawan Semen Tonasa.</p>
+        </div>
+        <div class="flex gap-2">
+             <a href="{{ route('employee-management.stats') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition flex items-center">
+                <i class="fas fa-chart-pie mr-2"></i>Statistik
+            </a>
+            <a href="{{ route('employee-management.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition flex items-center">
+                <i class="fas fa-plus mr-2"></i>Tambah Karyawan
+            </a>
+        </div>
     </div>
 
-    {{-- Search Form dengan Tombol Reset --}}
-    <div class="bg-white p-4 rounded-lg shadow-sm mb-6 border">
-        <form method="GET" action="{{ route('employee-management.index') }}">
-            <div class="flex flex-col md:flex-row gap-2">
-                <div class="relative w-full md:w-1/2">
-                    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                        <i class="fas fa-search text-gray-400"></i>
-                    </span>
-                    <input type="text" name="search" value="{{ request('search') }}" 
-                           class="w-full py-2 pl-10 pr-4 text-gray-700 bg-gray-50 border rounded-lg focus:outline-none focus:border-blue-500" 
-                           placeholder="Cari SAP atau Nama..." 
-                           onchange="this.form.submit()">
-                </div>
-                
-                {{-- Tombol Reset --}}
-                @if(request('search'))
-                    <a href="{{ route('employee-management.index') }}" class="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition font-medium flex items-center">
-                        <i class="fas fa-times mr-1"></i> Reset
-                    </a>
-                @endif
+    {{-- SEARCH --}}
+    <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
+        <form action="{{ route('employee-management.index') }}" method="GET" class="flex gap-4">
+            <div class="relative flex-grow">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                <input type="text" name="search" value="{{ request('search') }}" 
+                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Cari berdasarkan Nama, NIK, atau SAP ID...">
             </div>
+            <button type="submit" class="bg-gray-800 text-white px-6 py-2 rounded-lg hover:bg-gray-700 transition">
+                Cari
+            </button>
+            @if(request('search'))
+                <a href="{{ route('employee-management.index') }}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition flex items-center">
+                    Reset
+                </a>
+            @endif
         </form>
     </div>
 
-    {{-- Tabel Ringkas --}}
-    <div class="bg-white overflow-hidden shadow-md sm:rounded-lg">
+    @if(session('success'))
+        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+            <p>{{ session('success') }}</p>
+        </div>
+    @endif
+
+    {{-- TABLE --}}
+    <div class="bg-white rounded-xl shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-800 text-white">
+            <thead class="bg-gray-50">
                 <tr>
-                    {{-- PERUBAHAN DI SINI: Header ditukar jadi SAP ID / NIK --}}
-                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider w-1/4">SAP / NIK</th>
-                    <th class="px-6 py-4 text-left text-sm font-bold uppercase tracking-wider">Nama Karyawan</th>
-                    <th class="px-6 py-4 text-center text-sm font-bold uppercase tracking-wider w-1/6">Aksi</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Karyawan</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan & Unit</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Kerja</th>
+                    {{-- KOLOM HP MENYESUAIKAN PRIMARY --}}
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kontak (Utama)</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($employees as $employee)
-                <tr class="hover:bg-blue-50 transition duration-150">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                        {{-- PERUBAHAN DI SINI: SAP ID jadi utama (tebal), NIK jadi kecil di bawahnya --}}
-                        <span class="font-mono font-semibold">{{ $employee->sap_id ?? '-' }}</span>
-                        <div class="text-xs text-gray-400">{{ $employee->nik ?? '-' }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800">
-                        {{ $employee->nama }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <div class="flex justify-center space-x-4">
-                            <a href="{{ route('employee-management.edit', $employee->id) }}" class="text-blue-600 hover:text-blue-900 tooltip" title="Edit Data Lengkap">
-                                <i class="fas fa-edit text-xl"></i>
-                            </a>
-                            <form action="{{ route('employee-management.destroy', $employee->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus data {{ $employee->nama }}?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-900 tooltip" title="Hapus Data">
-                                    <i class="fas fa-trash-alt text-xl"></i>
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10">
+                                    @if($employee->foto_terbaru)
+                                        <img class="h-10 w-10 rounded-full object-cover border" src="{{ asset('storage/' . $employee->foto_terbaru) }}" alt="">
+                                    @else
+                                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-500 font-bold">
+                                            {{ substr($employee->nama, 0, 1) }}
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ $employee->nama }}</div>
+                                    <div class="text-xs text-gray-500">NIK: {{ $employee->nik }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm text-gray-900">{{Str::limit($employee->jabatan, 20)}}</div>
+                            <div class="text-xs text-gray-500">{{ $employee->unit_kerja }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                {{ $employee->masa_kerja }} Tahun
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{-- LOGIKA MENAMPILKAN NO HP UTAMA --}}
+                            @php
+                                // Ambil nama kolom dari database, misal 'no_hp_2'
+                                $primaryField = $employee->primary_phone ?? 'no_hp_1'; 
+                                // Ambil nilai dari kolom tersebut
+                                $primaryNumber = $employee->$primaryField;
+                            @endphp
+                            
+                            @if($primaryNumber)
+                                <span class="flex items-center text-blue-600 font-medium">
+                                    <i class="fas fa-phone-alt text-xs mr-2"></i> {{ $primaryNumber }}
+                                </span>
+                            @else
+                                <span class="text-gray-400 italic text-xs">Tidak ada no HP</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end gap-2">
+                                <button onclick="openModal({{ $employee->id }})" class="text-blue-600 hover:text-blue-900" title="Lihat Detail">
+                                    <i class="fas fa-eye"></i>
                                 </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
+                                <a href="{{ route('employee-management.edit', $employee->id) }}" class="text-yellow-600 hover:text-yellow-900" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('employee-management.destroy', $employee->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
                 @empty
-                <tr>
-                    <td colspan="3" class="px-6 py-8 text-center text-gray-500 italic">
-                        Data karyawan tidak ditemukan.
-                    </td>
-                </tr>
+                    <tr>
+                        <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                            <i class="fas fa-folder-open text-4xl mb-3 text-gray-300"></i>
+                            <p>Data karyawan tidak ditemukan.</p>
+                        </td>
+                    </tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
-    {{-- PAGINATION CUSTOM BAHASA INDONESIA --}}
-<div class="mt-6 bg-white px-4 py-3 border rounded-lg flex items-center justify-between shadow-sm">
-    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-        <div>
-            <p class="text-sm text-gray-600">
-                Menampilkan <span class="font-bold text-gray-800">{{ $employees->firstItem() ?? 0 }}</span> 
-                sampai <span class="font-bold text-gray-800">{{ $employees->lastItem() ?? 0 }}</span> 
-                dari <span class="font-bold text-gray-800">{{ $employees->total() }}</span> data
-            </p>
-        </div>
-        <div>
-            @if ($employees->hasPages())
-                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                    {{-- Tombol Sebelumnya --}}
-                    @if ($employees->onFirstPage())
-                        <span class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-gray-50 text-sm font-medium text-gray-400 cursor-not-allowed">
-                            <i class="fas fa-chevron-left mr-2"></i> Sebelumnya
-                        </span>
-                    @else
-                        <a href="{{ $employees->previousPageUrl() }}" class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-                            <i class="fas fa-chevron-left mr-2 text-blue-600"></i> Sebelumnya
-                        </a>
-                    @endif
-
-                    {{-- Tombol Selanjutnya --}}
-                    @if ($employees->hasMorePages())
-                        <a href="{{ $employees->nextPageUrl() }}" class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
-                            Selanjutnya <i class="fas fa-chevron-right ml-2 text-blue-600"></i>
-                        </a>
-                    @else
-                        <span class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-gray-50 text-sm font-medium text-gray-400 cursor-not-allowed">
-                            Selanjutnya <i class="fas fa-chevron-right ml-2"></i>
-                        </span>
-                    @endif
-                </nav>
-            @endif
-        </div>
+    <div class="mt-4">
+        {{ $employees->links() }}
     </div>
 </div>
-</div>
+
+{{-- INCLUDE MODAL DETAIL --}}
+@include('admin.show') 
+
+<script>
+    // Fungsi untuk memanggil Modal Detail
+    // Menggunakan AJAX request ke route show untuk mendapatkan data HTML partial
+    function openModal(id) {
+        const modal = document.getElementById('employeeModal');
+        const content = document.getElementById('modalContent');
+        
+        // Tampilkan Modal
+        if(modal) modal.classList.remove('hidden');
+        
+        // Tampilkan Loading
+        if(content) {
+            content.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10">
+                    <i class="fas fa-circle-notch fa-spin text-4xl text-blue-500 mb-3"></i>
+                    <p class="text-gray-500">Mengambil data karyawan...</p>
+                </div>
+            `;
+        }
+
+        // Fetch Data via AJAX
+        fetch(`/admin/employee-management/${id}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.text(); // Kita ambil text karena controller akan return view partial (HTML)
+            })
+            .then(html => {
+                if(content) content.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if(content) {
+                    content.innerHTML = `
+                        <div class="text-center py-10 text-red-500">
+                            <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
+                            <p>Gagal memuat data. Silakan coba lagi.</p>
+                        </div>
+                    `;
+                }
+            });
+    }
+</script>
 @endsection

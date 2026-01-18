@@ -1,86 +1,68 @@
-@extends('layouts.app')
+{{-- MODAL STRUCTURE --}}
+{{-- Hidden by default using class 'hidden' --}}
+<div id="employeeModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        
+        {{-- Background Overlay --}}
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeModal()"></div>
 
-@section('content')
-<div class="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-    <h2 class="text-2xl font-bold text-gray-800">Monitoring: {{ $event->title }}</h2>
-    
-    <div class="flex space-x-2">
-        <a href="{{ route('attendance.pdf', $event->id) }}" class="bg-red-600 text-white px-4 py-2 rounded shadow hover:bg-red-700 text-sm transition flex items-center">
-            <i class="fas fa-file-pdf mr-2"></i> Download PDF
-        </a>
+        {{-- Centering Trick --}}
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        {{-- Modal Panel --}}
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
+            
+            {{-- Header Modal --}}
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 flex justify-between items-center border-b">
+                <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
+                    Detail Karyawan
+                </h3>
+                <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-500 focus:outline-none transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            {{-- Body Modal (Konten Dinamis akan dimuat di sini) --}}
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div id="modalContent">
+                    {{-- Default Loading State --}}
+                    <div class="flex flex-col items-center justify-center py-10">
+                        <i class="fas fa-circle-notch fa-spin text-4xl text-blue-500 mb-3"></i>
+                        <p class="text-gray-500">Memuat data...</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Footer Modal --}}
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" onclick="closeModal()" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    Tutup
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
-<div class="bg-white rounded-lg shadow p-6 mb-6 border-l-4 border-blue-900">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-        <div>
-            <span class="text-gray-500 block uppercase text-xs font-bold">Tanggal</span> 
-            {{ \Carbon\Carbon::parse($event->date)->isoFormat('dddd, D MMMM Y') }}
-        </div>
-        <div>
-            <span class="text-gray-500 block uppercase text-xs font-bold">Waktu</span> 
-            {{ $event->start_time }} - {{ $event->end_time }}
-        </div>
-        <div>
-            <span class="text-gray-500 block uppercase text-xs font-bold">Lokasi</span> 
-            {{ $event->location }}
-        </div>
-        <div>
-            <span class="text-gray-500 block uppercase text-xs font-bold">Total Hadir</span> 
-            <span class="text-blue-600 font-bold text-lg">{{ $attendances->count() }}</span> Orang
-        </div>
-    </div>
-</div>
+<script>
+    function closeModal() {
+        const modal = document.getElementById('employeeModal');
+        modal.classList.add('hidden');
+        
+        // Optional: Reset content to loading state after close
+        setTimeout(() => {
+            document.getElementById('modalContent').innerHTML = `
+                <div class="flex flex-col items-center justify-center py-10">
+                    <i class="fas fa-circle-notch fa-spin text-4xl text-blue-500 mb-3"></i>
+                    <p class="text-gray-500">Memuat data...</p>
+                </div>
+            `;
+        }, 300);
+    }
 
-<div class="bg-white rounded-lg shadow overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="min-w-full leading-normal">
-            <thead>
-                <tr>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">No</th>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Waktu</th>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Nama Lengkap</th>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Unit Kerja</th>
-                    <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-50 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">Tanda Tangan</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($attendances as $index => $attendance)
-                <tr class="hover:bg-gray-50 transition">
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-500">
-                        {{ $index + 1 }}
-                    </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-500">
-                        {{ $attendance->created_at->format('H:i') }}
-                    </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm font-bold text-gray-800">
-                        {{ $attendance->name }}
-                    </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-gray-600">
-                        {{ $attendance->work_unit }}
-                    </td>
-                    <td class="px-5 py-4 border-b border-gray-200 bg-white text-sm text-center">
-                        @if($attendance->signature_path)
-                            <div class="flex justify-center">
-                                <img src="{{ asset('storage/' . $attendance->signature_path) }}" class="h-12 border rounded bg-white p-1 shadow-sm hover:scale-150 transition-transform duration-200 cursor-zoom-in">
-                            </div>
-                        @else
-                            <span class="text-gray-400 italic text-xs">Tidak ada</span>
-                        @endif
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="5" class="text-center py-10 text-gray-500 bg-gray-50">
-                        <div class="flex flex-col items-center">
-                            <i class="fas fa-clipboard-list text-4xl mb-3 text-gray-300"></i>
-                            <p>Belum ada peserta yang mengisi absensi.</p>
-                        </div>
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
-@endsection
+    // Close modal on Esc key press
+    document.addEventListener('keydown', function(event) {
+        if(event.key === "Escape") {
+            closeModal();
+        }
+    });
+</script>

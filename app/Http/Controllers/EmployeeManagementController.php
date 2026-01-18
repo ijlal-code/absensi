@@ -11,23 +11,20 @@ class EmployeeManagementController extends Controller
 {
     /**
      * Menampilkan halaman statistik karyawan (Chart & Persentase).
-     * Method ini ditambahkan untuk fitur visualisasi data.
      */
     public function stats()
     {
         $employees = TonasaEmployee::all();
 
         // 1. Data Tingkat Pendidikan
-        // Mengelompokkan berdasarkan kolom 'pendidikan'. Jika null, dianggap 'Belum Diisi'.
         $educationData = $employees->groupBy(function($item) {
             return $item->pendidikan ?? 'Belum Diisi';
         })->map->count();
 
-        // 2. Data Masa Kerja (LOGIKA DIPERBARUI: Rentang 0-5 Tahun)
+        // 2. Data Masa Kerja (Rentang 0-5 Tahun, dst)
         $serviceData = $employees->map(function($item) {
             $years = (int) $item->masa_kerja; 
             
-            // Penggabungan rentang menjadi 0 - 5 Tahun
             if ($years <= 5) return '0 - 5 Tahun'; 
             if ($years <= 10) return '6 - 10 Tahun';
             if ($years <= 20) return '11 - 20 Tahun';
@@ -40,9 +37,9 @@ class EmployeeManagementController extends Controller
            
         })->groupBy(fn($item) => $item)->map->count();
 
-        // 3. Data Tingkat Usia (Kelompokkan per Range Umur)
+        // 3. Data Tingkat Usia
         $ageData = $employees->map(function($item) {
-            $age = (int) $item->umur; // Pastikan jadi integer
+            $age = (int) $item->umur;
             if ($age < 25) return '< 25 Tahun';
             if ($age <= 35) return '25 - 35 Tahun';
             if ($age <= 45) return '36 - 45 Tahun';
@@ -50,17 +47,22 @@ class EmployeeManagementController extends Controller
             return '> 55 Tahun';
         })->groupBy(fn($item) => $item)->map->count();
 
-        return view('admin.management.stats', compact('educationData', 'serviceData', 'ageData'));
+        // 4. Data Jenis Kelamin (Male vs Female) - FITUR TAMBAHAN
+        $genderData = $employees->groupBy(function($item) {
+            return $item->jenis_kelamin ?? 'Tidak Diketahui';
+        })->map->count();
+
+        return view('admin.management.stats', compact('educationData', 'serviceData', 'ageData', 'genderData'));
     }
 
     /**
-     * Menampilkan daftar karyawan dengan pencarian spesifik.
+     * Menampilkan daftar karyawan dengan pencarian.
      */
     public function index(Request $request)
     {
         $query = TonasaEmployee::query();
 
-        // LOGIKA PENCARIAN (Hanya Nama, NIK, SAP ID)
+        // Pencarian (Nama, NIK, SAP ID)
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {
@@ -83,7 +85,7 @@ class EmployeeManagementController extends Controller
     }
 
     /**
-     * Menyimpan data karyawan baru beserta foto.
+     * Menyimpan data karyawan baru.
      */
     public function store(Request $request)
     {
@@ -94,32 +96,36 @@ class EmployeeManagementController extends Controller
             'sap_id'        => 'required|string|max:50',
             'tanggal_lahir' => 'required|date',
             'tanggal_masuk' => 'required|date',
-            'pendidikan'    => 'nullable|string', // Tambahan validasi pendidikan
+            'pendidikan'    => 'nullable|string',
             'email'         => 'nullable|email',
-            // Validasi Foto: Harus gambar, max 2MB
             'foto_terbaru'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'foto_lama'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            
+            // Validasi Kontak & Primary Phone
+            'no_hp_1'       => 'nullable|string',
+            'no_hp_2'       => 'nullable|string',
+            'no_hp_3'       => 'nullable|string',
+            'primary_phone' => 'required|in:no_hp_1,no_hp_2,no_hp_3',
         ], [
             'nik.required'           => 'NIK wajib diisi.',
             'nik.unique'             => 'NIK sudah terdaftar di sistem.',
             'sap_id.required'        => 'SAP ID wajib diisi.',
             'nama.required'          => 'Nama lengkap wajib diisi.',
             'tanggal_lahir.required' => 'Tanggal lahir wajib diisi.',
-            'tanggal_masuk.required' => 'Tanggal masuk wajib diisi.',
-            'foto_terbaru.image'     => 'File foto terbaru harus berupa gambar.',
-            'foto_terbaru.max'       => 'Ukuran foto terbaru maksimal 2MB.',
+            'primary_phone.required' => 'Silakan pilih satu nomor HP sebagai nomor utama.',
+            'primary_phone.in'       => 'Pilihan nomor utama tidak valid.',
         ]);
 
         $data = $request->all();
 
-        // 2. HITUNG UMUR (Otomatis)
+        // 2. HITUNG UMUR
         try {
             $data['umur'] = Carbon::parse($request->tanggal_lahir)->age;
         } catch (\Exception $e) {
             $data['umur'] = 0;
         }
 
-        // 3. HITUNG MASA KERJA (Bulat ke Bawah / Tahun Penuh)
+        // 3. HITUNG MASA KERJA
         try {
             $data['masa_kerja'] = (int) Carbon::parse($request->tanggal_masuk)->diffInYears(Carbon::now());
         } catch (\Exception $e) {
@@ -128,12 +134,10 @@ class EmployeeManagementController extends Controller
 
         // 4. UPLOAD FOTO
         if ($request->hasFile('foto_terbaru')) {
-            // Simpan di folder public/employees/new
             $data['foto_terbaru'] = $request->file('foto_terbaru')->store('employees/new', 'public');
         }
 
         if ($request->hasFile('foto_lama')) {
-            // Simpan di folder public/employees/old
             $data['foto_lama'] = $request->file('foto_lama')->store('employees/old', 'public');
         }
 
@@ -141,6 +145,21 @@ class EmployeeManagementController extends Controller
 
         return redirect()->route('employee-management.index')
             ->with('success', 'Data karyawan berhasil ditambahkan.');
+    }
+
+    /**
+     * Menampilkan detail karyawan (Untuk Modal/Popup).
+     */
+    public function show($id)
+    {
+        $employee = TonasaEmployee::findOrFail($id);
+        
+        // Jika request datang dari AJAX (untuk modal), return partial view atau JSON
+        if (request()->ajax()) {
+            return view('admin.show_partial', compact('employee'))->render();
+        }
+        
+        return view('admin.management.show', compact('employee'));
     }
 
     /**
@@ -159,7 +178,6 @@ class EmployeeManagementController extends Controller
     {
         $employee = TonasaEmployee::findOrFail($id);
 
-        // 1. VALIDASI (Abaikan unique NIK milik sendiri)
         $request->validate([
             'nama'          => 'required|string|max:255',
             'nik'           => 'required|unique:tonasa_employees,nik,' . $id,
@@ -170,44 +188,47 @@ class EmployeeManagementController extends Controller
             'email'         => 'nullable|email',
             'foto_terbaru'  => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'foto_lama'     => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            
+            // Validasi Kontak
+            'no_hp_1'       => 'nullable|string',
+            'no_hp_2'       => 'nullable|string',
+            'no_hp_3'       => 'nullable|string',
+            'primary_phone' => 'required|in:no_hp_1,no_hp_2,no_hp_3',
         ], [
             'nik.required' => 'NIK wajib diisi.',
             'nik.unique'   => 'NIK sudah digunakan karyawan lain.',
+            'primary_phone.required' => 'Silakan pilih satu nomor HP sebagai nomor utama.',
         ]);
 
         $data = $request->all();
 
-        // 2. HITUNG ULANG UMUR (Jika tanggal berubah)
+        // Hitung ulang umur jika tanggal lahir berubah
         if ($request->filled('tanggal_lahir')) {
             try {
                 $data['umur'] = Carbon::parse($request->tanggal_lahir)->age;
             } catch (\Exception $e) {}
         }
 
-        // 3. HITUNG ULANG MASA KERJA (Jika tanggal berubah)
+        // Hitung ulang masa kerja jika tanggal masuk berubah
         if ($request->filled('tanggal_masuk')) {
             try {
                 $data['masa_kerja'] = (int) Carbon::parse($request->tanggal_masuk)->diffInYears(Carbon::now());
             } catch (\Exception $e) {}
         }
 
-        // 4. UPDATE FOTO TERBARU
+        // Update Foto Terbaru
         if ($request->hasFile('foto_terbaru')) {
-            // Hapus file lama jika ada
             if ($employee->foto_terbaru && Storage::disk('public')->exists($employee->foto_terbaru)) {
                 Storage::disk('public')->delete($employee->foto_terbaru);
             }
-            // Upload file baru
             $data['foto_terbaru'] = $request->file('foto_terbaru')->store('employees/new', 'public');
         }
 
-        // 5. UPDATE FOTO LAMA
+        // Update Foto Lama
         if ($request->hasFile('foto_lama')) {
-            // Hapus file lama jika ada
             if ($employee->foto_lama && Storage::disk('public')->exists($employee->foto_lama)) {
                 Storage::disk('public')->delete($employee->foto_lama);
             }
-            // Upload file baru
             $data['foto_lama'] = $request->file('foto_lama')->store('employees/old', 'public');
         }
 
@@ -218,13 +239,12 @@ class EmployeeManagementController extends Controller
     }
 
     /**
-     * Menghapus data karyawan beserta fotonya.
+     * Menghapus data karyawan.
      */
     public function destroy($id)
     {
         $employee = TonasaEmployee::findOrFail($id);
 
-        // Hapus file fisik foto dari storage
         if ($employee->foto_terbaru && Storage::disk('public')->exists($employee->foto_terbaru)) {
             Storage::disk('public')->delete($employee->foto_terbaru);
         }

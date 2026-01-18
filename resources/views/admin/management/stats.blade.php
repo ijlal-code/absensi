@@ -50,6 +50,16 @@
                             <span class="text-xs text-gray-500">Kelompok Umur</span>
                         </div>
                     </button>
+
+                    <button onclick="updateChart('gender')" id="btn-gender" class="chart-btn flex items-center p-3 rounded-lg border-2 border-transparent hover:bg-gray-50 transition w-full">
+                        <div class="bg-pink-500 text-white rounded-full w-8 h-8 flex-shrink-0 flex items-center justify-center mr-3">
+                            <i class="fas fa-venus-mars text-sm"></i>
+                        </div>
+                        <div class="text-left">
+                            <span class="block font-bold text-sm">Jenis Kelamin</span>
+                            <span class="text-xs text-gray-500">Male vs Female</span>
+                        </div>
+                    </button>
                 </div>
             </div>
 
@@ -108,6 +118,11 @@
             data: formatData({!! json_encode($ageData->keys()) !!}, {!! json_encode($ageData->values()) !!}),
             title: 'Persentase Tingkat Usia',
             color: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#6D28D9', '#5B21B6'] // Nuansa Ungu
+        },
+        gender: {
+            data: formatData({!! json_encode($genderData->keys()) !!}, {!! json_encode($genderData->values()) !!}),
+            title: 'Persentase Jenis Kelamin',
+            color: ['#F472B6', '#3B82F6', '#EC4899', '#2563EB'] // Pink & Biru
         }
     };
 
@@ -191,10 +206,7 @@
                     data: dataset.data,
                     
                     // Warna Custom per kategori
-                    color: [
-                        '#3B82F6', '#10B981', '#F59E0B', '#EF4444', 
-                        '#8B5CF6', '#EC4899', '#6366F1', '#14B8A6'
-                    ],
+                    color: dataset.color,
 
                     // Animasi Masuk
                     animationType: 'scale',
@@ -212,9 +224,14 @@
     }
 
     function updateChart(type) {
-        // Reset Style Tombol (Sama seperti sebelumnya)
+        // Reset Style Tombol
         document.querySelectorAll('.chart-btn').forEach(btn => {
-            btn.classList.remove('bg-blue-50', 'text-blue-700', 'border-blue-500', 'bg-teal-50', 'text-teal-700', 'border-teal-500', 'bg-purple-50', 'text-purple-700', 'border-purple-500');
+            btn.classList.remove(
+                'bg-blue-50', 'text-blue-700', 'border-blue-500', 
+                'bg-teal-50', 'text-teal-700', 'border-teal-500', 
+                'bg-purple-50', 'text-purple-700', 'border-purple-500',
+                'bg-pink-50', 'text-pink-700', 'border-pink-500'
+            );
             btn.classList.add('border-transparent', 'hover:bg-gray-50');
         });
 
@@ -224,6 +241,7 @@
         if(type === 'education') btn.classList.add('bg-blue-50', 'text-blue-700', 'border-blue-500');
         if(type === 'service') btn.classList.add('bg-teal-50', 'text-teal-700', 'border-teal-500');
         if(type === 'age') btn.classList.add('bg-purple-50', 'text-purple-700', 'border-purple-500');
+        if(type === 'gender') btn.classList.add('bg-pink-50', 'text-pink-700', 'border-pink-500');
 
         renderChart(type);
     }
