@@ -29,7 +29,7 @@ class EventController extends Controller
     {
         // Ambil event hari ini berdasarkan kolom 'date'
         $todayEvents = Event::whereDate('date', Carbon::today())
-                        ->orderBy('start_time', 'asc')
+                        ->latest()
                         ->get();
 
         return view('admin.agenda.index', compact('todayEvents'));
@@ -71,18 +71,21 @@ class EventController extends Controller
     /**
      * Halaman Monitor (Show)
      */
-    public function show($id)
-    {
-        $event = Event::with(['attendances' => function($query) {
-            $query->orderBy('created_at', 'desc');
-        }])->findOrFail($id);
-        
-        // Generate QR Code
-        $url = route('attendance.form', $event->id);
-        $qrcode = QrCode::size(200)->generate($url);
+   public function show($id)
+{
+    // Load event dengan relasi attendances (peserta)
+    $event = Event::with(['attendances' => function($query) {
+        $query->orderBy('created_at', 'desc');
+    }])->findOrFail($id);
+    
+    // Generate QR Code
+    $url = route('attendance.form', $event->id);
+    $qrcode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->generate($url);
 
-        return view('admin.show', compact('event', 'qrcode'));
-    }
+    // Kirim $event dan $qrcode ke view
+    // Data peserta ($attendances) sudah menempel di dalam $event
+    return view('admin.show', compact('event', 'qrcode')); 
+}
 
     /**
      * Form Edit

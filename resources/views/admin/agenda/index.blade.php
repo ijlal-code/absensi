@@ -4,7 +4,7 @@
 <div class="container mx-auto px-4 py-6">
     
     {{-- Header & Tombol Kembali --}}
-    <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
         <div>
             <h2 class="text-2xl font-bold text-gray-800">Manajemen Agenda</h2>
             <p class="text-gray-500 text-sm">Atur jadwal dan monitor kehadiran hari ini.</p>
@@ -14,83 +14,109 @@
         </a>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    {{-- Layout Stack Vertikal (Atas Bawah) --}}
+    <div class="flex flex-col gap-8">
         
-        {{-- PANEL KIRI: TOMBOL BUAT AGENDA --}}
-        <div class="lg:col-span-1">
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 text-white text-center">
-                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
-                    <i class="fas fa-plus fa-2x text-white"></i>
-                </div>
-                <h3 class="text-xl font-bold mb-2">Buat Agenda Baru</h3>
-                <p class="text-blue-100 text-sm mb-6">Jadwalkan rapat baru untuk mendapatkan Link Absensi & QR Code.</p>
+        {{-- BAGIAN ATAS: TOMBOL BUAT AGENDA --}}
+        <div class="w-full">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-xl shadow-lg p-6 text-white flex flex-col md:flex-row items-center justify-between gap-6">
                 
-                <a href="{{ route('event.create') }}" class="block w-full py-3 bg-white text-blue-700 font-bold rounded-lg shadow hover:bg-blue-50 transition transform hover:-translate-y-1">
-                    + Buat Agenda Sekarang
-                </a>
+                {{-- Icon & Teks --}}
+                <div class="flex items-center gap-5">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shrink-0">
+                        <i class="fas fa-plus fa-2x text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-1">Buat Agenda Baru</h3>
+                        <p class="text-blue-100 text-sm max-w-lg">
+                            Jadwalkan rapat atau pertemuan baru untuk hari ini. Sistem akan otomatis membuat Link Absensi & QR Code.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Tombol Action --}}
+                <div class="shrink-0 w-full md:w-auto">
+                    <a href="{{ route('event.create') }}" class="inline-block w-full md:w-auto px-8 py-3 bg-white text-blue-700 font-bold rounded-lg shadow-lg hover:bg-blue-50 transition transform hover:-translate-y-1 text-center">
+                        <i class="fas fa-calendar-plus mr-2"></i> Buat Agenda Sekarang
+                    </a>
+                </div>
             </div>
 
-            <div class="mt-6 bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-                <h4 class="font-bold text-gray-700 mb-2 text-sm"><i class="fas fa-info-circle text-blue-500 mr-1"></i> Informasi</h4>
-                <p class="text-xs text-gray-500 leading-relaxed">
-                    Agenda yang dibuat akan otomatis muncul di daftar "Jadwal Hari Ini" sesuai tanggal pelaksanaannya.
+            {{-- Info Alert Kecil --}}
+            <div class="mt-4 bg-blue-50 border border-blue-100 p-3 rounded-lg flex items-start gap-3">
+                <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                <p class="text-xs text-blue-700 leading-relaxed">
+                    <strong>Info Sistem:</strong> Agenda yang baru saja Anda buat akan otomatis muncul di <strong>urutan paling atas</strong> pada daftar di bawah ini.
                 </p>
             </div>
         </div>
 
-        {{-- PANEL KANAN: LIST JADWAL HARI INI --}}
-        <div class="lg:col-span-2">
-            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        {{-- BAGIAN BAWAH: LIST JADWAL HARI INI --}}
+        <div class="w-full">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                 <div class="px-6 py-4 border-b bg-gray-50 flex justify-between items-center">
                     <h3 class="font-bold text-gray-700 flex items-center gap-2">
                         <i class="far fa-clock text-green-500"></i> Jadwal Agenda Hari Ini
                     </h3>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">
-                        {{ $todayEvents->count() }} Agenda
+                    <span class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full border border-green-200">
+                        {{ $todayEvents->count() }} Agenda Aktif
                     </span>
                 </div>
 
                 @if($todayEvents->isEmpty())
-                    <div class="p-10 text-center text-gray-500 flex flex-col items-center">
-                        <i class="far fa-calendar-times fa-3x text-gray-300 mb-3"></i>
-                        <p>Tidak ada agenda terjadwal untuk hari ini.</p>
+                    <div class="p-12 text-center text-gray-500 flex flex-col items-center justify-center bg-gray-50/50">
+                        <div class="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4 text-gray-400">
+                            <i class="far fa-calendar-check fa-2x"></i>
+                        </div>
+                        <h4 class="text-lg font-semibold text-gray-600">Jadwal Kosong</h4>
+                        <p class="text-sm">Belum ada agenda yang dijadwalkan untuk hari ini.</p>
                     </div>
                 @else
                     <div class="divide-y divide-gray-100">
-                        @foreach($todayEvents as $event)
-                        <div class="p-5 hover:bg-gray-50 transition group">
-                            <div class="flex flex-col md:flex-row justify-between gap-4">
+                        @foreach($todayEvents as $index => $event)
+                        <div class="p-5 hover:bg-blue-50/30 transition group {{ $index == 0 ? 'bg-blue-50/40' : '' }}">
+                            <div class="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
+                                
+                                {{-- Info Agenda --}}
                                 <div class="flex-grow">
-                                    <h4 class="font-bold text-lg text-blue-900">{{ $event->title }}</h4>
-                                    <div class="text-sm text-gray-500 mt-1 space-y-1">
-                                        <div class="flex items-center gap-2">
-                                            <i class="far fa-clock text-orange-400 w-5"></i> 
+                                    <div class="flex items-center gap-2 mb-1">
+                                        @if($index == 0)
+                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold uppercase tracking-wide rounded-sm">Terbaru</span>
+                                        @endif
+                                        <h4 class="font-bold text-lg text-gray-800 group-hover:text-blue-700 transition">{{ $event->title }}</h4>
+                                    </div>
+                                    
+                                    <div class="flex flex-wrap gap-4 text-sm text-gray-500">
+                                        <div class="flex items-center gap-1.5">
+                                            <i class="far fa-clock text-orange-500"></i> 
                                             {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }}
                                         </div>
-                                        <div class="flex items-center gap-2">
-                                            <i class="fas fa-map-marker-alt text-red-400 w-5"></i> 
+                                        <div class="flex items-center gap-1.5">
+                                            <i class="fas fa-map-marker-alt text-red-500"></i> 
                                             {{ $event->location }}
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="flex flex-wrap items-center gap-2 shrink-0 self-start md:self-center">
-                                    {{-- Tombol Aksi --}}
-                                    <a href="{{ route('event.show', $event->id) }}" class="bg-teal-50 text-teal-600 px-3 py-2 rounded text-sm hover:bg-teal-100 border border-teal-100 transition" title="Monitor">
-                                        <i class="fas fa-desktop"></i>
+                                {{-- Tombol Aksi --}}
+                                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                                    <a href="{{ route('event.show', $event->id) }}" class="inline-flex items-center gap-1 bg-teal-50 text-teal-700 px-3 py-2 rounded-lg text-sm hover:bg-teal-100 border border-teal-200 transition font-medium" title="Monitor Layar">
+                                        <i class="fas fa-desktop"></i> <span class="hidden sm:inline">Monitor</span>
                                     </a>
-                                    <a href="{{ route('event.qrcode', $event->id) }}" class="bg-purple-50 text-purple-600 px-3 py-2 rounded text-sm hover:bg-purple-100 border border-purple-100 transition" title="QR Code">
-                                        <i class="fas fa-qrcode"></i>
-                                    </a>
-                                    <button onclick="copyLink('{{ route('attendance.form', $event->id) }}')" class="bg-gray-100 text-gray-600 px-3 py-2 rounded text-sm hover:bg-gray-200 border border-gray-200 transition" title="Copy Link">
+
+                                    <div class="h-6 w-px bg-gray-300 mx-1 hidden md:block"></div>
+
+                                    <button onclick="copyLink('{{ route('attendance.form', $event->id) }}')" class="bg-gray-100 text-gray-600 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 border border-gray-200 transition" title="Salin Link">
                                         <i class="fas fa-link"></i>
                                     </button>
-                                    <a href="{{ route('event.edit', $event->id) }}" class="bg-yellow-50 text-yellow-600 px-3 py-2 rounded text-sm hover:bg-yellow-100 border border-yellow-100 transition" title="Edit">
+
+                                    <a href="{{ route('event.edit', $event->id) }}" class="bg-yellow-50 text-yellow-600 px-3 py-2 rounded-lg text-sm hover:bg-yellow-100 border border-yellow-200 transition" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
+
                                     <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Hapus Agenda ini?');" class="inline">
                                         @csrf @method('DELETE')
-                                        <button type="submit" class="bg-red-50 text-red-600 px-3 py-2 rounded text-sm hover:bg-red-100 border border-red-100 transition" title="Hapus">
+                                        <button type="submit" class="bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm hover:bg-red-100 border border-red-200 transition" title="Hapus">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
@@ -107,9 +133,23 @@
 
 <script>
 function copyLink(url) {
-    navigator.clipboard.writeText(url).then(() => {
-        alert('Link berhasil disalin!');
-    });
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => alert('Link berhasil disalin!'));
+    } else {
+        // Fallback untuk browser lama
+        let textArea = document.createElement("textarea");
+        textArea.value = url;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            alert('Link berhasil disalin!');
+        } catch (err) {}
+        document.body.removeChild(textArea);
+    }
 }
 </script>
 @endsection

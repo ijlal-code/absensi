@@ -80,7 +80,7 @@
                             <div class="flex items-center justify-center gap-2">
                                 {{-- Tombol Detail / Monitor (Diarahkan ke halaman show) --}}
                                 <a href="{{ route('event.show', $event->id) }}" class="group relative px-3 py-2 bg-blue-50 text-blue-600 rounded-lg border border-blue-200 hover:bg-blue-600 hover:text-white transition" title="Lihat Detail & Daftar Hadir">
-                                    <i class="fas fa-eye"></i>
+                                    <i class="fas fa-desktop"></i>
                                     <span class="sr-only">Detail</span>
                                 </a>
 
