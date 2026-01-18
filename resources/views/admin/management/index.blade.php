@@ -52,7 +52,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Karyawan</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jabatan & Unit</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Masa Kerja</th>
-                    {{-- KOLOM HP MENYESUAIKAN PRIMARY --}}
+                    {{-- KOLOM KONTAK DINAMIS --}}
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kontak (Utama)</th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                 </tr>
@@ -89,9 +89,10 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{-- LOGIKA MENAMPILKAN NO HP UTAMA --}}
                             @php
-                                // Ambil nama kolom dari database, misal 'no_hp_2'
+                                // 1. Cek kolom mana yang jadi primary (default ke no_hp_1 jika null)
                                 $primaryField = $employee->primary_phone ?? 'no_hp_1'; 
-                                // Ambil nilai dari kolom tersebut
+                                
+                                // 2. Ambil isi datanya (misal isi dari kolom no_hp_2)
                                 $primaryNumber = $employee->$primaryField;
                             @endphp
                             
@@ -100,7 +101,9 @@
                                     <i class="fas fa-phone-alt text-xs mr-2"></i> {{ $primaryNumber }}
                                 </span>
                             @else
-                                <span class="text-gray-400 italic text-xs">Tidak ada no HP</span>
+                                <span class="text-gray-400 italic text-xs">
+                                    Tidak ada ({{ str_replace('_', ' ', strtoupper($primaryField)) }})
+                                </span>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -138,12 +141,10 @@
     </div>
 </div>
 
-{{-- INCLUDE MODAL DETAIL --}}
+{{-- INCLUDE MODAL WRAPPER --}}
 @include('admin.show') 
 
 <script>
-    // Fungsi untuk memanggil Modal Detail
-    // Menggunakan AJAX request ke route show untuk mendapatkan data HTML partial
     function openModal(id) {
         const modal = document.getElementById('employeeModal');
         const content = document.getElementById('modalContent');
@@ -151,7 +152,7 @@
         // Tampilkan Modal
         if(modal) modal.classList.remove('hidden');
         
-        // Tampilkan Loading
+        // Tampilkan Loading State
         if(content) {
             content.innerHTML = `
                 <div class="flex flex-col items-center justify-center py-10">
@@ -161,11 +162,11 @@
             `;
         }
 
-        // Fetch Data via AJAX
-        fetch(`/admin/employee-management/${id}`)
+        // Fetch Data via AJAX ke Controller method show()
+        fetch(`/employee-management/${id}`)
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
-                return response.text(); // Kita ambil text karena controller akan return view partial (HTML)
+                return response.text(); 
             })
             .then(html => {
                 if(content) content.innerHTML = html;
@@ -176,7 +177,7 @@
                     content.innerHTML = `
                         <div class="text-center py-10 text-red-500">
                             <i class="fas fa-exclamation-triangle text-3xl mb-2"></i>
-                            <p>Gagal memuat data. Silakan coba lagi.</p>
+                            <p>Gagal memuat data.</p>
                         </div>
                     `;
                 }

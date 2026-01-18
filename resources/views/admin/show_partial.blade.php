@@ -34,12 +34,12 @@
             
             <div class="space-y-2">
                 {{-- HP 1 --}}
-                <div class="flex justify-between items-center p-3 rounded-lg {{ $employee->primary_phone == 'no_hp_1' ? 'bg-blue-50 border border-blue-200 shadow-sm' : 'bg-gray-50 border border-transparent' }}">
+                <div class="flex justify-between items-center p-3 rounded-lg {{ ($employee->primary_phone ?? 'no_hp_1') == 'no_hp_1' ? 'bg-blue-50 border border-blue-200 shadow-sm' : 'bg-gray-50 border border-transparent' }}">
                     <div class="flex items-center">
-                        <i class="fas fa-phone-alt {{ $employee->primary_phone == 'no_hp_1' ? 'text-blue-500' : 'text-gray-400' }} mr-3 text-sm"></i>
+                        <i class="fas fa-phone-alt {{ ($employee->primary_phone ?? 'no_hp_1') == 'no_hp_1' ? 'text-blue-500' : 'text-gray-400' }} mr-3 text-sm"></i>
                         <span class="text-sm text-gray-600">HP 1: <span class="font-semibold text-gray-800 ml-1">{{ $employee->no_hp_1 ?? '-' }}</span></span>
                     </div>
-                    @if($employee->primary_phone == 'no_hp_1')
+                    @if(($employee->primary_phone ?? 'no_hp_1') == 'no_hp_1')
                         <span class="text-[10px] bg-blue-600 text-white px-2 py-1 rounded-full uppercase font-bold tracking-wider shadow-sm">
                             <i class="fas fa-check mr-1"></i>Utama
                         </span>

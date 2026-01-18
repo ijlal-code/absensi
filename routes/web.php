@@ -38,6 +38,12 @@ Route::middleware(['auth'])->group(function () {
     // Route Statistik Karyawan (Menu Terpisah)
     Route::get('/statistik-karyawan', [EmployeeManagementController::class, 'stats'])->name('employee.stats');
 
+    // Tambahkan ini agar route stats terdefinisi
+Route::get('employee-management/stats', [EmployeeManagementController::class, 'stats'])->name('employee-management.stats');
+
+// Baru kemudian route resource
+Route::resource('employee-management', EmployeeManagementController::class);
+
     // 2. Route Kelola Karyawan (CRUD Lengkap)
     // Note: Route 'stats' yang lama dihapus dari sini agar tidak konflik
     Route::resource('employee-management', EmployeeManagementController::class);
