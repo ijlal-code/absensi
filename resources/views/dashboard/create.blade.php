@@ -20,12 +20,11 @@
                 <input type="date" name="date" id="date" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
             </div>
 
-            {{-- Jam Mulai & Selesai (Otomatis Terisi JS) --}}
+            {{-- Jam Mulai & Selesai --}}
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-gray-700 font-bold mb-2">Jam Mulai (WITA)</label>
                     <input type="time" name="start_time" id="start_time" class="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                    <p class="text-xs text-gray-500 mt-1">*Otomatis jam sekarang</p>
                 </div>
                 <div>
                     <label class="block text-gray-700 font-bold mb-2">Jam Selesai (WITA)</label>
@@ -41,41 +40,35 @@
 
             {{-- Tombol Aksi --}}
             <div class="flex justify-end space-x-2">
-                <a href="{{ route('dashboard') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</a>
+                <a href="{{ route('event.agenda') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Batal</a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded shadow-lg">Simpan Agenda</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- SCRIPT OTOMATIS JAM LAPTOP (REALTIME) --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 1. Ambil Waktu Sekarang di Laptop User
         const now = new Date();
+        
+        // Helper untuk format 2 digit
+        const pad = (num) => String(num).padStart(2, '0');
 
-        // 2. Format Jam & Menit menjadi 2 digit (misal: 08:05)
-        const currentHours = String(now.getHours()).padStart(2, '0');
-        const currentMinutes = String(now.getMinutes()).padStart(2, '0');
-        const currentTime = `${currentHours}:${currentMinutes}`;
-
-        // 3. Set Jam Mulai = Jam Sekarang
-        const startTimeInput = document.getElementById('start_time');
-        startTimeInput.value = currentTime;
-
-        // 4. Set Jam Selesai = Jam Sekarang + 2 Jam (Estimasi)
-        const endTimeInput = document.getElementById('end_time');
-        let endHours = now.getHours() + 2; 
-        if (endHours > 23) endHours = 23; // Mentok di jam 23
-        const endHoursStr = String(endHours).padStart(2, '0');
-        endTimeInput.value = `${endHoursStr}:${currentMinutes}`;
-
-        // 5. Set Tanggal Hari Ini
+        // Set Tanggal Hari Ini
         const dateInput = document.getElementById('date');
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0');
-        const day = String(now.getDate()).padStart(2, '0');
-        dateInput.value = `${year}-${month}-${day}`;
+        dateInput.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+
+        // Set Jam Sekarang
+        const startTimeInput = document.getElementById('start_time');
+        const currentHours = now.getHours();
+        const currentMinutes = now.getMinutes();
+        startTimeInput.value = `${pad(currentHours)}:${pad(currentMinutes)}`;
+
+        // Set Jam Selesai (+2 Jam)
+        const endTimeInput = document.getElementById('end_time');
+        let endHours = currentHours + 2;
+        if (endHours > 23) endHours = 23;
+        endTimeInput.value = `${pad(endHours)}:${pad(currentMinutes)}`;
     });
 </script>
 @endsection

@@ -7,16 +7,15 @@ use App\Models\TonasaEmployee;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Illuminate\Support\Facades\Auth; // PENTING: Untuk ambil Auth::id()
 
 class EventController extends Controller
 {
     /**
-     * Dashboard Utama (Menu Navigasi).
-     * Hanya menampilkan kartu menu pilihan (Manajemen Agenda & Data Karyawan).
+     * Dashboard Utama
      */
     public function index()
     {
-        // Data ringkasan untuk tampilan kartu menu
         $totalEvents = Event::count();
         $totalEmployees = TonasaEmployee::count();
 
@@ -24,13 +23,12 @@ class EventController extends Controller
     }
 
     /**
-     * Halaman Manajemen Agenda.
-     * Menampilkan tombol buat agenda baru & daftar agenda hari ini.
+     * Halaman Manajemen Agenda
      */
     public function agenda()
     {
-        // Ambil event khusus HARI INI untuk monitoring
-        $todayEvents = Event::whereDate('start_time', Carbon::today())
+        // Ambil event hari ini berdasarkan kolom 'date'
+        $todayEvents = Event::whereDate('date', Carbon::today())
                         ->orderBy('start_time', 'asc')
                         ->get();
 
@@ -38,7 +36,7 @@ class EventController extends Controller
     }
 
     /**
-     * Form Buat Agenda Baru.
+     * Form Buat Agenda
      */
     public function create()
     {
@@ -46,36 +44,48 @@ class EventController extends Controller
     }
 
     /**
-     * Simpan Agenda Baru.
+     * Simpan Agenda (FIX: User ID & Date)
      */
     public function store(Request $request)
     {
+        // 1. Validasi Input
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
+            'date' => 'required|date',             // Wajib ada karena kolom 'date' terpisah
+            'start_time' => 'required',            // Format H:i dari input time
+            'end_time' => 'required',
             'location' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
 
+        // 2. Tambahkan user_id manual (Solusi Error 1364)
+        $validated['user_id'] = Auth::id();
+
+        // 3. Simpan ke Database
         Event::create($validated);
 
-        // Redirect ke halaman Manajemen Agenda (bukan dashboard utama)
         return redirect()->route('event.agenda')
             ->with('success', 'Agenda berhasil dibuat dan siap digunakan.');
     }
 
     /**
-     * Tampilkan Detail Agenda (Monitor Absensi).
+     * Halaman Monitor (Show)
      */
     public function show($id)
     {
-        $event = Event::with('attendances')->findOrFail($id);
-        return view('admin.show', compact('event'));
+        $event = Event::with(['attendances' => function($query) {
+            $query->orderBy('created_at', 'desc');
+        }])->findOrFail($id);
+        
+        // Generate QR Code
+        $url = route('attendance.form', $event->id);
+        $qrcode = QrCode::size(200)->generate($url);
+
+        return view('admin.show', compact('event', 'qrcode'));
     }
 
     /**
-     * Form Edit Agenda.
+     * Form Edit
      */
     public function edit(Event $event)
     {
@@ -83,63 +93,51 @@ class EventController extends Controller
     }
 
     /**
-     * Update Data Agenda.
+     * Update Agenda
      */
     public function update(Request $request, Event $event)
     {
-        $request->validate([
-            'title' => 'required',
-            'start_time' => 'required|date',
-            'end_time' => 'required|date|after:start_time',
-            'location' => 'required',
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'date' => 'required|date',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'location' => 'required|string|max:255',
         ]);
 
-        $event->update($request->all());
+        // Update data (user_id tidak perlu di-update)
+        $event->update($validated);
 
         return redirect()->route('event.agenda')
             ->with('success', 'Agenda berhasil diperbarui.');
     }
 
     /**
-     * Hapus Agenda.
+     * Hapus Agenda
      */
     public function destroy(Event $event)
     {
         $event->delete();
-
         return redirect()->route('event.agenda')
             ->with('success', 'Agenda berhasil dihapus.');
     }
 
-    /**
-     * Halaman Laporan (Rekapitulasi).
-     */
     public function reports()
     {
         $events = Event::withCount('attendances')->latest()->get();
         return view('dashboard.reports', compact('events'));
     }
 
-    /**
-     * Tampilkan Halaman QR Code.
-     */
     public function showQrCode(Event $event)
     {
         $url = route('attendance.form', $event->id);
-        
-        // Generate QR Code sederhana untuk view
         $qrcode = QrCode::size(300)->generate($url);
-        
         return view('dashboard.qrcode', compact('event', 'qrcode', 'url'));
     }
     
-    /**
-     * Download QR Code (PNG).
-     */
     public function downloadQrCode(Event $event)
     {
         $url = route('attendance.form', $event->id);
-        
         return response()->streamDownload(
             function () use ($url) {
                 echo QrCode::format('png')->size(300)->generate($url);
@@ -147,14 +145,5 @@ class EventController extends Controller
             'qrcode-' . $event->id . '.png',
             ['Content-Type' => 'image/png']
         );
-    }
-    
-    /**
-     * Dashboard Khusus Admin (Jika dipisah logic-nya).
-     * Saat ini diarahkan ke logic index yang sama.
-     */
-    public function adminDashboard()
-    {
-        return $this->index();
     }
 }
