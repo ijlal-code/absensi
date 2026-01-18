@@ -71,20 +71,18 @@ class EventController extends Controller
     /**
      * Halaman Monitor (Show)
      */
-   public function show($id)
+ public function show(Event $event)
 {
-    // Load event dengan relasi attendances (peserta)
-    $event = Event::with(['attendances' => function($query) {
-        $query->orderBy('created_at', 'desc');
-    }])->findOrFail($id);
-    
-    // Generate QR Code
-    $url = route('attendance.form', $event->id);
-    $qrcode = \SimpleSoftwareIO\QrCode\Facades\QrCode::size(200)->generate($url);
+    // Ini tetap untuk menampilkan view detail/modal
+    return view('admin.show', compact('event'));
+}
 
-    // Kirim $event dan $qrcode ke view
-    // Data peserta ($attendances) sudah menempel di dalam $event
-    return view('admin.show', compact('event', 'qrcode')); 
+public function monitor(Event $event)
+{
+    // Method baru khusus untuk halaman monitoring
+    // Pastikan relasi attendances dimuat (eager loading)
+    $event->load('attendances'); 
+    return view('admin.monitor', compact('event'));
 }
 
     /**

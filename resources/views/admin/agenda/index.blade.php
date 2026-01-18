@@ -100,9 +100,14 @@
 
                                 {{-- Tombol Aksi --}}
                                 <div class="flex flex-wrap items-center gap-2 shrink-0">
-                                    <a href="{{ route('event.show', $event->id) }}" class="inline-flex items-center gap-1 bg-teal-50 text-teal-700 px-3 py-2 rounded-lg text-sm hover:bg-teal-100 border border-teal-200 transition font-medium" title="Monitor Layar">
+                                    <a href="{{ route('event.monitor', $event->id) }}" class="inline-flex items-center gap-1 bg-teal-50 text-teal-700 px-3 py-2 rounded-lg text-sm hover:bg-teal-100 border border-teal-200 transition font-medium" title="Monitor Layar">
                                         <i class="fas fa-desktop"></i> <span class="hidden sm:inline">Monitor</span>
                                     </a>
+
+                                    {{-- TOMBOL QR CODE (DITAMBAHKAN KEMBALI) --}}
+    <a href="{{ route('event.qrcode', $event->id) }}" class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 px-3 py-2 rounded-lg text-sm hover:bg-indigo-100 border border-indigo-200 transition font-medium" title="Tampilkan QR Code">
+        <i class="fas fa-qrcode"></i> <span class="hidden sm:inline">QR Code</span>
+    </a>
 
                                     <div class="h-6 w-px bg-gray-300 mx-1 hidden md:block"></div>
 

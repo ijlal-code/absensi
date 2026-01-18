@@ -61,7 +61,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/event/{event}/qrcode/download', [EventController::class, 'downloadQrCode'])->name('event.qrcode.download');
     
     Route::get('/reports', [EventController::class, 'reports'])->name('reports');
-    Route::get('/event/{event}/monitor', [EventController::class, 'show'])->name('event.show');
+
+// GANTI menjadi seperti ini:
+Route::get('/event/{event}/show', [EventController::class, 'show'])->name('event.show'); // Untuk detail/modal
+Route::get('/event/{event}/monitor', [EventController::class, 'monitor'])->name('event.monitor'); // Khusus Monitoring
     Route::get('/event/{event}/download-pdf', [AttendanceController::class, 'downloadPdf'])->name('attendance.pdf');
 
     // --- 5. Admin Management (User System) ---
