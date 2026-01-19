@@ -10,18 +10,19 @@ use Illuminate\Support\Facades\Storage;
 class EmployeeManagementController extends Controller
 {
     /**
-     * Menampilkan halaman statistik karyawan (Chart & Persentase).
+     * Menampilkan halaman statistik karyawan.
      */
     public function stats()
     {
         $employees = TonasaEmployee::all();
 
         // 1. Data Tingkat Pendidikan
+        // Kita hitung dulu jumlahnya, urutan "Belum Diisi-SMA..." akan dihandle di JS
         $educationData = $employees->groupBy(function($item) {
             return $item->pendidikan ?? 'Belum Diisi';
         })->map->count();
 
-        // 2. Data Masa Kerja (Rentang 0-5 Tahun, dst)
+        // 2. Data Masa Kerja (Diurutkan secara Logika Tahun)
         $serviceData = $employees->map(function($item) {
             $years = (int) $item->masa_kerja; 
             
@@ -34,10 +35,21 @@ class EmployeeManagementController extends Controller
             if ($years <= 40) return '36 - 40 Tahun';
             if ($years <= 45) return '41 - 45 Tahun';
             if ($years <= 50) return '46 - 50 Tahun';
-           
+            return '> 50 Tahun';
         })->groupBy(fn($item) => $item)->map->count();
 
-        // 3. Data Tingkat Usia
+        // URUTKAN KEY MASA KERJA (Agar defaultnya dari tahun terkecil)
+        // Kita pakai array keys manual agar urutannya pasti
+        $serviceOrder = [
+            '0 - 5 Tahun', '6 - 10 Tahun', '11 - 20 Tahun', '21 - 25 Tahun',
+            '26 - 30 Tahun', '31 - 35 Tahun', '36 - 40 Tahun', '41 - 45 Tahun', 
+            '46 - 50 Tahun', '> 50 Tahun'
+        ];
+        $serviceData = $serviceData->sortBy(function($val, $key) use ($serviceOrder) {
+            return array_search($key, $serviceOrder);
+        });
+
+        // 3. Data Tingkat Usia (Diurutkan secara Logika Umur)
         $ageData = $employees->map(function($item) {
             $age = (int) $item->umur;
             if ($age < 25) return '< 25 Tahun';
@@ -47,10 +59,17 @@ class EmployeeManagementController extends Controller
             return '> 55 Tahun';
         })->groupBy(fn($item) => $item)->map->count();
 
-        // 4. Data Jenis Kelamin (Male vs Female) - FITUR TAMBAHAN
+        // URUTKAN KEY USIA
+        $ageOrder = ['< 25 Tahun', '25 - 35 Tahun', '36 - 45 Tahun', '46 - 55 Tahun', '> 55 Tahun'];
+        $ageData = $ageData->sortBy(function($val, $key) use ($ageOrder) {
+            return array_search($key, $ageOrder);
+        });
+
+        // 4. Data Jenis Kelamin
         $genderData = $employees->groupBy(function($item) {
             return $item->jenis_kelamin ?? 'Tidak Diketahui';
         })->map->count();
+        // Gender akan diurutkan by Value (jumlah) di Frontend sesuai request
 
         return view('admin.management.stats', compact('educationData', 'serviceData', 'ageData', 'genderData'));
     }
