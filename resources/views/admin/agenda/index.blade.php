@@ -42,13 +42,7 @@
                 </div>
             </div>
 
-            {{-- Info Alert Kecil --}}
-            <div class="mt-4 bg-blue-50 border border-blue-100 p-3 rounded-lg flex items-start gap-3">
-                <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
-                <p class="text-xs text-blue-700 leading-relaxed">
-                    <strong>Info Sistem:</strong> Agenda yang baru saja Anda buat akan otomatis muncul di <strong>urutan paling atas</strong> pada daftar di bawah ini.
-                </p>
-            </div>
+            
         </div>
 
         {{-- BAGIAN BAWAH: LIST JADWAL HARI INI --}}

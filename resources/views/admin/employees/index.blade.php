@@ -14,22 +14,22 @@
     }
 </script>
 
-<div class="min-h-screen bg-gray-50 py-8 font-sans">
-    <div class="max-w-[98%] mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 py-4 sm:py-8 font-sans">
+    <div class="w-full max-w-[98%] mx-auto px-2 sm:px-6 lg:px-8">
         
         {{-- HEADER --}}
-        <div class="md:flex md:items-center md:justify-between mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
             <div class="min-w-0 flex-1">
-                <h2 class="text-3xl font-bold text-gray-900">Informasi Karyawan</h2>
+                <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Informasi Karyawan</h2>
                 <p class="mt-1 text-sm text-gray-500">Database Lengkap Semen Tonasa 2026</p>
             </div>
             
             {{-- SEARCH FORM & FILTER --}}
-            <div class="mt-4 md:mt-0 flex flex-col md:flex-row md:items-center gap-4">
-                <div class="flex-none">
+            <div class="flex flex-col md:flex-row md:items-center gap-3 w-full md:w-auto">
+                <div class="flex-none w-full md:w-auto">
                     <form action="{{ route('employees.index') }}" method="GET">
                         <button type="submit" name="filter_birthday" value="today" 
-                            class="group inline-flex items-center gap-2 bg-white border border-green-600 text-green-700 px-4 py-2.5 rounded-lg hover:bg-green-50 transition font-medium text-sm shadow-sm w-full justify-center md:w-auto">
+                            class="group inline-flex items-center justify-center gap-2 bg-white border border-green-600 text-green-700 px-4 py-2.5 rounded-lg hover:bg-green-50 transition font-medium text-sm shadow-sm w-full md:w-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
@@ -40,8 +40,8 @@
 
                 <div class="hidden md:block h-8 w-[3px] bg-gray-300 rounded-full"></div>
 
-                <div class="flex w-full md:max-w-md gap-2">
-                    <div class="relative flex-grow">
+                <div class="flex flex-col sm:flex-row gap-2 w-full md:max-w-md">
+                    <div class="relative flex-grow w-full">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -60,7 +60,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('employees.index') }}" class="flex-none bg-gray-100 text-gray-600 border border-gray-300 px-4 py-2.5 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition font-medium text-sm shadow-sm flex items-center justify-center">
+                    <a href="{{ route('employees.index') }}" class="flex-none w-full sm:w-auto bg-gray-100 text-gray-600 border border-gray-300 px-4 py-2.5 rounded-lg hover:bg-gray-200 hover:text-gray-800 transition font-medium text-sm shadow-sm flex items-center justify-center">
                         Reset
                     </a>
                 </div>
@@ -68,17 +68,19 @@
         </div>
 
         {{-- WRAPPER KONTEN --}}
-        <div id="employee-content-wrapper">
-            <div class="bg-white shadow-md rounded-lg overflow-hidden border-t-4 border-primary-600">
-                <div class="overflow-x-auto">
+        <div id="employee-content-wrapper" class="relative z-0"> {{-- Tambahan z-0 untuk memastikan stacking context benar --}}
+            <div class="bg-white shadow-md rounded-lg overflow-hidden border-t-4 border-primary-600 flex flex-col">
+                
+                {{-- TABLE WRAPPER --}}
+                <div class="overflow-x-auto w-full">
                     <table class="min-w-max w-full divide-y divide-gray-200 text-xs">
                         <thead class="bg-primary-50">
                             <tr>
-                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase sticky left-0 bg-primary-50 z-10 shadow-sm">Aksi</th>
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase sticky left-0 bg-primary-50 z-10 shadow-sm border-r border-primary-100">Aksi</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">SAP</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">NIK</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Nama Karyawan</th>
-                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">No. HP Utama</th> {{-- PINDAH KE DEPAN AGAR LEBIH JELAS --}}
+                                <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">No. HP Utama</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">Emp. Subgroup</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">TXT_DIR</th>
                                 <th class="px-2 py-3 text-left font-bold text-primary-700 uppercase whitespace-nowrap">TXT_DEPT</th>
@@ -110,23 +112,17 @@
                                 $tglSd        = $emp->s_d ? $emp->s_d->format('d M Y') : '-';
                                 $tglTerminasi = $emp->date_terminasi ? $emp->date_terminasi->format('d M Y') : '-';
                                 
-                                // LOGIKA PENENTUAN NO HP UTAMA DI TABEL
-                                // Default ke 'no_hp_1' jika primary_phone null
                                 $primaryKey = $emp->primary_phone ?? 'no_hp_1';
                                 $displayPhone = $emp->$primaryKey;
 
-                                // DATA JSON UNTUK MODAL
                                 $jsonData = json_encode([
                                     'sap' => $emp->sap_id,
                                     'nik' => $emp->nik,
                                     'nama' => $emp->nama,
-                                    // Kirim semua no HP
                                     'hp1' => $emp->no_hp_1, 
                                     'hp2' => $emp->no_hp_2, 
                                     'hp3' => $emp->no_hp_3,
-                                    // Kirim kunci primary phone agar JS tahu mana yang utama (no_hp_1, no_hp_2, dst)
                                     'primary_phone_key' => $primaryKey,
-                                    
                                     'subgroup' => $emp->subgroup,
                                     'txt_dir' => $emp->direktorat,
                                     'txt_dept' => $emp->departemen,
@@ -162,18 +158,16 @@
                             @endphp
 
                             <tr class="{{ $isBirthday ? 'bg-green-100 text-green-900' : 'bg-white hover:bg-gray-50 transition' }}">
-                                <td class="px-2 py-3 whitespace-nowrap sticky left-0 z-10 shadow-sm border-r {{ $isBirthday ? 'bg-green-100' : 'bg-white' }}">
+                                <td class="px-2 py-3 whitespace-nowrap sticky left-0 z-10 shadow-sm border-r border-gray-200 {{ $isBirthday ? 'bg-green-100' : 'bg-white' }}">
                                     <button onclick="showEmployeeModal(this)" 
                                             data-json="{{ $jsonData }}"
                                             class="bg-primary-600 hover:bg-primary-700 text-white text-[10px] font-bold py-1 px-3 rounded shadow transition">
-                                        Detail
+                                            Detail
                                     </button>
                                 </td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->sap_id ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap font-medium">{{ $emp->nik ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap font-bold flex items-center gap-1">{{ $emp->nama ?? '-' }}</td>
-                                
-                                {{-- TAMPILAN DINAMIS NO HP UTAMA DI TABEL --}}
                                 <td class="px-2 py-2 whitespace-nowrap font-bold text-blue-700">
                                     {{ $displayPhone ? wordwrap($displayPhone, 4, ' ', true) : '-' }}
                                     @if($displayPhone)
@@ -182,7 +176,6 @@
                                         </span>
                                     @endif
                                 </td>
-
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->subgroup ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->direktorat ?? '-' }}</td>
                                 <td class="px-2 py-2 whitespace-nowrap">{{ $emp->departemen ?? '-' }}</td>
@@ -205,7 +198,9 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="25" class="px-6 py-10 text-center text-gray-500">Tidak ada data ditemukan.</td>
+                                <td colspan="25" class="px-6 py-10 text-center text-gray-500">
+                                    <p class="text-base">Tidak ada data ditemukan.</p>
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -213,16 +208,16 @@
                 </div>
                 
                 {{-- PAGINATION --}}
-                <div class="bg-white px-4 py-3 border-t flex items-center justify-between sm:px-6">
-                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-xs text-gray-500">
-                                Menampilkan <span class="font-bold text-gray-700">{{ $employees->firstItem() ?? 0 }}</span> 
-                                sampai <span class="font-bold text-gray-700">{{ $employees->lastItem() ?? 0 }}</span> 
-                                dari <span class="font-bold text-gray-700">{{ $employees->total() }}</span> data
+                <div class="bg-white px-4 py-3 border-t border-gray-200">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="w-full sm:w-auto text-center sm:text-left">
+                            <p class="text-xs text-gray-700">
+                                Menampilkan <span class="font-bold">{{ $employees->firstItem() ?? 0 }}</span> 
+                                sampai <span class="font-bold">{{ $employees->lastItem() ?? 0 }}</span> 
+                                dari <span class="font-bold">{{ $employees->total() }}</span> data
                             </p>
                         </div>
-                        <div>
+                        <div class="w-full sm:w-auto flex justify-center sm:justify-end" id="pagination-links">
                             @if ($employees->hasPages())
                                 {{ $employees->links('pagination::tailwind') }}
                             @endif
@@ -235,10 +230,8 @@
     </div>
 </div>
 
-{{-- INCLUDE FILE MODAL TERPISAH --}}
 @include('admin.employees.show_modal')
 
-{{-- Script Live Search (Tetap di sini atau dipisah ke JS file) --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInput = document.getElementById('live-search-input');
@@ -246,27 +239,70 @@
         const loadingIndicator = document.getElementById('loading-indicator');
         let timeout = null;
 
-        searchInput.addEventListener('input', function() {
+        // --- FUNGSI UTAMA AJAX FETCHER ---
+        // Digunakan oleh Search dan Pagination agar konsisten
+        function fetchEmployees(url) {
             loadingIndicator.classList.remove('hidden');
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                const query = this.value;
-                const url = `{{ route('employees.index') }}?search=${encodeURIComponent(query)}`;
-                
-                fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
                 .then(response => response.text())
                 .then(html => {
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(html, 'text/html');
-                    const newContent = doc.getElementById('employee-content-wrapper').innerHTML;
-                    contentWrapper.innerHTML = newContent;
+                    
+                    // Ambil konten baru
+                    const newContent = doc.getElementById('employee-content-wrapper');
+                    
+                    if(newContent) {
+                        contentWrapper.innerHTML = newContent.innerHTML;
+                    }
+                    
                     loadingIndicator.classList.add('hidden');
                 })
                 .catch(error => {
                     console.error('Error:', error);
                     loadingIndicator.classList.add('hidden');
                 });
+        }
+
+        // 1. EVENT LISTENER UNTUK SEARCH (Debounce)
+        searchInput.addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                const query = this.value;
+                const url = `{{ route('employees.index') }}?search=${encodeURIComponent(query)}`;
+                fetchEmployees(url);
             }, 500);
+        });
+
+        // 2. EVENT LISTENER UNTUK PAGINATION (Delegation)
+        // Ini kuncinya: Menangkap klik pada link pagination, mencegah default behaviour (reload),
+        // dan mencegah event bubbling ke layout (sidebar)
+        contentWrapper.addEventListener('click', function(e) {
+            // Cek apakah yang diklik adalah link pagination (tag <a> atau elemen di dalamnya)
+            const link = e.target.closest('a'); // Cari tag <a> terdekat
+            
+            // Pastikan link tersebut ada di dalam area pagination (biasanya nav)
+            // Class 'relative inline-flex items-center' adalah ciri khas pagination tailwind
+            if (link && link.closest('nav')) {
+                const url = link.getAttribute('href');
+                
+                // Pastikan ada URL valid
+                if (url && url !== '#') {
+                    e.preventDefault();   // Mencegah reload halaman
+                    e.stopPropagation();  // Mencegah event "naik" ke sidebar/layout
+                    
+                    // Tambahkan query search saat ini ke URL pagination jika belum ada
+                    const currentSearch = searchInput.value;
+                    let finalUrl = url;
+                    
+                    if(currentSearch && !url.includes('search=')) {
+                         finalUrl += (url.includes('?') ? '&' : '?') + `search=${encodeURIComponent(currentSearch)}`;
+                    }
+
+                    fetchEmployees(finalUrl);
+                }
+            }
         });
     });
 </script>
