@@ -62,4 +62,10 @@ class User extends Authenticatable
         // Cek apakah permission ada di dalam array
         return in_array($permission, $this->permissions);
     }
+
+    // TAMBAHKAN RELASI INI
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
 }

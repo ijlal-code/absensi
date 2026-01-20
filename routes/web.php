@@ -32,16 +32,22 @@ Route::prefix('absensi')->group(function () {
 */
 Route::middleware(['auth'])->group(function () {
     
-    // --- 1. Dashboard Utama (Menu Navigasi) ---
+   // --- DASHBOARD USER ---
     Route::get('/dashboard', [EventController::class, 'index'])->name('dashboard');
+    
+    // Route Khusus List Agenda Admin
+    Route::get('/agenda-resmi', [EventController::class, 'listAdminAgendas'])->name('events.admin_list');
 
-    // --- 2. Manajemen Agenda (Halaman Operasional) ---
-    Route::get('/manajemen-agenda', [EventController::class, 'agenda'])->name('event.agenda');
-    Route::get('/create-event', [EventController::class, 'create'])->name('event.create');
-    Route::post('/store-event', [EventController::class, 'store'])->name('event.store');
-    Route::get('/event/{event}/edit', [EventController::class, 'edit'])->name('event.edit');
-    Route::put('/event/{event}', [EventController::class, 'update'])->name('event.update');
-    Route::delete('/event/{event}', [EventController::class, 'destroy'])->name('event.destroy');
+    // --- FITUR BUAT AGENDA SENDIRI ---
+    // Lindungi dengan permission 'create_events' agar user yang belum dicentang tidak bisa akses via URL
+    Route::middleware(['permission:create_events'])->group(function () {
+        Route::get('/manajemen-agenda', [EventController::class, 'agenda'])->name('event.agenda');
+        Route::get('/create-event', [EventController::class, 'create'])->name('event.create');
+        Route::post('/store-event', [EventController::class, 'store'])->name('event.store');
+        Route::get('/event/{event}/edit', [EventController::class, 'edit'])->name('event.edit');
+        Route::put('/event/{event}', [EventController::class, 'update'])->name('event.update');
+        Route::delete('/event/{event}', [EventController::class, 'destroy'])->name('event.destroy');
+    });
 
     // Fitur Event lainnya
     Route::get('/event/{event}/qrcode', [EventController::class, 'showQrCode'])->name('event.qrcode');

@@ -15,30 +15,38 @@ class EventController extends Controller
     /**
      * Dashboard Utama
      */
+    /**
+     * Dashboard Utama (Menangani Admin & User)
+     */
     public function index()
-{
-    $user = \Illuminate\Support\Facades\Auth::user();
+    {
+        $user = Auth::user();
 
-    // 1. Jika Admin -> Tampilkan Statistik (View Admin)
-    if ($user->isAdmin()) {
-        $totalEvents = Event::count();
-        $totalEmployees = \App\Models\TonasaEmployee::count();
-        
-        // Pastikan view ini ada: resources/views/admin/dashboard.blade.php
-        return view('admin.dashboard', compact('totalEvents', 'totalEmployees'));
+        // JIKA ADMIN: Tampilkan Statistik
+        if ($user->isAdmin()) {
+            $totalEvents = Event::count();
+            $totalEmployees = TonasaEmployee::count();
+            return view('admin.dashboard', compact('totalEvents', 'totalEmployees'));
+        }
+
+        // JIKA USER BIASA: Tampilkan Pilihan Card (Navigasi)
+        else {
+            return view('dashboard.user_index');
+        }
     }
 
-    // 2. Jika User Biasa -> Tampilkan Agenda (View User)
-    else {
-        // Ambil agenda buatan admin
+    /**
+     * Menampilkan Tabel Agenda Khusus Buatan Admin (Untuk User)
+     */
+    public function listAdminAgendas()
+    {
+        // Ambil event yang dibuat oleh user dengan role 'admin'
         $adminEvents = Event::whereHas('user', function($query) {
             $query->where('role', 'admin');
         })->latest()->get();
 
-        // Pastikan view ini ada: resources/views/dashboard/user_index.blade.php
-        return view('dashboard.user_index', compact('adminEvents'));
+        return view('dashboard.admin_agendas_list', compact('adminEvents'));
     }
-}
 
     /**
      * Halaman Manajemen Agenda
@@ -64,26 +72,29 @@ class EventController extends Controller
     /**
      * Simpan Agenda (FIX: User ID & Date)
      */
+    // UPDATE METHOD STORE AGAR AMAN
     public function store(Request $request)
     {
-        // 1. Validasi Input
+        // Cek izin dulu
+        if (!Auth::user()->isAdmin() && !Auth::user()->hasPermission('create_events')) {
+            abort(403, 'Anda tidak memiliki akses untuk membuat agenda.');
+        }
+
+        // ... validasi dan save code (copy dari file sebelumnya) ...
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'date' => 'required|date',             // Wajib ada karena kolom 'date' terpisah
-            'start_time' => 'required',            // Format H:i dari input time
+            'date' => 'required|date',
+            'start_time' => 'required',
             'end_time' => 'required',
             'location' => 'required|string|max:255',
             'description' => 'nullable|string',
         ]);
-
-        // 2. Tambahkan user_id manual (Solusi Error 1364)
+        
         $validated['user_id'] = Auth::id();
-
-        // 3. Simpan ke Database
         Event::create($validated);
 
         return redirect()->route('event.agenda')
-            ->with('success', 'Agenda berhasil dibuat dan siap digunakan.');
+            ->with('success', 'Agenda berhasil dibuat.');
     }
 
     /**

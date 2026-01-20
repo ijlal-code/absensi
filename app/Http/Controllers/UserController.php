@@ -6,9 +6,12 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index() {
-        // Tampilkan semua user kecuali yang sedang login (opsional) atau tampilkan semua
-        $users = User::where('role', '!=', 'admin')->latest()->get();
+   public function index() {
+        // Ambil user biasa beserta agenda yang mereka buat
+        $users = User::where('role', '!=', 'admin')
+                     ->with('events') // Load relasi events
+                     ->latest()
+                     ->get();
         return view('admin.users.index', compact('users'));
     }
 
@@ -35,21 +38,21 @@ class UserController extends Controller
         return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan!');
     }
 
-    // Tambahkan method EDIT
-    public function edit(User $user) {
+   public function edit(User $user) {
         return view('admin.users.edit', compact('user'));
     }
 
-    // Tambahkan method UPDATE
     public function update(Request $request, User $user) {
+        // Validasi permissions sebagai array
         $request->validate([
             'name' => 'required',
-            'permissions' => 'array'
+            'permissions' => 'nullable|array'
         ]);
 
         $data = [
             'name' => $request->name,
-            'permissions' => $request->permissions ?? [],
+            // Jika tidak ada centang yang dipilih, simpan array kosong
+            'permissions' => $request->permissions ?? [], 
         ];
 
         if($request->filled('password')) {
