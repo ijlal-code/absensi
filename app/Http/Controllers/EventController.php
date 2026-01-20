@@ -17,10 +17,26 @@ class EventController extends Controller
      */
     public function index()
     {
-        $totalEvents = Event::count();
-        $totalEmployees = TonasaEmployee::count();
+        $user = Auth::user();
 
-        return view('admin.dashboard', compact('totalEvents', 'totalEmployees'));
+        // JIKA ADMIN: Tampilkan Statistik
+        if ($user->isAdmin()) {
+            $totalEvents = Event::count();
+            $totalEmployees = TonasaEmployee::count();
+            return view('admin.dashboard', compact('totalEvents', 'totalEmployees'));
+        }
+
+        // JIKA USER: Tampilkan Agenda buatan Admin
+        else {
+            // Ambil agenda yang dibuat oleh user dengan role admin
+            $adminEvents = Event::whereHas('user', function($query) {
+                $query->where('role', 'admin');
+            })->latest()->get();
+
+            // Kita gunakan view yang berbeda atau view dashboard dimodifikasi
+            // Disini saya arahkan ke view baru khusus user dashboard agar rapi
+            return view('dashboard.user_index', compact('adminEvents'));
+        }
     }
 
     /**

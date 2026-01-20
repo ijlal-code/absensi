@@ -10,22 +10,21 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    // app/Models/User.php
-
-protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'role', // pastikan ini ada jika Anda pakai role
-    'nik',
-    'tkt_jabatan',
-    'unit_kerja',
-    'no_hp_1',
-    'no_hp_2',
-    'no_hp_3',
-    'foto_sekarang',
-    'foto_lama',
-];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+        'permissions', // Tambahkan ini
+        'nik',
+        'tkt_jabatan',
+        'unit_kerja',
+        'no_hp_1',
+        'no_hp_2',
+        'no_hp_3',
+        'foto_sekarang',
+        'foto_lama',
+    ];
 
     protected $hidden = [
         'password',
@@ -37,12 +36,30 @@ protected $fillable = [
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'permissions' => 'array', // Pastikan dicast sebagai array
         ];
     }
 
-    // Helper untuk cek apakah user adalah admin
+    // Cek apakah user adalah admin
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    // Cek apakah user punya hak akses tertentu
+    public function hasPermission($permission)
+    {
+        // Admin selalu boleh
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        // Jika permissions kosong, return false
+        if (!$this->permissions) {
+            return false;
+        }
+
+        // Cek apakah permission ada di dalam array
+        return in_array($permission, $this->permissions);
     }
 }

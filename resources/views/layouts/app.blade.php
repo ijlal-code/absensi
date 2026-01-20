@@ -31,34 +31,51 @@
 
             <nav class="mt-4">
                 
-                {{-- Menu Dashboard User Biasa --}}
-                @if(!Auth::user()->isAdmin())
-                    <a href="{{ route('dashboard') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('dashboard') ? 'bg-blue-700' : '' }}">
-                        <i class="fas fa-home mr-2 w-6"></i> Dashboard
-                    </a>
-                @endif
-            
-                {{-- MENU 1: INFORMASI KARYAWAN (View Only) --}}
-                <a href="{{ route('employees.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employees.index') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-info-circle mr-2 w-6"></i> Informasi Karyawan
-                </a>
+    {{-- Dashboard: Semua bisa akses, tapi isinya beda di Controller --}}
+    <a href="{{ route('dashboard') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('dashboard') ? 'bg-blue-700' : '' }}">
+        <i class="fas fa-home mr-2 w-6"></i> Dashboard
+    </a>
 
-                {{-- BARU: MENU STATISTIK KARYAWAN --}}
-                <a href="{{ route('employee-management.stats') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee.stats') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-chart-pie mr-2 w-6"></i> Statistik Karyawan
-                </a>
-            
-                {{-- MENU 2: KELOLA KARYAWAN (CRUD) --}}
-                <a href="{{ route('employee-management.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee-management.*') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-user-edit mr-2 w-6"></i> Kelola Karyawan
-                </a>
-            
-                {{-- Menu Lainnya --}}
-                <a href="{{ route('reports') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('reports') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-file-export mr-2 w-6"></i> Laporan
-                </a>
-            
-            </nav>
+    {{-- MENU 1: INFORMASI KARYAWAN --}}
+    {{-- Logic: Admin ATAU User yang punya permission 'view_employees' --}}
+    @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_employees'))
+    <a href="{{ route('employees.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employees.index') ? 'bg-blue-700' : '' }}">
+        <i class="fas fa-info-circle mr-2 w-6"></i> Informasi Karyawan
+    </a>
+    @endif
+
+    {{-- MENU STATISTIK --}}
+    @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_statistics'))
+    <a href="{{ route('employee-management.stats') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee.stats') ? 'bg-blue-700' : '' }}">
+        <i class="fas fa-chart-pie mr-2 w-6"></i> Statistik Karyawan
+    </a>
+    @endif
+
+    {{-- MENU KELOLA KARYAWAN (CRUD) --}}
+    @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('manage_employees'))
+    <a href="{{ route('employee-management.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee-management.*') ? 'bg-blue-700' : '' }}">
+        <i class="fas fa-user-edit mr-2 w-6"></i> Kelola Karyawan
+    </a>
+    @endif
+
+    {{-- MENU LAPORAN --}}
+    @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_reports'))
+    <a href="{{ route('reports') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('reports') ? 'bg-blue-700' : '' }}">
+        <i class="fas fa-file-export mr-2 w-6"></i> Laporan
+    </a>
+    @endif
+
+    {{-- MENU MANAGEMENT USER (HANYA ADMIN) --}}
+    @if(Auth::user()->isAdmin())
+    <div class="mt-4 pt-4 border-t border-blue-800">
+        <p class="px-4 text-xs text-gray-400 uppercase mb-2">Administrator</p>
+        <a href="{{ route('admin.users.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('admin.users.*') ? 'bg-blue-700' : '' }}">
+            <i class="fas fa-users-cog mr-2 w-6"></i> Management User
+        </a>
+    </div>
+    @endif
+
+</nav>
 
             <div class="absolute bottom-0 left-0 w-full p-4">
                 <form action="{{ route('logout') }}" method="POST">
