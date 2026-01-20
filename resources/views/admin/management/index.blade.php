@@ -3,7 +3,6 @@
 @section('content')
 <div class="container mx-auto px-4 py-6">
     {{-- HEADER --}}
-    {{-- Perubahan: Menggunakan flex-col untuk HP dan md:flex-row untuk Laptop agar layout fleksibel --}}
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
         <div class="w-full md:w-auto">
             <h2 class="text-2xl font-bold text-gray-800">Manajemen Karyawan</h2>
@@ -23,7 +22,6 @@
 
     {{-- SEARCH --}}
     <div class="bg-white rounded-xl shadow-sm p-4 mb-6">
-        {{-- Perubahan: Form menjadi tumpuk vertikal di HP --}}
         <form action="{{ route('employee-management.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
             <div class="relative flex-grow w-full">
                 <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
@@ -53,7 +51,6 @@
 
     {{-- TABLE --}}
     <div class="bg-white rounded-xl shadow overflow-hidden">
-        {{-- Perubahan: Tambahan overflow-x-auto agar tabel bisa di-scroll ke samping pada HP --}}
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
@@ -81,7 +78,10 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ $employee->nama }}</div>
-                                        <div class="text-xs text-gray-500">NIK: {{ $employee->nik }}</div>
+                                        {{-- PERUBAHAN DI SINI: Menampilkan SAP dan NIK --}}
+                                        <div class="text-xs text-gray-500">
+                                            SAP: {{ $employee->sap_id }} <span class="mx-1">|</span> NIK: {{ $employee->nik }}
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -112,12 +112,12 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end gap-2">
-                                    {{-- ICON MATA TELAH DIHAPUS DI SINI --}}
-                                    
                                     <a href="{{ route('employee-management.edit', $employee->id) }}" class="text-yellow-600 hover:text-yellow-900" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ route('employee-management.destroy', $employee->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');" class="inline">
+                                    
+                                    {{-- PERUBAHAN DI SINI: Update tombol hapus pakai SweetAlert (delete-form) --}}
+                                    <form action="{{ route('employee-management.destroy', $employee->id) }}" method="POST" class="inline delete-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-900" title="Hapus">
@@ -144,6 +144,4 @@
         {{ $employees->links() }}
     </div>
 </div>
-
-{{-- MODAL SCRIPT DAN INCLUDE DIHAPUS KARENA TOMBOL VIEW SUDAH TIDAK ADA --}}
 @endsection

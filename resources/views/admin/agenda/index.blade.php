@@ -105,6 +105,7 @@
 
                                     <div class="h-6 w-px bg-gray-300 mx-1 hidden md:block"></div>
 
+                                    {{-- Tombol Copy Link (Diupdate Scriptnya) --}}
                                     <button onclick="copyLink('{{ route('attendance.form', $event->id) }}')" class="bg-gray-100 text-gray-600 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 border border-gray-200 transition" title="Salin Link">
                                         <i class="fas fa-link"></i>
                                     </button>
@@ -113,12 +114,14 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
 
-                                    <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Hapus Agenda ini?');" class="inline">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm hover:bg-red-100 border border-red-200 transition" title="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
+                                    <form action="{{ route('event.destroy', $event->id) }}" method="POST" class="delete-form">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="group relative px-3 py-2 bg-red-50 text-red-600 rounded-lg border border-red-200 hover:bg-red-600 hover:text-white transition" title="Hapus Agenda">
+        <i class="fas fa-trash-alt"></i>
+        <span class="sr-only">Hapus</span>
+    </button>
+</form>
                                 </div>
                             </div>
                         </div>
@@ -130,25 +133,55 @@
     </div>
 </div>
 
+{{-- SCRIPT: Copy Link & Toast --}}
 <script>
-function copyLink(url) {
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(url).then(() => alert('Link berhasil disalin!'));
-    } else {
-        // Fallback untuk browser lama
-        let textArea = document.createElement("textarea");
-        textArea.value = url;
-        textArea.style.position = "fixed";
-        textArea.style.left = "-9999px";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            alert('Link berhasil disalin!');
-        } catch (err) {}
-        document.body.removeChild(textArea);
+    function copyLink(url) {
+        // Cek dukungan clipboard API modern
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(url).then(showToast);
+        } else {
+            // Fallback untuk browser lama atau non-HTTPS
+            let textArea = document.createElement("textarea");
+            textArea.value = url;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast(); // Panggil notifikasi sukses
+            } catch (err) {
+                console.error('Gagal menyalin link', err);
+            }
+            document.body.removeChild(textArea);
+        }
     }
-}
+
+    // Fungsi menampilkan Toast SweetAlert2 (Profesional & Minimalis)
+    function showToast() {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#fff',
+            color: '#1f2937', // Abu-abu gelap
+            iconColor: '#10b981', // Hijau (Sukses)
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer)
+                toast.addEventListener('mouseleave', Swal.resumeTimer)
+            },
+            customClass: {
+                popup: 'rounded-xl shadow-xl border border-gray-100'
+            }
+        });
+
+        Toast.fire({
+            icon: 'success',
+            title: 'Link berhasil disalin!'
+        });
+    }
 </script>
 @endsection

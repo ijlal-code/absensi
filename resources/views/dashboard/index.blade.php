@@ -124,12 +124,14 @@
                             <i class="fas fa-edit"></i>
                         </a>
 
-                        <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus Agenda ini? Data absensi akan ikut terhapus.');" class="inline">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="bg-red-100 text-red-700 px-3 py-2 rounded text-sm hover:bg-red-200 border border-red-200 transition" title="Hapus Agenda">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </form>
+                        {{-- Hapus 'onsubmit' & tambahkan class 'delete-form' --}}
+<form action="{{ route('event.destroy', $event->id) }}" method="POST" class="inline delete-form">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="bg-red-100 text-red-700 px-3 py-2 rounded text-sm hover:bg-red-200 border border-red-200 transition" title="Hapus Agenda">
+        <i class="fas fa-trash-alt"></i>
+    </button>
+</form>
                     </div>
 
                 </div>

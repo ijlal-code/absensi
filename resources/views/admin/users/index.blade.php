@@ -15,12 +15,12 @@
             <h3 class="font-bold text-lg text-gray-800">{{ $user->name }}</h3>
             <span class="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded">Penyelenggara</span>
         </div>
-        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user {{ $user->name }}?');">
-            @csrf @method('DELETE')
-            <button type="submit" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full">
-                <i class="fas fa-trash"></i>
-            </button>
-        </form>
+        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" class="delete-form">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="..." title="Hapus">
+        </button>
+</form>
     </div>
     @endforeach
 </div>

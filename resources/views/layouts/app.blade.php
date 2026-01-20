@@ -85,5 +85,40 @@
             </main>
         </div>
     </div>
+    {{-- 1. CDN SweetAlert2 --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- 2. Script Global Konfirmasi Hapus --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tangkap semua form dengan class "delete-form"
+            const deleteForms = document.querySelectorAll('.delete-form');
+
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault(); // Cegah submit langsung
+
+                    const formId = this; // Simpan referensi form
+
+                    Swal.fire({
+                        title: 'Apakah Anda Yakin?',
+                        text: "Data yang dihapus tidak dapat dikembalikan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444', // Warna Merah (Tailwind red-500)
+                        cancelButtonColor: '#3b82f6',  // Warna Biru (Tailwind blue-500)
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true, // Tombol batal di kiri, hapus di kanan (opsional)
+                        focusCancel: true // Default fokus ke tombol batal (safety)
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            formId.submit(); // Submit form jika user klik Ya
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -91,14 +91,14 @@
                                 </a>
 
                                 {{-- TAMBAHAN: Tombol Hapus --}}
-                                <form action="{{ route('event.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus agenda ini? Seluruh data absensi dan tanda tangan akan ikut terhapus permanen.');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="group relative px-3 py-2 bg-red-50 text-red-600 rounded-lg border border-red-200 hover:bg-red-600 hover:text-white transition" title="Hapus Agenda">
-                                        <i class="fas fa-trash-alt"></i>
-                                        <span class="sr-only">Hapus</span>
-                                    </button>
-                                </form>
+                                <form action="{{ route('event.destroy', $event->id) }}" method="POST" class="delete-form">
+    @csrf
+    @method('DELETE')
+    <button type="submit" class="group relative px-3 py-2 bg-red-50 text-red-600 rounded-lg border border-red-200 hover:bg-red-600 hover:text-white transition" title="Hapus Agenda">
+        <i class="fas fa-trash-alt"></i>
+        <span class="sr-only">Hapus</span>
+    </button>
+</form>
                             </div>
                         </td>
                     </tr>
