@@ -33,7 +33,7 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
                         <i class="fas fa-user"></i>
                     </span>
-                    <input type="text" name="name" class="w-full pl-10 pr-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300" placeholder="Contoh: BEM Univ / Panitia Qurban" required value="{{ old('name') }}">
+                    <input type="text" name="name" class="w-full pl-10 pr-3 py-2 border rounded focus:outline-none focus:ring focus:ring-blue-300" placeholder="Contoh:  Nama penyelenggara" required value="{{ old('name') }}">
                 </div>
                 <p class="text-xs text-gray-400 mt-1">*Gunakan nama unik tanpa spasi jika memungkinkan (opsional).</p>
             </div>

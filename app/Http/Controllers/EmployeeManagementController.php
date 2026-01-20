@@ -199,6 +199,7 @@ class EmployeeManagementController extends Controller
 
         $request->validate([
             'nama'          => 'required|string|max:255',
+            // Ignore unique rule untuk ID karyawan ini sendiri
             'nik'           => 'required|unique:tonasa_employees,nik,' . $id,
             'sap_id'        => 'required|string|max:50',
             'tanggal_lahir' => 'required|date',
@@ -235,19 +236,29 @@ class EmployeeManagementController extends Controller
             } catch (\Exception $e) {}
         }
 
-        // Update Foto Terbaru
+        // ==============================================================
+        // LOGIKA UPDATE FOTO: Hapus File Lama -> Simpan File Baru
+        // ==============================================================
+
+        // 1. Update Foto Terbaru (Folder: employees/new)
         if ($request->hasFile('foto_terbaru')) {
+            // Cek apakah di database ada data foto lama DAN apakah file fisiknya ada di storage
             if ($employee->foto_terbaru && Storage::disk('public')->exists($employee->foto_terbaru)) {
+                // Hapus file lama agar tidak menumpuk
                 Storage::disk('public')->delete($employee->foto_terbaru);
             }
+            // Simpan foto baru (Laravel otomatis buat nama unik hash, misal: employees/new/Xyz...jpg)
             $data['foto_terbaru'] = $request->file('foto_terbaru')->store('employees/new', 'public');
         }
 
-        // Update Foto Lama
+        // 2. Update Foto Lama / Badge (Folder: employees/old)
         if ($request->hasFile('foto_lama')) {
+            // Cek apakah di database ada data foto lama DAN apakah file fisiknya ada di storage
             if ($employee->foto_lama && Storage::disk('public')->exists($employee->foto_lama)) {
+                // Hapus file lama agar tidak menumpuk
                 Storage::disk('public')->delete($employee->foto_lama);
             }
+            // Simpan foto baru
             $data['foto_lama'] = $request->file('foto_lama')->store('employees/old', 'public');
         }
 

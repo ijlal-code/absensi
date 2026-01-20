@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Illuminate\Support\Facades\Auth; // PENTING: Untuk ambil Auth::id()
+use Illuminate\Support\Facades\Storage;
 
 class EventController extends Controller
 {
@@ -114,13 +115,25 @@ public function monitor(Event $event)
     }
 
     /**
-     * Hapus Agenda
+     * Hapus Agenda & File Tanda Tangan
      */
     public function destroy(Event $event)
     {
+        // 1. Hapus file tanda tangan fisik di storage
+        // Load relasi attendances untuk mendapatkan path tanda tangan
+        $event->load('attendances');
+
+        foreach ($event->attendances as $attendance) {
+            if ($attendance->signature_path && Storage::disk('public')->exists($attendance->signature_path)) {
+                Storage::disk('public')->delete($attendance->signature_path);
+            }
+        }
+
+        // 2. Hapus data event di database
         $event->delete();
-        return redirect()->route('event.agenda')
-            ->with('success', 'Agenda berhasil dihapus.');
+
+        // Gunakan back() agar kembali ke halaman pemanggil (bisa dari Agenda atau Reports)
+        return back()->with('success', 'Agenda dan seluruh data tanda tangan berhasil dihapus.');
     }
 
     public function reports()
