@@ -67,20 +67,46 @@
                     </div>
                 @else
                     <div class="divide-y divide-gray-100">
-                        @foreach($todayEvents as $index => $event)
-                        <div class="p-5 hover:bg-blue-50/30 transition group {{ $index == 0 ? 'bg-blue-50/40' : '' }}">
+                        @foreach($todayEvents as $event)
+                            @php
+                                // Cek apakah pembuatnya admin
+                                $isAdminEvent = $event->user->role === 'admin';
+                                
+                                // Cek apakah ini agenda admin yang paling baru dibuat
+                                $isLatestAdmin  = ($event->id === $latestAdminEventId);
+                            @endphp
+
+                        <div class="p-5 transition group border-l-4 {{ $isAdminEvent ? 'bg-blue-50/50 border-blue-600' : 'bg-white border-gray-300' }} hover:shadow-md">
                             <div class="flex flex-col md:flex-row justify-between gap-4 items-start md:items-center">
                                 
                                 {{-- Info Agenda --}}
                                 <div class="flex-grow">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        @if($index == 0)
-                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-600 text-[10px] font-bold uppercase tracking-wide rounded-sm">Terbaru</span>
+                                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                                        
+                                        {{-- LOGIK BADGE TERBARU (Hanya untuk Admin Event Terakhir) --}}
+                                        @if($isLatestAdmin)
+                                            <span class="px-2 py-0.5 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-wide rounded shadow-sm animate-pulse">
+                                                Terbaru
+                                            </span>
                                         @endif
-                                        <h4 class="font-bold text-lg text-gray-800 group-hover:text-blue-700 transition">{{ $event->title }}</h4>
+
+                                        {{-- BADGE TIPE AGENDA --}}
+                                        @if($isAdminEvent)
+                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold uppercase tracking-wide rounded border border-blue-200">
+                                                <i class="fas fa-building mr-1"></i> Resmi
+                                            </span>
+                                        @else
+                                            <span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wide rounded border border-gray-200">
+                                                <i class="fas fa-user mr-1"></i> Personal
+                                            </span>
+                                        @endif
+
+                                        <h4 class="font-bold text-lg text-gray-800 group-hover:text-blue-700 transition">
+                                            {{ $event->title }}
+                                        </h4>
                                     </div>
                                     
-                                    <div class="flex flex-wrap gap-4 text-sm text-gray-500">
+                                    <div class="flex flex-wrap gap-4 text-sm text-gray-500 mt-2">
                                         <div class="flex items-center gap-1.5">
                                             <i class="far fa-clock text-orange-500"></i> 
                                             {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }}
@@ -89,23 +115,29 @@
                                             <i class="fas fa-map-marker-alt text-red-500"></i> 
                                             {{ $event->location }}
                                         </div>
+                                        
+                                        {{-- JIKA AGENDA USER: Tampilkan Nama Pembuatnya --}}
+                                        @if(!$isAdminEvent)
+                                        <div class="flex items-center gap-1.5 text-gray-400">
+                                            <i class="fas fa-user-circle"></i> 
+                                            Oleh: <span class="font-semibold text-gray-600">{{ $event->user->name }}</span>
+                                        </div>
+                                        @endif
                                     </div>
                                 </div>
 
-                                {{-- Tombol Aksi --}}
-                                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                                {{-- Tombol Aksi (Sama seperti sebelumnya) --}}
+                                <div class="flex flex-wrap items-center gap-2 shrink-0 opacity-80 group-hover:opacity-100 transition">
                                     <a href="{{ route('event.monitor', $event->id) }}" class="inline-flex items-center gap-1 bg-teal-50 text-teal-700 px-3 py-2 rounded-lg text-sm hover:bg-teal-100 border border-teal-200 transition font-medium" title="Monitor Layar">
                                         <i class="fas fa-desktop"></i> <span class="hidden sm:inline">Monitor</span>
                                     </a>
 
-                                    {{-- TOMBOL QR CODE (DITAMBAHKAN KEMBALI) --}}
-    <a href="{{ route('event.qrcode', $event->id) }}" class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 px-3 py-2 rounded-lg text-sm hover:bg-indigo-100 border border-indigo-200 transition font-medium" title="Tampilkan QR Code">
-        <i class="fas fa-qrcode"></i> <span class="hidden sm:inline">QR Code</span>
-    </a>
+                                    <a href="{{ route('event.qrcode', $event->id) }}" class="inline-flex items-center gap-1 bg-indigo-50 text-indigo-700 px-3 py-2 rounded-lg text-sm hover:bg-indigo-100 border border-indigo-200 transition font-medium" title="Tampilkan QR Code">
+                                        <i class="fas fa-qrcode"></i> <span class="hidden sm:inline">QR Code</span>
+                                    </a>
 
                                     <div class="h-6 w-px bg-gray-300 mx-1 hidden md:block"></div>
 
-                                    {{-- Tombol Copy Link (Diupdate Scriptnya) --}}
                                     <button onclick="copyLink('{{ route('attendance.form', $event->id) }}')" class="bg-gray-100 text-gray-600 px-3 py-2 rounded-lg text-sm hover:bg-gray-200 border border-gray-200 transition" title="Salin Link">
                                         <i class="fas fa-link"></i>
                                     </button>
@@ -114,14 +146,13 @@
                                         <i class="fas fa-edit"></i>
                                     </a>
 
-                                    <form action="{{ route('event.destroy', $event->id) }}" method="POST" class="delete-form">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="group relative px-3 py-2 bg-red-50 text-red-600 rounded-lg border border-red-200 hover:bg-red-600 hover:text-white transition" title="Hapus Agenda">
-        <i class="fas fa-trash-alt"></i>
-        <span class="sr-only">Hapus</span>
-    </button>
-</form>
+                                    <form action="{{ route('event.destroy', $event->id) }}" method="POST" class="delete-form inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-2 bg-red-50 text-red-600 rounded-lg border border-red-200 hover:bg-red-600 hover:text-white transition" title="Hapus Agenda">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

@@ -51,14 +51,59 @@ class EventController extends Controller
     /**
      * Halaman Manajemen Agenda
      */
-    public function agenda()
+  public function agenda()
     {
-        // Ambil event hari ini berdasarkan kolom 'date'
-        $todayEvents = Event::whereDate('date', Carbon::today())
-                        ->latest()
-                        ->get();
+        $user = \Illuminate\Support\Facades\Auth::user();
+        
+        // 1. Ambil semua event hari ini & load data user
+        $query = \App\Models\Event::whereDate('date', \Carbon\Carbon::today())
+                    ->with('user'); 
 
-        return view('admin.agenda.index', compact('todayEvents'));
+        // 2. Filter untuk User Biasa (Hanya lihat punya sendiri)
+        if (!$user->isAdmin()) {
+            $query->where('user_id', $user->id);
+        }
+
+        // 3. Eksekusi Query
+        $eventsCollection = $query->get();
+
+        // 4. Cari ID Agenda Admin yang PALING BARU DIBUAT (Created At terakhir)
+        // Ini akan kita gunakan untuk menaruhnya di posisi paling atas (Ranking 0)
+        $latestAdminEvent = \App\Models\Event::whereDate('date', \Carbon\Carbon::today())
+            ->whereHas('user', function($q) {
+                $q->where('role', 'admin');
+            })
+            ->latest('created_at') // Urutkan berdasarkan waktu pembuatan
+            ->first();
+
+        $latestAdminEventId = $latestAdminEvent ? $latestAdminEvent->id : null;
+
+        // 5. LOGIKA SORTING CANGGIH (Multi-Level Sorting)
+        if ($user->isAdmin()) {
+            $todayEvents = $eventsCollection->sortBy([
+                function ($event) use ($latestAdminEventId) {
+                    // LEVEL 1: Jika ini adalah agenda Admin TERBARU -> Rank 0 (Paling Atas)
+                    if ($event->id === $latestAdminEventId) {
+                        return 0;
+                    }
+                    
+                    // LEVEL 2: Jika ini agenda Admin SISANYA -> Rank 1 (Di bawah yg terbaru)
+                    if ($event->user->role === 'admin') {
+                        return 1;
+                    }
+
+                    // LEVEL 3: Jika ini agenda User -> Rank 2 (Paling Bawah)
+                    return 2;
+                },
+                // LEVEL 4: Jika rankingnya sama (misal sama-sama rank 1), urutkan berdasarkan Jam Mulai
+                ['start_time', 'asc'],
+            ]);
+        } else {
+            // Untuk User biasa, cukup urutkan berdasarkan jam
+            $todayEvents = $eventsCollection->sortBy('start_time');
+        }
+
+        return view('admin.agenda.index', compact('todayEvents', 'latestAdminEventId'));
     }
 
     /**
