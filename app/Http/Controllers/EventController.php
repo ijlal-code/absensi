@@ -16,28 +16,29 @@ class EventController extends Controller
      * Dashboard Utama
      */
     public function index()
-    {
-        $user = Auth::user();
+{
+    $user = \Illuminate\Support\Facades\Auth::user();
 
-        // JIKA ADMIN: Tampilkan Statistik
-        if ($user->isAdmin()) {
-            $totalEvents = Event::count();
-            $totalEmployees = TonasaEmployee::count();
-            return view('admin.dashboard', compact('totalEvents', 'totalEmployees'));
-        }
-
-        // JIKA USER: Tampilkan Agenda buatan Admin
-        else {
-            // Ambil agenda yang dibuat oleh user dengan role admin
-            $adminEvents = Event::whereHas('user', function($query) {
-                $query->where('role', 'admin');
-            })->latest()->get();
-
-            // Kita gunakan view yang berbeda atau view dashboard dimodifikasi
-            // Disini saya arahkan ke view baru khusus user dashboard agar rapi
-            return view('dashboard.user_index', compact('adminEvents'));
-        }
+    // 1. Jika Admin -> Tampilkan Statistik (View Admin)
+    if ($user->isAdmin()) {
+        $totalEvents = Event::count();
+        $totalEmployees = \App\Models\TonasaEmployee::count();
+        
+        // Pastikan view ini ada: resources/views/admin/dashboard.blade.php
+        return view('admin.dashboard', compact('totalEvents', 'totalEmployees'));
     }
+
+    // 2. Jika User Biasa -> Tampilkan Agenda (View User)
+    else {
+        // Ambil agenda buatan admin
+        $adminEvents = Event::whereHas('user', function($query) {
+            $query->where('role', 'admin');
+        })->latest()->get();
+
+        // Pastikan view ini ada: resources/views/dashboard/user_index.blade.php
+        return view('dashboard.user_index', compact('adminEvents'));
+    }
+}
 
     /**
      * Halaman Manajemen Agenda

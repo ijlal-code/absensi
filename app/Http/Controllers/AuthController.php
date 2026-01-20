@@ -1,54 +1,64 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Models\User; // <--- PENTING: Panggil Model User
+use Illuminate\Support\Facades\Hash; // <--- PENTING: Untuk enkripsi password
 
 class AuthController extends Controller
 {
-    public function showLogin() { return view('auth.login'); }
-    public function showRegister() { return view('auth.register'); }
+    public function showLogin()
+    {
+        return view('auth.login');
+    }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
+        // Validasi login hanya nama & password
         $credentials = $request->validate([
-            'name' => 'required', 
+            'name' => 'required',
             'password' => 'required'
-        ], [
-            // Kustomisasi pesan error login (opsional)
-            'name.required' => 'Nama wajib diisi.',
-            'password.required' => 'Password wajib diisi.'
         ]);
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            if (Auth::user()->isAdmin()) {
-                return redirect()->route('admin.dashboard');
-            }
-            return redirect()->intended('dashboard');
+            // Redirect ke dashboard (logika admin/user diatur di EventController)
+            return redirect()->intended(route('dashboard')); 
         }
-        
-        return back()->withErrors(['name' => 'Nama atau password salah.']);
+
+        return back()->withErrors([
+            'name' => 'Nama atau password salah.',
+        ]);
+    }
+
+    public function showRegister()
+    {
+        return view('auth.register');
     }
 
     public function register(Request $request) {
-        // PERBAIKAN DISINI: Menambahkan parameter kedua untuk pesan bahasa Indonesia
+        // 1. Validasi Input
         $request->validate([
             'name' => 'required|unique:users', 
             'password' => 'required|min:6'
         ], [
             'name.required' => 'Nama wajib diisi.',
-            'name.unique' => 'Nama ini sudah digunakan, silakan pilih nama lain.', // Mengganti "The name has already been taken."
+            'name.unique' => 'Nama ini sudah digunakan, silakan pilih nama lain.',
             'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal harus 6 karakter.' // Mengganti "The password field must be at least 6 characters."
+            'password.min' => 'Password minimal harus 6 karakter.'
         ]);
 
+        // 2. SIMPAN KE DATABASE (BAGIAN YANG HILANG SEBELUMNYA)
         User::create([
             'name' => $request->name,
-            'email' => strtolower(str_replace(' ', '', $request->name)) . '@system.com',
-            'password' => Hash::make($request->password),
-            'role' => 'organizer'
+            'password' => Hash::make($request->password), // Enkripsi password
+            'role' => 'user', // Set default role sebagai user biasa
+            'permissions' => [], // Set default permission kosong
+            // Email kita biarkan null (karena database akan kita ubah agar boleh null)
         ]);
+
         return redirect()->route('login')->with('success', 'Registrasi berhasil, silakan login.');
     }
 

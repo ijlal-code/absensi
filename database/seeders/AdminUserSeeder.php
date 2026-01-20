@@ -16,7 +16,7 @@ class AdminUserSeeder extends Seeder
     {
         // Menggunakan updateOrCreate agar jika dijalankan 2x tidak error (duplicate)
         User::updateOrCreate(
-            ['email' => 'admin@system.com'], // Cek berdasarkan email
+            // ['email' => 'admin@system.com'], // Cek berdasarkan email
             [
                 'name' => 'Administrator Utama',
                 'password' => Hash::make('password123'), // Ganti password sesuai keinginan

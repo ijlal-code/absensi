@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
     // HANYA BISA DIAKSES ADMIN
     // Kita gunakan 'permission:manage_users'. 
     // Admin lolos karena bypass. User biasa ditolak karena tidak punya hak ini.
+    // Rute Admin Users harus punya nama prefix 'admin.'
     Route::prefix('admin')->name('admin.')->middleware('permission:manage_users')->group(function() {
         Route::resource('users', UserController::class);
     });
