@@ -44,7 +44,7 @@
                         {{-- Kolom Waktu --}}
                         <td class="px-6 py-4">
                             <div class="font-bold text-gray-700">
-                                {{ \Carbon\Carbon::parse($event->date)->translatedFormat('l, d F Y') }}
+                                {{ \Carbon\Carbon::parse($event->date)->locale('id')->translatedFormat('l, d F Y') }}
                             </div>
                             <div class="text-xs text-gray-400 mt-1 flex items-center gap-1">
                                 <i class="far fa-clock"></i>

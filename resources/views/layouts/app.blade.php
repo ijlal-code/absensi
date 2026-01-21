@@ -46,14 +46,16 @@
 
     {{-- MENU STATISTIK --}}
     @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_statistics'))
-    <a href="{{ route('employee-management.stats') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee.stats') ? 'bg-blue-700' : '' }}">
+    {{-- PERBAIKAN: Ubah 'employee.stats' menjadi 'employee-management.stats' --}}
+    <a href="{{ route('employee-management.stats') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee-management.stats') ? 'bg-blue-700' : '' }}">
         <i class="fas fa-chart-pie mr-2 w-6"></i> Statistik Karyawan
     </a>
     @endif
 
     {{-- MENU KELOLA KARYAWAN (CRUD) --}}
     @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('manage_employees'))
-    <a href="{{ route('employee-management.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee-management.*') ? 'bg-blue-700' : '' }}">
+    {{-- PERBAIKAN: Tambahkan pengecekan && !request()->routeIs('employee-management.stats') agar tidak bentrok --}}
+    <a href="{{ route('employee-management.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('employee-management.*') && !request()->routeIs('employee-management.stats') ? 'bg-blue-700' : '' }}">
         <i class="fas fa-user-edit mr-2 w-6"></i> Kelola Karyawan
     </a>
     @endif
