@@ -36,6 +36,8 @@
         <i class="fas fa-home mr-2 w-6"></i> Dashboard
     </a>
 
+    
+
     {{-- MENU 1: INFORMASI KARYAWAN --}}
     {{-- Logic: Admin ATAU User yang punya permission 'view_employees' --}}
     @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_employees'))
@@ -76,6 +78,18 @@
         </a>
     </div>
     @endif
+
+    {{-- SEPARATOR --}}
+    <div class="px-4 mt-6 mb-2 text-xs text-gray-400 uppercase">Agenda Rapat</div>
+
+    {{-- MENU RAPAT --}}
+    <a href="{{ route('meetings.index') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('meetings.index') || request()->routeIs('meetings.create') ? 'bg-blue-700' : '' }}">
+        <i class="fas fa-handshake mr-2 w-6"></i> Agenda Rapat
+    </a>
+
+    <a href="{{ route('meetings.reports') }}" class="block py-2.5 px-4 rounded hover:bg-blue-700 {{ request()->routeIs('meetings.reports') ? 'bg-blue-700' : '' }}">
+        <i class="fas fa-file-contract mr-2 w-6"></i> Laporan Rapat
+    </a>
 
 </nav>
 

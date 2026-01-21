@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EmployeeInfoController;
 use App\Http\Controllers\EmployeeManagementController;
+use App\Http\Controllers\MeetingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,5 +86,19 @@ Route::middleware(['auth'])->group(function () {
     // Rute Admin Users harus punya nama prefix 'admin.'
     Route::prefix('admin')->name('admin.')->middleware('permission:manage_users')->group(function() {
         Route::resource('users', UserController::class);
+    });
+
+    // === ROUTE AGENDA RAPAT (Terpisah) ===
+    Route::prefix('rapat')->name('meetings.')->group(function () {
+        Route::get('/', [MeetingController::class, 'index'])->name('index'); // Dashboard Rapat hari ini/list
+        Route::get('/create', [MeetingController::class, 'create'])->name('create');
+        Route::post('/', [MeetingController::class, 'store'])->name('store');
+        Route::get('/{meeting}/edit', [MeetingController::class, 'edit'])->name('edit');
+        Route::put('/{meeting}', [MeetingController::class, 'update'])->name('update');
+        Route::delete('/{meeting}', [MeetingController::class, 'destroy'])->name('destroy');
+        
+        // Halaman Laporan & PDF
+        Route::get('/reports', [MeetingController::class, 'reports'])->name('reports');
+        Route::get('/{meeting}/pdf', [MeetingController::class, 'downloadPdf'])->name('pdf');
     });
 });
