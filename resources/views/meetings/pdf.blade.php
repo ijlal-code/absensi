@@ -15,27 +15,25 @@
         }
 
         /* HEADER */
-       .header {
-    position: relative;
-    margin-bottom: 20px;
-    height: 80px; /* KUNCI AREA ATAS */
-}
-
+        .header {
+            position: relative;
+            margin-bottom: 20px;
+            height: 80px;
+        }
 
         .logo-left {
-    position: absolute;
-    left: 0;
-    top: 5px;      /* PALING ATAS */
-    width: 70px;
-}
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 70px;
+        }
 
-.logo-right {
-    position: absolute;
-    right: 0;
-    top: 5px;      /* SAMA PERSIS */
-    width: 60px;
-}
-
+        .logo-right {
+            position: absolute;
+            right: 0;
+            top: 5px;
+            width: 60px;
+        }
 
         .title-box {
             text-align: center;
@@ -104,6 +102,7 @@
 
         .action-items {
             width: 60%;
+            vertical-align: top;
         }
 
         .action-pic {
@@ -111,14 +110,16 @@
             text-align: center;
             border-left: 1px solid #888;
             border-right: 1px solid #888;
+            vertical-align: top;
         }
 
         .action-deadline {
             width: 20%;
             text-align: center;
+            vertical-align: top;
         }
 
-        /* FOOTER (PERSIS GAMBAR) */
+        /* FOOTER */
         .footer {
             width: 100%;
             margin-top: 10px;
@@ -141,13 +142,25 @@
             width: 35%;
         }
 
+        /* UPDATED: NOTULIS BOX */
         .notulis-box {
-            width: 30%;
+            /* Menggunakan width pixel agar tidak terlalu lebar (sebelumnya 30%) */
+            width: 20%; 
             float: right;
             border: 3px solid #6b4ea0;
             padding: 10px;
             background: #e6e1ef;
             height: 100px;
+            /* Penting: relative agar text nama bisa di-set absolute di bawah */
+            position: relative; 
+        }
+
+        /* NEW: Posisi Nama Notulis */
+        .notulis-name {
+            position: absolute;
+            bottom: 10px; /* Jarak dari bawah kotak (sedikit spacing) */
+            left: 10px;   /* Mengikuti padding kotak */
+            right: 10px;
         }
 
         .clearfix {
@@ -207,7 +220,6 @@
 
             @php
                 $currentPic = null;
-                $number = 1;
             @endphp
 
             @foreach($meeting->actionItems as $item)
@@ -216,12 +228,12 @@
                     <tr>
                         <td colspan="3" style="border-top:1px solid #888;"></td>
                     </tr>
-                    @php $number = 1; @endphp
                 @endif
 
                 <tr>
                     <td class="action-items">
-                        {{ $number }}. {{ $item->action_item }}
+                        {{-- Menggunakan nl2br untuk baris baru --}}
+                        {!! nl2br(e($item->action_item)) !!}
                     </td>
                     <td class="action-pic">
                         {{ $item->pic }}
@@ -233,34 +245,37 @@
 
                 @php
                     $currentPic = $item->pic;
-                    $number++;
                 @endphp
 
             @endforeach
         </table>
     </div>
 
-    {{-- FOOTER (FINAL PERSIS GAMBAR) --}}
+    {{-- FOOTER --}}
     <div class="footer">
 
         <table class="footer-table">
             <tr>
                 <td class="footer-label">List of Attendees</td>
-                <td>Terlampir</td>
+                <td>{{ $meeting->attendees_list ?? 'Terlampir' }}</td>
             </tr>
             <tr>
                 <td class="footer-label">Presenter</td>
-                <td>Administrator Utama</td>
+                <td>{{ $meeting->presenter }}</td>
             </tr>
             <tr>
                 <td class="footer-label">Waktu</td>
-                <td>90 Menit</td>
+                <td>{{ $meeting->meeting_duration }}</td>
             </tr>
         </table>
 
         <div class="notulis-box">
-            <strong>Notulis,</strong><br><br><br>
-            <u><b>Sapriadi,ST</b></u>
+            <strong>Notulis,</strong>
+            
+            {{-- Nama diposisikan di bawah menggunakan class baru --}}
+            <div class="notulis-name">
+                <u><b>{{ $meeting->notulis }}</b></u>
+            </div>
         </div>
 
         <div class="clearfix"></div>

@@ -30,7 +30,8 @@ class MeetingController extends Controller
             'date' => 'required|date',
             'start_time' => 'required',
             'location' => 'required',
-            'action_items' => 'array', // Array dari input dinamis
+            'notulis' => 'required', // Validasi baru
+            'action_items' => 'array',
         ]);
 
         $meeting = Meeting::create([
@@ -41,6 +42,11 @@ class MeetingController extends Controller
             'start_time' => $request->start_time,
             'end_time' => $request->end_time,
             'location' => $request->location,
+            // Tambahkan field baru ini:
+            'notulis' => $request->notulis,
+            'presenter' => $request->presenter, // Boleh null
+            'meeting_duration' => $request->meeting_duration, // Boleh null
+            'attendees_list' => $request->attendees_list ?? 'Terlampir', // Default Terlampir jika kosong
         ]);
 
         // Simpan Action Items
@@ -62,27 +68,48 @@ class MeetingController extends Controller
 
     public function edit(Meeting $meeting)
     {
+        // Pastikan relasi actionItems dimuat
         $meeting->load('actionItems');
         return view('meetings.edit', compact('meeting'));
     }
 
     public function update(Request $request, Meeting $meeting)
     {
-        // Logic update mirip store, hapus action items lama, buat baru (cara simpel)
-        // Atau update existing. Untuk ringkasnya, kita update header saja disini
-        // Implementasi detail disesuaikan kebutuhan.
+        $request->validate([
+            'type_of_meeting' => 'required',
+            'facilitator' => 'required',
+            'date' => 'required|date',
+            'start_time' => 'required',
+            'location' => 'required',
+            'notulis' => 'required',
+            // Validasi lain sesuai kebutuhan
+        ]);
+
+        // 1. Update Data Header Rapat
+        $meeting->update([
+            'type_of_meeting' => $request->type_of_meeting,
+            'facilitator' => $request->facilitator,
+            'date' => $request->date,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'location' => $request->location,
+            'notulis' => $request->notulis,
+            'presenter' => $request->presenter,
+            'meeting_duration' => $request->meeting_duration,
+            'attendees_list' => $request->attendees_list,
+        ]);
         
-        $meeting->update($request->except('action_items'));
-        
-        // Handle update action items (bisa menggunakan logika sync atau delete-insert)
+        // 2. Update Action Items (Hapus Lama -> Buat Baru)
+        // Ini cara paling aman untuk menangani perubahan urutan atau penghapusan item
         $meeting->actionItems()->delete();
+
         if ($request->has('action_items')) {
             foreach ($request->action_items as $item) {
                 if(!empty($item['task'])) {
                     $meeting->actionItems()->create([
                         'action_item' => $item['task'],
-                        'pic' => $item['pic'],
-                        'deadline' => $item['deadline'],
+                        'pic' => $item['pic'] ?? '-',
+                        'deadline' => $item['deadline'] ?? null,
                     ]);
                 }
             }
