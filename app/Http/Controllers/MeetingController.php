@@ -7,6 +7,8 @@ use App\Models\ActionItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PDF; // Pastikan package dompdf terinstall (composer require barryvdh/laravel-dompdf)
+use App\Models\MeetingLocation; // Tambahkan ini
+use App\Models\TonasaEmployee; // Tambahkan ini
 
 class MeetingController extends Controller
 {
@@ -18,9 +20,50 @@ class MeetingController extends Controller
     }
 
     public function create()
-    {
-        return view('meetings.create');
+{
+    // Ambil semua lokasi untuk dropdown
+    $locations = MeetingLocation::orderBy('name')->get();
+    return view('meetings.create', compact('locations'));
+}
+
+public function searchEmployee(Request $request)
+{
+    $query = $request->get('query');
+
+    if (empty($query)) {
+        return response()->json([]);
     }
+
+    // PERBAIKAN: Gunakan 'sap_id' (sesuai database), bukan 'sap'
+    $employees = TonasaEmployee::where('sap_id', 'like', "%{$query}%")
+                ->orWhere('nama', 'like', "%{$query}%")
+                ->limit(10)
+                ->get(['id', 'nama', 'sap_id']); // Ambil kolom yang benar
+
+    return response()->json($employees);
+}
+
+// Tambahkan Method Baru: Simpan Lokasi (AJAX)
+public function storeLocation(Request $request)
+{
+    $request->validate(['name' => 'required|unique:meeting_locations,name']);
+    
+    $location = MeetingLocation::create([
+        'name' => $request->name
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'location' => $location
+    ]);
+}
+
+// Tambahkan Method Baru: Hapus Lokasi (AJAX)
+public function destroyLocation($id)
+{
+    MeetingLocation::destroy($id);
+    return response()->json(['success' => true]);
+}
 
     public function store(Request $request)
     {

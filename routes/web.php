@@ -100,5 +100,12 @@ Route::middleware(['auth'])->group(function () {
         // Halaman Laporan & PDF
         Route::get('/reports', [MeetingController::class, 'reports'])->name('reports');
         Route::get('/{meeting}/pdf', [MeetingController::class, 'downloadPdf'])->name('pdf');
+
+        // API untuk mencari karyawan berdasarkan SAP/Nama
+    Route::get('/api/search-employee', [MeetingController::class, 'searchEmployee'])->name('search.employee');
+
+    // Route untuk Manajemen Lokasi (AJAX)
+    Route::post('/location', [MeetingController::class, 'storeLocation'])->name('location.store');
+    Route::delete('/location/{id}', [MeetingController::class, 'destroyLocation'])->name('location.destroy');
     });
 });
