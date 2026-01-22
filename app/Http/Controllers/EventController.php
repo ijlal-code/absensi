@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
 class EventController extends Controller
 {
     /**
-     * Dashboard Utama
+     * Dashboard Utama k
      */
     /**
      * Dashboard Utama (Menangani Admin & User)
@@ -211,7 +211,19 @@ public function monitor(Event $event)
 
     public function reports()
     {
-        $events = Event::withCount('attendances')->latest()->get();
+        // LOGIKA FILTER:
+        // Jika Admin -> Lihat SEMUA riwayat agenda/absensi
+        // Jika User Biasa -> HANYA lihat agenda yang dibuat oleh user tersebut (user_id == Auth::id())
+        
+        if (Auth::user()->isAdmin()) {
+            $events = Event::withCount('attendances')->latest()->get();
+        } else {
+            $events = Event::where('user_id', Auth::id())
+                        ->withCount('attendances')
+                        ->latest()
+                        ->get();
+        }
+
         return view('dashboard.reports', compact('events'));
     }
 

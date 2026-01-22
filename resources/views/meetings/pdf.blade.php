@@ -80,43 +80,37 @@
             border-right: 1px solid #888;
         }
 
-        /* ACTION ITEMS */
+        /* ACTION ITEMS TABLE (UPDATED) */
         .action-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: collapse; /* KUNCI: Menyatukan garis border */
         }
 
-        .action-header td {
+        .action-table th, 
+        .action-table td {
+            border: 1px solid #888; /* Garis di setiap sisi sel */
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        .action-header th {
             background: #e6e1ef;
             font-weight: bold;
             text-align: center;
-            padding: 8px;
-            border-bottom: 1px solid #888;
-        }
-
-        .action-table td {
-            padding: 8px;
-            vertical-align: top;
-            border-bottom: 1px solid #888;
         }
 
         .action-items {
             width: 60%;
-            vertical-align: top;
         }
 
         .action-pic {
             width: 20%;
             text-align: center;
-            border-left: 1px solid #888;
-            border-right: 1px solid #888;
-            vertical-align: top;
         }
 
         .action-deadline {
             width: 20%;
             text-align: center;
-            vertical-align: top;
         }
 
         /* FOOTER */
@@ -142,24 +136,21 @@
             width: 35%;
         }
 
-        /* UPDATED: NOTULIS BOX */
+        /* NOTULIS BOX */
         .notulis-box {
-            /* Menggunakan width pixel agar tidak terlalu lebar (sebelumnya 30%) */
             width: 20%; 
             float: right;
             border: 3px solid #6b4ea0;
             padding: 10px;
             background: #e6e1ef;
             height: 100px;
-            /* Penting: relative agar text nama bisa di-set absolute di bawah */
             position: relative; 
         }
 
-        /* NEW: Posisi Nama Notulis */
         .notulis-name {
             position: absolute;
-            bottom: 10px; /* Jarak dari bawah kotak (sedikit spacing) */
-            left: 10px;   /* Mengikuti padding kotak */
+            bottom: 10px;
+            left: 10px;
             right: 10px;
         }
 
@@ -213,23 +204,12 @@
     <div class="box">
         <table class="action-table">
             <tr class="action-header">
-                <td>Action Items</td>
-                <td>Pic</td>
-                <td>Deadline</td>
+                <th>Action Items</th>
+                <th>Pic</th>
+                <th>Deadline</th>
             </tr>
 
-            @php
-                $currentPic = null;
-            @endphp
-
             @foreach($meeting->actionItems as $item)
-
-                @if($currentPic !== null && $currentPic !== $item->pic)
-                    <tr>
-                        <td colspan="3" style="border-top:1px solid #888;"></td>
-                    </tr>
-                @endif
-
                 <tr>
                     <td class="action-items">
                         {{-- Menggunakan nl2br untuk baris baru --}}
@@ -242,11 +222,6 @@
                         {{ $item->deadline ? \Carbon\Carbon::parse($item->deadline)->format('d M Y') : '' }}
                     </td>
                 </tr>
-
-                @php
-                    $currentPic = $item->pic;
-                @endphp
-
             @endforeach
         </table>
     </div>
@@ -272,7 +247,6 @@
         <div class="notulis-box">
             <strong>Notulis,</strong>
             
-            {{-- Nama diposisikan di bawah menggunakan class baru --}}
             <div class="notulis-name">
                 <u><b>{{ $meeting->notulis }}</b></u>
             </div>
