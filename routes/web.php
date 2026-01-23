@@ -104,7 +104,8 @@ Route::middleware(['auth'])->group(function () {
         // API untuk mencari karyawan berdasarkan SAP/Nama
     Route::get('/api/search-employee', [MeetingController::class, 'searchEmployee'])->name('search.employee');
 
-    // Route untuk Manajemen Lokasi (AJAX)
+    // --- MANAJEMEN LOKASI (Route Baru) ---
+    Route::get('/manajemen-lokasi', [MeetingController::class, 'manageLocations'])->name('locations.index'); // Halaman List
     Route::post('/location', [MeetingController::class, 'storeLocation'])->name('location.store');
     Route::delete('/location/{id}', [MeetingController::class, 'destroyLocation'])->name('location.destroy');
     });

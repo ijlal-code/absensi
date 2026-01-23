@@ -60,6 +60,11 @@
                     <i class="fas fa-handshake mr-3 w-5 text-center"></i> Agenda Rapat
                 </a>
 
+                {{-- MENU BARU DISINI --}}
+<a href="{{ route('meetings.locations.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('meetings.locations.index') ? 'bg-blue-700' : '' }}">
+    <i class="fas fa-map-marker-alt mr-3 w-5 text-center"></i> Kelola Lokasi
+</a>
+
                 <a href="{{ route('meetings.reports') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('meetings.reports') ? 'bg-blue-700' : '' }}">
                     <i class="fas fa-file-contract mr-3 w-5 text-center"></i> Laporan Rapat
                 </a>

@@ -43,27 +43,33 @@ public function searchEmployee(Request $request)
     return response()->json($employees);
 }
 
-// Tambahkan Method Baru: Simpan Lokasi (AJAX)
-public function storeLocation(Request $request)
-{
-    $request->validate(['name' => 'required|unique:meeting_locations,name']);
-    
-    $location = MeetingLocation::create([
-        'name' => $request->name
-    ]);
+public function manageLocations()
+    {
+        $locations = MeetingLocation::orderBy('name')->get();
+        return view('meetings.locations', compact('locations'));
+    }
 
-    return response()->json([
-        'success' => true,
-        'location' => $location
-    ]);
-}
+    // 2. Simpan Lokasi (Sekarang Redirect back)
+    public function storeLocation(Request $request)
+    {
+        $request->validate(
+            ['name' => 'required|unique:meeting_locations,name'],
+            ['name.unique' => 'Nama lokasi sudah ada.', 'name.required' => 'Nama lokasi wajib diisi.']
+        );
+        
+        MeetingLocation::create([
+            'name' => $request->name
+        ]);
 
-// Tambahkan Method Baru: Hapus Lokasi (AJAX)
-public function destroyLocation($id)
-{
-    MeetingLocation::destroy($id);
-    return response()->json(['success' => true]);
-}
+        return back()->with('success', 'Lokasi baru berhasil ditambahkan.');
+    }
+
+    // 3. Hapus Lokasi (Sekarang Redirect back)
+    public function destroyLocation($id)
+    {
+        MeetingLocation::destroy($id);
+        return back()->with('success', 'Lokasi berhasil dihapus.');
+    }
 
     public function store(Request $request)
     {
