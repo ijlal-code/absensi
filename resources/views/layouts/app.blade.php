@@ -53,47 +53,75 @@
                     <i class="fas fa-home mr-3 w-5 text-center"></i> Dashboard
                 </a>
 
-                {{-- SEPARATOR --}}
-                <div class="mt-6 mb-2 text-xs text-gray-400 uppercase font-semibold tracking-wider px-2">Agenda Rapat</div>
+                {{-- SEPARATOR AGENDA --}}
+                <div class="mt-6 mb-2 text-xs text-gray-400 uppercase font-semibold tracking-wider px-2">Menu Utama</div>
 
-                <a href="{{ route('meetings.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('meetings.index') || request()->routeIs('meetings.create') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-handshake mr-3 w-5 text-center"></i> Agenda Rapat
-                </a>
+                {{-- DROPDOWN AGENDA RAPAT --}}
+                <div x-data="{ open: {{ request()->routeIs('meetings.*') ? 'true' : 'false' }} }" class="mb-1">
+                    <button @click="open = !open" class="w-full flex justify-between items-center py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 focus:outline-none {{ request()->routeIs('meetings.*') ? 'bg-blue-800 text-white' : '' }}">
+                        <span class="flex items-center">
+                            <i class="fas fa-handshake mr-3 w-5 text-center"></i> Agenda Rapat
+                        </span>
+                        <i class="fas fa-chevron-down text-xs transition-transform duration-200" :class="open ? 'transform rotate-180' : ''"></i>
+                    </button>
+                    
+                    {{-- Submenu dengan Ikon --}}
+                    <div x-show="open" class="bg-blue-800 rounded mt-1 overflow-hidden space-y-1 py-1" style="display: none;">
+                        
+                        <a href="{{ route('meetings.index') }}" class="block py-2 px-4 pl-8 text-sm hover:bg-blue-700 transition {{ request()->routeIs('meetings.index') || request()->routeIs('meetings.create') || request()->routeIs('meetings.edit') ? 'text-yellow-300 font-bold' : 'text-gray-300' }}">
+                            <i class="fas fa-list mr-2 w-5 text-center"></i> List Agenda
+                        </a>
+                        
+                        <a href="{{ route('meetings.locations.index') }}" class="block py-2 px-4 pl-8 text-sm hover:bg-blue-700 transition {{ request()->routeIs('meetings.locations.index') ? 'text-yellow-300 font-bold' : 'text-gray-300' }}">
+                            <i class="fas fa-map-marker-alt mr-2 w-5 text-center"></i> Kelola Lokasi
+                        </a>
+                        
+                        <a href="{{ route('meetings.reports') }}" class="block py-2 px-4 pl-8 text-sm hover:bg-blue-700 transition {{ request()->routeIs('meetings.reports') ? 'text-yellow-300 font-bold' : 'text-gray-300' }}">
+                            <i class="fas fa-file-contract mr-2 w-5 text-center"></i> Laporan Rapat
+                        </a>
+                    </div>
+                </div>
 
-                {{-- MENU BARU DISINI --}}
-<a href="{{ route('meetings.locations.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('meetings.locations.index') ? 'bg-blue-700' : '' }}">
-    <i class="fas fa-map-marker-alt mr-3 w-5 text-center"></i> Kelola Lokasi
-</a>
-
-                <a href="{{ route('meetings.reports') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('meetings.reports') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-file-contract mr-3 w-5 text-center"></i> Laporan Rapat
-                </a>
-
-                {{-- KARYAWAN --}}
-                @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_employees'))
-                <div class="mt-6 mb-2 text-xs text-gray-400 uppercase font-semibold tracking-wider px-2">Kepegawaian</div>
+                {{-- DROPDOWN KEPEGAWAIAN --}}
+                @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_employees') || Auth::user()->hasPermission('view_statistics') || Auth::user()->hasPermission('manage_employees') || Auth::user()->hasPermission('view_reports'))
                 
-                <a href="{{ route('employees.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('employees.index') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-info-circle mr-3 w-5 text-center"></i> Info Karyawan
-                </a>
-                @endif
+                <div x-data="{ open: {{ request()->routeIs('employees.*') || request()->routeIs('employee-management.*') || request()->routeIs('reports') ? 'true' : 'false' }} }" class="mb-1">
+                    <button @click="open = !open" class="w-full flex justify-between items-center py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 focus:outline-none {{ request()->routeIs('employees.*') || request()->routeIs('employee-management.*') || request()->routeIs('reports') ? 'bg-blue-800 text-white' : '' }}">
+                        <span class="flex items-center">
+                            <i class="fas fa-users mr-3 w-5 text-center"></i> Kepegawaian
+                        </span>
+                        <i class="fas fa-chevron-down text-xs transition-transform duration-200" :class="open ? 'transform rotate-180' : ''"></i>
+                    </button>
+                    
+                    {{-- Submenu dengan Ikon --}}
+                    <div x-show="open" class="bg-blue-800 rounded mt-1 overflow-hidden space-y-1 py-1" style="display: none;">
+                        
+                        @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_employees'))
+                        <a href="{{ route('employees.index') }}" class="block py-2 px-4 pl-8 text-sm hover:bg-blue-700 transition {{ request()->routeIs('employees.index') ? 'text-yellow-300 font-bold' : 'text-gray-300' }}">
+                            <i class="fas fa-info-circle mr-2 w-5 text-center"></i> Info Karyawan
+                        </a>
+                        @endif
 
-                @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_statistics'))
-                <a href="{{ route('employee-management.stats') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('employee-management.stats') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-chart-pie mr-3 w-5 text-center"></i> Statistik
-                </a>
-                @endif
+                        @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_statistics'))
+                        <a href="{{ route('employee-management.stats') }}" class="block py-2 px-4 pl-8 text-sm hover:bg-blue-700 transition {{ request()->routeIs('employee-management.stats') ? 'text-yellow-300 font-bold' : 'text-gray-300' }}">
+                            <i class="fas fa-chart-pie mr-2 w-5 text-center"></i> Statistik
+                        </a>
+                        @endif
 
-                @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('manage_employees'))
-                <a href="{{ route('employee-management.index') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('employee-management.*') && !request()->routeIs('employee-management.stats') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-user-edit mr-3 w-5 text-center"></i> Kelola Karyawan
-                </a>
-                @endif
+                        @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('manage_employees'))
+                        <a href="{{ route('employee-management.index') }}" class="block py-2 px-4 pl-8 text-sm hover:bg-blue-700 transition {{ request()->routeIs('employee-management.*') && !request()->routeIs('employee-management.stats') ? 'text-yellow-300 font-bold' : 'text-gray-300' }}">
+                            <i class="fas fa-user-edit mr-2 w-5 text-center"></i> Kelola Karyawan
+                        </a>
+                        @endif
 
-                @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_reports'))
-                <a href="{{ route('reports') }}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 {{ request()->routeIs('reports') ? 'bg-blue-700' : '' }}">
-                    <i class="fas fa-file-export mr-3 w-5 text-center"></i> Laporan
-                </a>
+                        @if(Auth::user()->isAdmin() || Auth::user()->hasPermission('view_reports'))
+                        <a href="{{ route('reports') }}" class="block py-2 px-4 pl-8 text-sm hover:bg-blue-700 transition {{ request()->routeIs('reports') ? 'text-yellow-300 font-bold' : 'text-gray-300' }}">
+                            <i class="fas fa-file-export mr-2 w-5 text-center"></i> Laporan Umum
+                        </a>
+                        @endif
+
+                    </div>
+                </div>
                 @endif
 
                 {{-- ADMIN --}}
